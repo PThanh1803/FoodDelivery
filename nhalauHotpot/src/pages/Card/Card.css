@@ -1,0 +1,127 @@
+.card{
+    margin-top: 100px;
+}
+
+.card-items-title{
+    display: grid;
+    grid-template-columns: 1fr 1.5fr 1fr 1fr 1fr 0.5fr;
+    font-weight: 600;
+    align-items: center;
+    font-size: max(1vw, 12px);
+    color: rgb(142, 142, 142);
+}
+
+.card-items-item{
+    margin: 10px 0px;
+    color: rgb(0, 0, 0);
+}
+
+.card-items-item img{
+    border-radius: 8px;
+    width: 120px;
+    cursor: pointer;
+}
+
+.card-items-item .cross{
+    cursor: pointer;
+}
+
+.card-items-item .cross:hover{
+    color: tomato;
+}
+
+.card hr{
+    margin: 10px 0;
+    height: 1px;
+    background-color: rgb(142, 142, 142,0.1);
+    border-color: rgb(142, 142, 142,0.1);;
+}
+
+.card-bottom{
+    margin-top: 80px;
+    display: flex;
+    justify-content: space-between;
+    gap: max(12vw, 20px);
+}
+
+.card-total{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.card-total-details{
+    display: flex;
+    justify-content: space-between;
+    color: #555;
+}
+
+.card-total button{
+    width: 60%;
+    align-self: center;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    background-color: tomato;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.5s;
+}
+
+.card-total button:disabled{
+    cursor: not-allowed;
+    background-color: tomato ;
+    opacity: 0.5;
+}
+
+.card-promocode{
+    flex: 1;
+}
+
+.card-promocode p{
+    color: #555;
+}
+
+.card-promocode-input{
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #eaeaea;
+    border-radius: 4px;
+}
+
+.card-promocode-input input{
+    background: transparent;
+    border: none;
+    outline: none;
+    padding-left: 10px;
+}
+
+.card-promocode-input button{
+    width: 35%;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    background-color: rgb(18, 17, 17);
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.5s;
+}
+
+@media (max-width: 750px) {
+
+    .card-bottom{
+        flex-direction: column-reverse;
+    }
+    
+    .card-promocode{
+        justify-self: start;
+    }
+}

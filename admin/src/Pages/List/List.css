@@ -1,0 +1,86 @@
+.list-table-format {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr 1fr 0.5fr;
+    grid-gap: 10px;
+    align-items: center;
+    padding: 12px 15px;
+    border: 1px solid #a9a9a9;
+    font-size: 13;
+}
+
+.list-table-format.title{
+    background-color: #f9f9f9;
+}
+
+.list-table-format img{
+    width: 80px;
+}
+
+.cursor:hover{
+    cursor: pointer;
+    color: tomato;
+}
+
+@media (max-width: 600px) {
+
+    .list-table-format {
+        grid-template-columns: 1fr 3fr 1fr ;
+        gap: 13px;
+    }
+
+    .list-table-format.title{
+        display: none;
+    }
+    
+}
+
+
+/* Modal.css */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .modal {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    width: 400px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    text-align: center;
+  }
+  
+  .modal h2 {
+    margin-top: 0;
+  }
+  
+  .modal-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  
+  .modal-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .modal-button-confirm {
+    background-color: #4CAF50;
+    color: white;
+  }
+  
+  .modal-button-cancel {
+    background-color: #f44336;
+    color: white;
+  }
