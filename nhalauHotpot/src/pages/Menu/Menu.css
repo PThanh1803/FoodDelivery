@@ -1,0 +1,85 @@
+.menu-container {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+
+}
+
+/* Menu will be on the left */
+.menu {
+    flex: 1;
+    max-width: 300px;
+    padding-right: 20px;
+    margin-top: 30px;
+
+}
+
+.menu-header {
+    background-color: #169496;
+    padding: 15px;
+    margin-top: 30px;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* FoodDisplay will be on the right */
+.food-display {
+    flex: 3;
+    padding-left: 20px;
+}
+
+.menu-divider {
+    border: none;
+    /* Xóa đường kẻ mặc định */
+    border-top: 5px solid #0b7285;
+    /* Tạo đường kẻ màu xanh dương */
+    margin-top: 5px;
+    /* Tạo khoảng cách 10px từ .menu-header */
+    width: 100%;
+    /* Độ dài bằng container */
+}
+
+
+/* Remaining CSS for the menu */
+.menu h1 {
+    font-size: 30px;
+    color: white;
+    font-weight: 600;
+}
+
+.menu-list {
+    display: flex;
+    background-color: aliceblue;
+    flex-direction: column;
+    gap: 30px;
+    text-align: start;
+    margin: 20px 0;
+    overflow-y: scroll;
+    max-height: 70vh;
+    padding: 0 0 20px 20px;
+
+}
+
+.menu-list::-webkit-scrollbar {
+    display: none;
+}
+
+.menu-list-item p {
+    font-size: max(1.3vw, 16px);
+    font-weight: 500;
+    margin-top: 10px;
+    cursor: pointer;
+
+}
+
+.menu-list-item .active {
+    color: tomato;
+}
+
+@media (max-width: 1050px) {
+    .explore-menu-text {
+        max-width: 100%;
+        font-size: 14px;
+
+    }
+}

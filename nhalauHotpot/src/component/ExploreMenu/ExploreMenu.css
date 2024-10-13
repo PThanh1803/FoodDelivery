@@ -1,21 +1,21 @@
-.explore-menu{
+.explore-menu {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-.explore-menu h1{
+.explore-menu h1 {
     font-size: 30px;
     font-weight: 600;
 }
 
-.explore-menu p{
+.explore-menu p {
     font-size: 20px;
     font-weight: 400;
     margin-top: 10px;
 }
 
-.explore-menu-list{
+.explore-menu-list {
     display: flex;
     justify-content: space-between;
     margin-top: 50px;
@@ -25,11 +25,11 @@
     overflow-x: scroll;
 }
 
-.explore-menu-list::-webkit-scrollbar{
+.explore-menu-list::-webkit-scrollbar {
     display: none;
 }
 
-.explore-menu-list-item img{
+.explore-menu-list-item img {
     width: 7.5vw;
     min-width: 80px;
     cursor: pointer;
@@ -37,29 +37,33 @@
     transition: 0.2s;
 }
 
-.explore-menu-list-item p{
+.explore-menu-list-item p {
     font-size: max(1.4vw, 16px);
     font-weight: 500;
     margin-top: 10px;
     cursor: pointer;
 }
 
-.explore-menu hr{
+.explore-menu hr {
     margin: 10px 0;
     height: 2px;
     background-color: antiquewhite;
     border: none;
 }
 
-.explore-menu-list-item .active{
+.explore-menu-list-item .active {
     border: 5px solid tomato;
-    padding: 2px ;
+    padding: 2px;
 }
 
 @media (max-width: 1050px) {
-    .explore-menu-text{
+    .explore-menu-text {
         max-width: 100%;
         font-size: 14px;
 
     }
+}
+
+.menu-container {
+    display: flex;
 }
