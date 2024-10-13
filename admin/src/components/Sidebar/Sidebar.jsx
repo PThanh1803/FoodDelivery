@@ -20,6 +20,11 @@ export const Sidebar = () => {
             <img src={assets.order_icon} alt="" />
             <p>Place Orders</p>
           </NavLink>
+
+          <NavLink to='/voucher' className="sidebar-option">
+            <img src={assets.order_icon} alt="" />
+            <p>Voucher</p>
+          </NavLink>
         </div>
     </div>
   )
