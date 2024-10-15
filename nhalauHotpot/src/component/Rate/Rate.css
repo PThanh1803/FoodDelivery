@@ -1,0 +1,301 @@
+.rate-container {
+    font-family: Arial, sans-serif;
+    max-width: 1200px;
+    margin: 30px auto;
+}
+
+.rate-score-header {
+    display: flex;
+    margin-bottom: 20px;
+    margin-top: 5px;
+}
+
+.rate-number {
+    font-size: 15px;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.stars {
+    font-size: 15px;
+    color: #FFA500;
+    /* Màu cho ngôi sao */
+    margin-right: 10px;
+}
+
+.rate-count {
+    font-size: 15px;
+    color: gray;
+}
+
+/* Điểm tổng hợp */
+.total-rating {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 24px;
+}
+
+.total-rating-title {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+}
+
+.total-rating-number {
+    font-size: 30px;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.total-rating-stars {
+    font-size: 40px;
+    color: #FFA500;
+    /* Màu cho ngôi sao */
+    margin-right: 10px;
+}
+
+.total-rating-count {
+    font-size: 20px;
+    color: gray;
+}
+
+/* Hình ảnh minh họa */
+.image-gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.image-gallery img {
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+}
+
+.summary {
+    margin-bottom: 10px;
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.title {
+    margin-right: 5px;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+/* Thanh đánh giá */
+.rating-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 50%;
+}
+
+.rating-row {
+    display: flex;
+    align-items: center;
+}
+
+.star-label {
+    width: 20px;
+    font-size: 16px;
+    margin-right: 10px;
+}
+
+.bar {
+    width: 100%;
+    background-color: #E0E0E0;
+    height: 10px;
+    border-radius: 5px;
+    position: relative;
+}
+
+.bar-fill {
+    height: 100%;
+    background-color: #FFA500;
+    border-radius: 5px;
+}
+
+.rate-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #169496;
+    width: 150px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.rate-button img {
+    width: 20px;
+    height: 20px;
+}
+
+.rate-button span {
+    padding: 10px;
+}
+
+
+.rate-content-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.image-gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.image-gallery img {
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.remaining-images {
+    width: 100%;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.1);
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.popup-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+
+.popup-content {
+    position: relative;
+    background-color: white;
+    height: 80%;
+    width: 80%;
+    max-width: 1200px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: row;
+    padding: 20px;
+    min-width: 768px;
+}
+
+.popup-list {
+    display: flex;
+    flex-direction: column;
+    margin-right: 20px;
+    height: 100%;
+    overflow-y: auto;
+    /* Giữ thanh cuộn nếu danh sách vượt quá chiều cao */
+    padding: 10px;
+    border-right: 1px solid #ccc;
+    width: 40%;
+    min-width: 150px;
+    /* Đảm bảo chiều rộng tối thiểu */
+}
+
+.full-image {
+    width: 100%;
+    /* Đảm bảo ảnh chiếm toàn bộ chiều rộng của container */
+    height: auto;
+    /* Giữ tỉ lệ gốc của ảnh */
+    max-height: 70vh;
+    /* Giới hạn chiều cao tối đa của ảnh */
+    max-width: 100%;
+    /* Giới hạn chiều rộng tối đa của ảnh */
+    border-radius: 10px;
+    /* Bo tròn các góc của ảnh */
+    object-fit: contain;
+    /* Đảm bảo ảnh giữ tỉ lệ gốc mà không bị cắt */
+}
+
+.popup-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+    width: 90%;
+}
+
+.popup-navigation button {
+    padding: 10px;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 50%;
+    /* Bo tròn các nút điều hướng */
+    width: 50px;
+    height: 50px;
+    background-color: transparent;
+    /* Đặt nền cho nút điều hướng */
+    transition: background-color 0.3s;
+    /* Hiệu ứng chuyển màu cho nút điều hướng */
+}
+
+.popup-navigation button:hover {
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Hiệu ứng hover cho nút điều hướng */
+}
+
+.close-popup {
+    padding: 10px 20px;
+    background-color: gray;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.thumbnail {
+    width: 80px;
+    /* Chiều rộng thumbnail */
+    height: auto;
+    margin-bottom: 10px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    /* Đường viền mặc định */
+    border-radius: 5px;
+    transition: border-color 0.3s;
+}
+
+.thumbnail:hover {
+    border-color: #FFA500;
+    /* Đánh dấu khi di chuột qua */
+}
+
+.thumbnail.active {
+    border-color: #FFA500;
+    /* Đường viền cho thumbnail đang được chọn */
+    box-shadow: 0 0 10px rgba(255, 165, 0, 0.5);
+    /* Hiệu ứng bóng cho thumbnail đang được chọn */
+}
+
+.popup-list img {
+    min-height: 300px;
+    width: 100%;
+}

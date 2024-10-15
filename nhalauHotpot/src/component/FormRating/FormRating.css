@@ -1,0 +1,203 @@
+.form-rating-popup {
+    position: fixed;
+    /* Use fixed to ensure the form stays in place while scrolling */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    /* Dark overlay */
+    display: flex;
+    justify-content: center;
+    /* Center horizontally */
+    align-items: center;
+    /* Center vertically */
+    z-index: 999;
+    /* High z-index to appear above other elements */
+
+}
+
+.form-rating-user img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.form-rating-user-info {
+
+    font-size: 18px;
+}
+
+.form-rating-container {
+    max-width: 700px;
+    background-color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column;
+    gap: 25px;
+    padding: 25px 40px;
+    border-radius: 10px;
+    width: 70%;
+    height: 93%;
+    /* Adjust width as necessary */
+
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Shadow for form */
+    animation: fadeIn 0.5s;
+    /* Optional: smooth animation */
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+        /* Slight scale effect */
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.form-rating-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: black;
+
+}
+
+.form-rating-title img {
+    width: 16px;
+    cursor: pointer;
+}
+
+.form-rating-user {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    align-self: flex-start;
+}
+
+.form-rating-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    font-size: 20px;
+}
+
+.stars-form {
+    color: #FF9800;
+    /* Màu cho ngôi sao */
+    font-size: 40px;
+}
+
+.rating-textarea {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #808080;
+    border-radius: 5px;
+    resize: none;
+    min-height: 100px;
+    font-size: 18px;
+}
+
+.add-image-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border: 1px solid #808080;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.form-rating-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    align-self: flex-end;
+    margin-bottom: 10px;
+}
+
+.cancel-btn {
+    padding: 10px;
+    background-color: gray;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.submit-btn {
+    padding: 10px;
+    background-color: tomato;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.5s;
+    font-size: 20px;
+
+}
+
+.form-rating-content h4 {
+    width: 50%;
+    /* Makes the h4 take 45% of the available width */
+    margin-bottom: 10px;
+}
+
+.option {
+    border: 1px solid #ccc;
+    padding: 10px;
+    width: 20%;
+    font-size: 15px;
+    /* Sets width of the buttons */
+    cursor: pointer;
+    background-color: white;
+    text-align: center;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    /* Smooth background change */
+}
+
+.option:hover {
+    background-color: #f0f0f0;
+    /* Light gray on hover */
+}
+
+.option.active {
+    background-color: #d3d3d3;
+    /* Darker gray when active/clicked */
+}
+
+.dine-in {
+    border-color: #169496;
+    /* Custom border color */
+}
+
+.delivery {
+    border-color: #169496;
+    /* Custom border color */
+}
+
+.stars-form {
+    color: #ccc;
+    /* Màu ngôi sao chưa được chọn */
+    font-size: 40px;
+}
+
+.star {
+    cursor: pointer;
+    /* Thay đổi con trỏ khi hover */
+}
+
+.star.active {
+    color: #FF9800;
+    /* Màu cho ngôi sao đã chọn */
+}
