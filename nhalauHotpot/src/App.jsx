@@ -13,6 +13,7 @@ import FoodDetails from './component/FoodDetails/FoodDetails'
 import SpecialOffers from './component/SpecialOffers/SpecialOffers'
 import Rate from './component/Rate/Rate'
 import SpecialOffersDetails from './component/SpecialOffersDetails/SpecialOffersDetails'
+import UserProfile from './component/UserProfile/UserProfile'
 const App = () => {
 
   const [showLogin, setShowLogin] = React.useState(false)
@@ -28,6 +29,7 @@ const App = () => {
           <Route path='/placeorder' element={<PlaceOrder />} />
           <Route path='/verify' element={<Verify />} />
           <Route path='/myorders' element={<MyOrders />} />
+          <Route path='/myprofile' element={<UserProfile />} />
           <Route path='/menu' element={<Menu />} />
           <Route path='/menu/:id' element={<FoodDetails />} />
           <Route path='/specialoffers' element={<SpecialOffers />} />

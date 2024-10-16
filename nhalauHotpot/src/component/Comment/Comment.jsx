@@ -91,7 +91,7 @@ const reviews = [
 ];
 
 // Tính tổng số sao trung bình
-const totalRating = reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length;
+const totalRating = reviews.reduce((acc, review) => acc + review.star, 0) / reviews.length;
 
 const StarRating = ({ rating }) => {
     return (
@@ -122,8 +122,15 @@ const ReviewCard = ({ review }) => (
             </div>
             <StarRating rating={review.star} />
             <p>{review.comment}</p>
-
-
+            <div className="review-images">
+                {review.pictures.length > 0 ? (
+                    review.pictures.map((img, index) => (
+                        <img key={index} src={img} alt={`Review image ${index + 1}`} />
+                    ))
+                ) : (
+                    <img src={review.userImage} alt="Default avatar" className="default-avatar" />
+                )}
+            </div>
         </div>
     </div>
 );
@@ -153,13 +160,11 @@ const PlaceReview = () => {
 
     // Lọc các review theo số sao đã chọn (nếu có)
     const filteredReviews = filterRating > 0
-        ? reviews.filter(review => review.rating === filterRating)
+        ? reviews.filter(review => review.star === filterRating)
         : reviews;
 
     return (
         <div className="reviews-container">
-
-
             {/* Bộ lọc theo số sao */}
             <div className="filter-container">
                 <button onClick={() => handleRatingFilter(0)} className={filterRating === 0 ? 'active' : ''}>All</button>
@@ -172,7 +177,7 @@ const PlaceReview = () => {
 
             <div className="reviews-list">
                 {filteredReviews.slice(0, visibleReviews).map((review) => (
-                    <ReviewCard key={review.id} review={review} />
+                    <ReviewCard key={review.ID} review={review} />
                 ))}
             </div>
             <div className="show-more-container">
@@ -188,7 +193,6 @@ const PlaceReview = () => {
                     </button>
                 )}
             </div>
-
         </div>
     );
 };
