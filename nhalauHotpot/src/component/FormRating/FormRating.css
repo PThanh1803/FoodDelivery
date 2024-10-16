@@ -1,22 +1,3 @@
-.form-rating-popup {
-    position: fixed;
-    /* Use fixed to ensure the form stays in place while scrolling */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
-    /* Dark overlay */
-    display: flex;
-    justify-content: center;
-    /* Center horizontally */
-    align-items: center;
-    /* Center vertically */
-    z-index: 999;
-    /* High z-index to appear above other elements */
-
-}
-
 .form-rating-user img {
     width: 50px;
     height: 50px;
@@ -28,25 +9,7 @@
     font-size: 18px;
 }
 
-.form-rating-container {
-    max-width: 700px;
-    background-color: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-direction: column;
-    gap: 25px;
-    padding: 25px 40px;
-    border-radius: 10px;
-    width: 70%;
-    height: 93%;
-    /* Adjust width as necessary */
 
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    /* Shadow for form */
-    animation: fadeIn 0.5s;
-    /* Optional: smooth animation */
-}
 
 @keyframes fadeIn {
     from {
@@ -114,14 +77,7 @@
     border-radius: 5px;
     cursor: pointer;
     font-size: 18px;
-}
-
-.form-rating-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    align-self: flex-end;
-    margin-bottom: 10px;
+    text-align: center;
 }
 
 .cancel-btn {
@@ -134,17 +90,7 @@
     font-size: 20px;
 }
 
-.submit-btn {
-    padding: 10px;
-    background-color: tomato;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: 0.5s;
-    font-size: 20px;
 
-}
 
 .form-rating-content h4 {
     width: 50%;
@@ -200,4 +146,175 @@
 .star.active {
     color: #FF9800;
     /* Màu cho ngôi sao đã chọn */
+}
+
+.form-rating-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.form-rating-container {
+    max-width: 700px;
+    background-color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column;
+    gap: 25px;
+    padding: 25px 40px;
+    border-radius: 10px;
+    width: 70%;
+    max-height: 95vh;
+    /* Giới hạn chiều cao của container */
+    overflow-y: auto;
+    /* Cho phép cuộn khi cần */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.5s;
+}
+
+@media (max-height: 600px) {
+
+    /* Khi chiều cao màn hình thấp hơn 600px */
+    .form-rating-container {
+        padding: 15px 20px;
+        gap: 15px;
+    }
+
+    .form-rating-content h4 {
+        font-size: 16px;
+        /* Giảm kích thước chữ cho màn hình thấp */
+    }
+
+    .option {
+        font-size: 14px;
+        padding: 8px;
+        width: 30%;
+        /* Giảm kích thước option cho màn hình thấp */
+    }
+
+    .stars-form {
+        font-size: 30px;
+        /* Giảm kích thước ngôi sao */
+    }
+
+    .rating-textarea {
+        min-height: 80px;
+        /* Giảm chiều cao của textarea */
+        font-size: 16px;
+    }
+
+    .add-image-btn,
+    .cancel-btn,
+    .submit-btn {
+        padding: 8px;
+        /* Thu nhỏ các nút */
+        font-size: 16px;
+    }
+}
+
+.form-rating-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    align-self: flex-end;
+    margin-bottom: 10px;
+    width: 100%;
+    /* Đảm bảo các nút luôn nằm trong container */
+}
+
+.submit-btn {
+    padding: 10px;
+    background-color: tomato;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.5s;
+    font-size: 20px;
+    max-width: 150px;
+    /* Giới hạn chiều rộng nút Submit */
+}
+
+.cancel-btn {
+    padding: 10px;
+    background-color: gray;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 20px;
+    max-width: 150px;
+    /* Giới hạn chiều rộng nút Cancel */
+}
+
+@media (max-width: 768px) {
+
+    /* Khi màn hình có chiều rộng nhỏ hơn 768px */
+    .form-rating-container {
+        width: 90%;
+        padding: 15px;
+    }
+
+    .form-rating-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .stars-form {
+        font-size: 30px;
+    }
+
+    .option {
+        width: 100%;
+        font-size: 16px;
+    }
+
+    .submit-btn,
+    .cancel-btn {
+        width: 100%;
+        /* Đảm bảo nút phủ hết chiều ngang container */
+    }
+}
+
+.selected-images {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.image-preview {
+    position: relative;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.image-preview img {
+    width: 50px;
+    /* Adjust the size as needed */
+    height: 50px;
+    /* Adjust the size as needed */
+    border-radius: 5px;
+    /* Optional: rounded corners */
+}
+
+.remove-image-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: red;
+    /* Customize as needed */
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 2px 5px;
+    border-radius: 50%;
+    font-size: 12px;
 }

@@ -169,3 +169,20 @@
     gap: 10px;
     flex-direction: row;
 }
+
+.review-images {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.review-images img {
+    width: 50px;
+    /* Adjust the size as needed */
+    height: 50px;
+    /* Adjust the size as needed */
+    border-radius: 5px;
+    /* Optional: rounded corners */
+    margin-right: 5px;
+    /* Space between images */
+}

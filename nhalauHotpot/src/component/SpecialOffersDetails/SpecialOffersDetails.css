@@ -41,3 +41,22 @@
     font-size: 1.2rem;
     color: #f39c12;
 }
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .special-offers-description {
+        font-size: 1.1rem;
+        /* Slightly smaller font size for medium screens */
+        margin-top: 40px;
+        /* Reduced margin for medium screens */
+    }
+}
+
+@media (max-width: 480px) {
+    .special-offers-description {
+        font-size: 1rem;
+        /* Further reduced font size for small screens */
+        margin-top: 30px;
+        /* Further reduced margin for small screens */
+    }
+}
