@@ -7,7 +7,7 @@ import axios from 'axios'
 
 // eslint-disable-next-line react/prop-types
 const LoginPopup = ({ setShowLogin }) => {
-    const { url, setToken } = useContext(StoreContext)
+    const { url, setToken, loginUser } = useContext(StoreContext)
     const [curentState, setCurrentState] = React.useState("Login")
     const [data, setData] = React.useState({
         name: '',
@@ -25,21 +25,21 @@ const LoginPopup = ({ setShowLogin }) => {
         event.preventDefault();
         let newUrl = url;
         if (curentState === "Login") {
-            newUrl = `${url}/api/user/login`
+            // Gọi hàm loginUser để xử lý đăng nhập
+            const response = await loginUser(data.email, data.password);
+            if (response.success) {
+                setShowLogin(false);
+            } else {
+                alert(response.message);
+            }
         } else {
-            newUrl = `${url}/api/user/register`
-        }
-
-        const respone = await axios.post(newUrl, data)
-
-        if (respone.data.success) {
-            setToken(respone.data.token);
-            console.log(respone.data.token);
-            localStorage.setItem("token", respone.data.token);
-            setShowLogin(false)
-        }
-        else {
-            alert(respone.data.message);
+            newUrl = `${url}/api/user/register`;
+            const response = await axios.post(newUrl, data);
+            if (response.data.success) {
+                setShowLogin(false);
+            } else {
+                alert(response.data.message);
+            }
         }
     }
 

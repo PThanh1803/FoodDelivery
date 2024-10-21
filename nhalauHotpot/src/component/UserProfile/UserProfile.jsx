@@ -1,23 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import './UserProfile.css';
 import edit_icon from '../../assets/edit-alt-regular-24.png';
 import default_avatar from '../../assets/profile_icon.png'; // Placeholder avatar
+import FoodDisplay from '../FoodDisplay/FoodDisplay';
+import { StoreContext } from '../../Context/StoreContext';
 
 const UserProfile = () => {
+    const { userInfo, setUserInfo } = useContext(StoreContext);
+    console.log(userInfo); // Use StoreContext to get userInfo
     const [activeTab, setActiveTab] = useState('profile');
-    const [userInfo, setUserInfo] = useState({
-        name: 'John Doe',
-        email: 'johndoe@example.com',
-        address: '1234 Main St, City, Country',
-        password: '********',
-        avatar: default_avatar, // Default avatar image
-    });
-
-    const [wishlist, setWishlist] = useState([
-        { id: 1, item: 'Product 1' },
-        { id: 2, item: 'Product 2' },
-        { id: 3, item: 'Product 3' },
-    ]);
 
     const handleTabClick = (tab) => {
         setActiveTab(tab);
@@ -54,7 +45,7 @@ const UserProfile = () => {
                     />
                 )}
                 {activeTab === 'update-password' && <UpdatePassword />}
-                {activeTab === 'wishlist' && <Wishlist wishlist={wishlist} />}
+                {activeTab === 'wishlist' && <Wishlist wishlist={userInfo.wishlist} />} {/* Use wishlist from userInfo */}
             </div>
         </div>
     );
@@ -63,7 +54,7 @@ const UserProfile = () => {
 const MyProfile = ({ userInfo, setUserInfo }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editedInfo, setEditedInfo] = useState({ ...userInfo });
-    const [selectedAvatar, setSelectedAvatar] = useState(userInfo.avatar);
+    const [selectedAvatar, setSelectedAvatar] = useState(userInfo.avatar || default_avatar);
 
     const handleEditClick = () => {
         setIsEditing(true);
@@ -218,19 +209,18 @@ const UpdatePassword = () => {
     );
 };
 
-const Wishlist = ({ wishlist }) => (
-    <div className="wishlist-section">
-        <h2>Wishlist</h2>
-        {wishlist.length > 0 ? (
-            <ul>
-                {wishlist.map((item) => (
-                    <li key={item.id}>{item.item}</li>
-                ))}
-            </ul>
-        ) : (
-            <p>Your wishlist is empty.</p>
-        )}
-    </div>
-);
+const Wishlist = ({ wishlist }) => {
+    return (
+        <div className="wishlist-section">
+            <h2>Wishlist</h2>
+            {wishlist && wishlist.length > 0 ? (
+                <FoodDisplay wishlist={wishlist.map(item => item.id)} />
+            ) : (
+                <p>Your wishlist is empty.</p>
+            )}
+        </div>
+    );
+};
+
 
 export default UserProfile;
