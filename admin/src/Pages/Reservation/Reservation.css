@@ -1,0 +1,190 @@
+.reservation-container {
+    display: flex;
+    padding: 20px;
+    gap: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    width: 90%;
+    margin-left: max(5vw, 35px);
+    flex-direction: column;
+}
+
+.reservation-filter {   
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
+.status-filter {
+    margin-bottom: 10px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.status-filter select {
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    color: #555;
+    transition: border-color 0.3s;
+}
+
+.status-filter select:hover {
+    border-color: #007bff;
+}
+
+.reservation-list-container {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+    height: 100%;
+}
+
+.reservation-list {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.reservation-card {
+    border-radius: 10px;
+    padding: 15px;
+    cursor: pointer;
+    transition: box-shadow 0.3s, transform 0.3s;
+    background-color: #ffffff; /* White background */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.reservation-card.pending {
+    border-left: 5px solid #ffc107; /* Yellow border for pending */
+}
+
+.reservation-card.accepted {
+    border-left: 5px solid #28a745; /* Green border for accepted */
+}
+
+.reservation-card.completed {
+    border-left: 5px solid #17a2b8; /* Blue border for completed */
+}
+
+.reservation-card:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+}
+
+.reservation-title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+}
+
+.reservation-date,
+.reservation-time,
+.reservation-phone,
+.reservation-email,
+.reservation-status {
+    margin: 5px 0;
+    color: #555;
+}
+
+.status-actions {
+    margin-top: 10px;
+}
+
+.action-button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+    margin-right: 10px;
+}
+
+.action-button:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+    
+}
+
+.reservation-details {
+    flex: 1;
+    border-radius: 10px;
+    padding: 20px;
+    background-color: #f8f9fa; /* Light gray background */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.reservation-details h2 {
+    font-size: 24px; /* Larger font size for the title */
+    margin-bottom: 15px;
+    color: #333; /* Darker color for better contrast */
+    border-bottom: 2px solid #007bff; /* Blue underline for emphasis */
+    padding-bottom: 10px;
+}
+
+.reservation-details p {
+    font-size: 18px; /* Increase font size for better readability */
+    margin: 10px 0; /* Spacing between paragraphs */
+    color: #444; /* Slightly darker gray for better contrast */
+}
+
+.reservation-details strong {
+    color: #007bff; /* Use blue for strong text to highlight important information */
+}
+
+.pre-ordered-items {
+    margin-top: 15px;
+    border-top: 2px solid #007bff; /* Top border for separation */
+    padding-top: 15px; /* Padding for spacing */
+}
+
+.pre-ordered-items h3 {
+    font-size: 20px; /* Slightly smaller than the title */
+    margin: 10px 0;
+    color: #333;
+}
+
+.pre-ordered-items ul {
+    list-style: none; /* Remove default list styling */
+    padding: 0;
+}
+
+.pre-ordered-items li {
+    padding: 10px; /* Add padding for better spacing */
+    background-color: #e9ecef; /* Light background for items */
+    border-radius: 5px; /* Rounded corners */
+    margin-bottom: 5px; /* Space between items */
+    display: flex; /* Flex for horizontal alignment */
+    justify-content: space-between; /* Space items evenly */
+}
+
+.pre-ordered-items li:last-child {
+    margin-bottom: 0; /* Remove margin for last item */
+}
+
+.pre-ordered-items li strong {
+    color: #333; /* Darker color for emphasis */
+}
+
+.date-filter {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.date-filter h3 {
+    margin-bottom: 5px;
+}
+
+.date-filter input {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    color: #555;
+}

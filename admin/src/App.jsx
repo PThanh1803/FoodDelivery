@@ -7,9 +7,10 @@ import Orders from './Pages/Orders/Orders'
 import Voucher from './Pages/ListVoucher/ListVoucher'
 import { ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import VoucherDetail from './Pages/ListVoucher/VoucherDetail/VoucherDetail'
-import  AddVoucher from './Pages/ListVoucher/AddVoucher/AddVoucher'
-
+import DashBoard from './Pages/DashBoard/DashBoard'
+import Promotions from './Pages/Promotion/Promotion'
+import Notification from './Pages/Notification/Notification'
+import Reservation from './Pages/Reservation/Reservation'
 const App = () => {
   const url = "http://localhost:4000"
   return (
@@ -24,9 +25,11 @@ const App = () => {
             <Route path='/list' element={<List url={url}/>}/>
             <Route path='/orders' element={<Orders url={url}/>}/>
             <Route path='/voucher' element={<Voucher url={url}/>}>
-              <Route path=':id' element={<VoucherDetail url={url}/>}/>
-              <Route path='add' element={<AddVoucher url={url}/>}/>
             </Route>
+            <Route path='/dashboard' element={<DashBoard url={url}/>}/>
+            <Route path='/promotion' element={<Promotions url={url}/>}/>
+            <Route path='/notification' element={<Notification url={url}/>}/>
+            <Route path='/reservation' element={<Reservation url={url}/>}/>
           </Routes>
         </div>
     </div>

@@ -49,4 +49,40 @@ const removeFood = async (req, res) => {
     }
 }
 
-export {addFood, listFood, removeFood};
+const updateFood = async (req, res) => {
+    try {
+        // Fetch the food item from the database to get the current image
+        const foodItem = await foodModel.findById(req.body.id);
+
+        // Check if the food item exists
+        if (!foodItem) {
+            return res.json({ success: false, message: "Food item not found" });
+        }
+
+        // Prepare the update data
+        const updateData = {
+            name: req.body.name,
+            description: req.body.description,
+            price: req.body.price,
+            category: req.body.category,
+        };
+
+        // Check if a new image has been uploaded
+        if (req.file) {
+            const image_filename = `${req.file.filename}`;
+            updateData.image = image_filename; // Update with new image filename
+        } else {
+            updateData.image = foodItem.image; // Retain the old image filename
+        }
+
+        // Perform the update
+        await foodModel.findByIdAndUpdate(req.body.id, updateData);
+        res.json({ success: true, message: "Food updated successfully" });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: "Error updating food item" });
+    }
+}
+
+
+export {addFood, listFood, removeFood, updateFood};
