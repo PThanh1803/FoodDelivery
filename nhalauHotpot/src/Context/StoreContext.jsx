@@ -1,7 +1,10 @@
 import { createContext, useEffect, useState } from "react";
 import axios from "axios";
 
-export const StoreContext = createContext(null);
+
+
+export const StoreContext = createContext(null)
+
 
 const StoreContextProvider = (props) => {
     const url = "http://localhost:4000";

@@ -1,0 +1,79 @@
+.notification-container {
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 350px;
+    margin: 20px auto;
+    background-color: #fff;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+  }
+  
+  .notification-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .notification-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .notification-item:last-child {
+    border-bottom: none;
+  }
+  
+  .notification-content {
+    display: flex;
+    align-items: center; /* Center the icon with text */
+    flex-direction: column; /* Change to column layout */
+  }
+  
+  .notification-icon {
+    margin-right: 10px; /* Add spacing between icon and text */
+    color: #ffcc00; /* Change icon color */
+    font-size: 1.5em; /* Increase icon size */
+  }
+  
+  .notification-message {
+    font-weight: bold;
+  }
+  
+  .notification-details {
+    color: #555;
+  }
+  
+  .notification-date {
+    font-size: 0.9em;
+    color: #aaa;
+  }
+  
+  /* Notification.css */
+.notification-container {
+    padding: 10px;
+  }
+  
+  .filter-container {
+    margin-bottom: 10px;
+  }
+  
+  .filter-container button, 
+  .filter-container select {
+    margin-right: 10px;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .notification-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .notification-item {
+    padding: 10px;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  

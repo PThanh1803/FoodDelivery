@@ -1,38 +1,42 @@
-.sidebar{
-    width: 20%;
+.sidebar {
+    min-width: 200px;
     min-height: 100vh;
-    border-right: 1.5px solid #a9a9a9;
-    border-top: 0;
-    font-size: max(1vw,10px)
-}
-
-.sidebar-options{
+    background-color: #1f1f38;
     display: flex;
     flex-direction: column;
-    padding-top: 50px;
-    padding-left: 20%;
-    gap: 30px;
-}
-
-.sidebar-option{
-    display: flex;
     align-items: center;
-    gap: 10px;
-    border: 1px solid #a9a9a9;
-    border-right: 0;
-    padding: 8px 10px;
-    border-radius:  3px 0 0 3px;
-    cursor: pointer;
-
-}
-
-.sidebar-option.active{
-    background-color: #ffffed;
-    border-color: tomato;
-}
-
-@media (max-width: 900px) {
-    .sidebar-option p {
-        display: none;
-    }    
-}
+    padding: 20px 0;
+  }
+  
+  .sidebar-options {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .sidebar-option {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 15px;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    color: white; /* Set default icon color to white */
+  }
+  
+  .sidebar-icon {
+    font-size: 24px;
+  }
+  
+  .sidebar-option:hover {
+    background-color: #ff7a59;
+    box-shadow: 0px 4px 10px rgba(255, 122, 89, 0.4);
+  }
+  
+  .sidebar-option.active {
+    background-color: #ff7a59; /* Highlight color for the active option */
+    box-shadow: 0px 4px 10px rgba(255, 122, 89, 0.8);
+  }
+  

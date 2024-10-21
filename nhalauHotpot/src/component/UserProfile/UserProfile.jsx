@@ -1,3 +1,4 @@
+
 import React, { useState, useContext } from 'react';
 import './UserProfile.css';
 import edit_icon from '../../assets/edit-alt-regular-24.png';
@@ -9,6 +10,7 @@ const UserProfile = () => {
     const { userInfo, setUserInfo } = useContext(StoreContext);
     console.log(userInfo); // Use StoreContext to get userInfo
     const [activeTab, setActiveTab] = useState('profile');
+
 
     const handleTabClick = (tab) => {
         setActiveTab(tab);
@@ -45,7 +47,9 @@ const UserProfile = () => {
                     />
                 )}
                 {activeTab === 'update-password' && <UpdatePassword />}
+
                 {activeTab === 'wishlist' && <Wishlist wishlist={userInfo.wishlist} />} {/* Use wishlist from userInfo */}
+
             </div>
         </div>
     );
@@ -54,7 +58,9 @@ const UserProfile = () => {
 const MyProfile = ({ userInfo, setUserInfo }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editedInfo, setEditedInfo] = useState({ ...userInfo });
+
     const [selectedAvatar, setSelectedAvatar] = useState(userInfo.avatar || default_avatar);
+
 
     const handleEditClick = () => {
         setIsEditing(true);
@@ -209,6 +215,7 @@ const UpdatePassword = () => {
     );
 };
 
+
 const Wishlist = ({ wishlist }) => {
     return (
         <div className="wishlist-section">
@@ -221,6 +228,7 @@ const Wishlist = ({ wishlist }) => {
         </div>
     );
 };
+
 
 
 export default UserProfile;

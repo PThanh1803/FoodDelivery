@@ -1,0 +1,199 @@
+.dashboard-container {
+    background-color: #ffffff; /* Changed to white */
+    color: #333; /* Darker text color for readability */
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    border-radius: 8px;
+    gap: 20px;
+    width: 90%;
+    margin-left: max(5vw, 35px);
+    margin-top: 20px;
+
+
+.dashboard-cards {
+    display: flex;
+    justify-content: space-between;
+}
+
+.dashboard-card {
+    background-color: #f9f9f9; /* Light grey background for cards */
+    border-radius: 8px;
+    padding: 20px;
+    width: 100%;
+    text-align: center;
+    margin-right: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+}
+
+.most-ordered {
+    margin-top: 30px;
+}
+
+.order-item, .most-ordered-item {
+    background-color: #f0f0f0; /* Light grey for items */
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.order-list, .most-ordered {
+    background-color: #f7f7f7; /* Slightly darker grey for lists */
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.most-ordered {
+    margin-top: 30px;
+    width: 30%;
+}
+
+.most-ordered-item img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%; /* Keep images circular */
+}
+
+.dashboard-right {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    width: 70%;
+}
+
+/* Order Report */
+.order-report {
+    width: 100%;
+    background-color: #ffffff; /* Keep order report background white */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
+}
+
+/* Header with Filter */
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.filter-button {
+    background-color: #4CAF50; /* Green button */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.filter-button:hover {
+    background-color: #45a049; /* Darker green on hover */
+}
+
+/* Order Table */
+.order-table {
+    margin-top: 20px;
+}
+
+.order-table-header {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr 1fr;
+    background-color: #eeeeee; /* Light grey for header */
+    padding: 10px;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.order-list {
+    margin-top: 10px;
+}
+
+.order-item {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr 1fr;
+    align-items: center;
+    background-color: #f0f0f0; /* Light grey for order items */
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc; /* Light border for items */
+}
+
+.order-item p {
+    margin: 0;
+    font-size: 14px;
+}
+
+ .customer-name,  .food-name,  .food-price {
+    font-weight: bold;
+    width: 100%;
+    text-align: left;
+    color: #333; /* Dark text color */
+}
+
+.order-item .order-status {
+    width: 300px;
+    text-align: right;
+}
+
+.order-item .status {
+    padding: 5px 10px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+/* Status Colors */
+.status.completed {
+    background-color: #4caf50; /* Green */
+    color: white;
+}
+
+.status.preparing {
+    background-color: #2196F3; /* Blue */
+    color: white;
+}
+
+.status.outfordelivery {
+    background-color: #ff9800; /* Orange */
+    color: white;
+}
+
+.status.delivered {
+    background-color: #3de071; /* Light green */
+    color: white;
+}
+
+.status.foodprocessing {
+    background-color: #f44336; /* Red */
+    color: white;
+}
+.input-container {
+    display: flex;
+    gap: 10px; /* Space between inputs */
+    width: 200px;
+}
+
+.input-field {
+    padding: 10px;
+    border: 1px solid #ccc; /* Light gray border */
+    border-radius: 5px; /* Rounded corners */
+    font-size: 16px; /* Font size */
+    outline: none; /* Remove default outline */
+    transition: border-color 0.3s ease; /* Transition for border color change */
+}
+
+/* Focus effect */
+.input-field:focus {
+    border-color: #007bff; /* Change border color on focus */
+}
+
+/* Error state */
+.input-field.error {
+    border-color: #f44336; /* Red border for error */
+}
+}
