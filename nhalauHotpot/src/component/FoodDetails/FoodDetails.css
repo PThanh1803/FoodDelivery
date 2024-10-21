@@ -1,0 +1,192 @@
+/* Toàn bộ container của trang chi tiết món ăn */
+.food-details-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    max-width: 1200px;
+    margin: 40px auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Hình ảnh món ăn */
+.food-details-container img {
+    width: 50%;
+    height: auto;
+    border-radius: 10px;
+    object-fit: cover;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Thông tin món ăn */
+.food-details-info {
+    width: 45%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Tiêu đề và đánh giá */
+.food-details-title h1 {
+    font-size: 2rem;
+    color: #333;
+}
+
+.food-details-title div {
+    font-size: 1.5rem;
+    color: #f39c12;
+}
+
+/* Mô tả món ăn */
+.food-details-description {
+    margin-top: 20px;
+}
+
+.food-details-description p {
+    font-size: 1.2rem;
+    color: #555;
+    margin: 20px 0;
+}
+
+/* Bộ đếm số lượng */
+.food-details-counter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.food-details-counter button {
+    background-color: #ff6f61;
+    color: white;
+    font-size: 1.2rem;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.food-details-counter p {
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+/* Nút Đặt món */
+.order-button {
+    background-color: #28a745;
+    color: white;
+    font-size: 1.2rem;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.wishlist-button {
+    color: black;
+    font-size: 1.2rem;
+    padding: 15px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    border-color: #28a745;
+}
+
+/* Responsive Styles */
+@media (max-width: 1200px) {
+    .food-details-container {
+        flex-direction: column;
+        /* Stack the image and info vertically */
+        align-items: center;
+        /* Center the content */
+    }
+
+    .food-details-container img {
+        width: 100%;
+        /* Image full width */
+        margin-bottom: 20px;
+        /* Add space below the image */
+    }
+
+    .food-details-info {
+        width: 100%;
+        /* Info section full width */
+        padding: 15px;
+        /* Reduce padding */
+    }
+}
+
+@media (max-width: 768px) {
+    .food-details-title h1 {
+        font-size: 1.8rem;
+        /* Adjust title font size */
+    }
+
+    .food-details-title div {
+        font-size: 1.3rem;
+        /* Adjust subtitle font size */
+    }
+
+    .food-details-description p {
+        font-size: 1rem;
+        /* Adjust description font size */
+    }
+
+    .food-details-counter p {
+        font-size: 1.2rem;
+        /* Adjust counter font size */
+    }
+
+    .food-details-counter button,
+    .order-button,
+    .wishlist-button {
+        font-size: 1rem;
+        /* Adjust button font size */
+        padding: 10px 15px;
+        /* Adjust button padding */
+    }
+}
+
+@media (max-width: 480px) {
+    .food-details-title h1 {
+        font-size: 1.5rem;
+        /* Further adjust title font size */
+    }
+
+    .food-details-title div {
+        font-size: 1.2rem;
+        /* Further adjust subtitle font size */
+    }
+
+    .food-details-description p {
+        font-size: 0.9rem;
+        /* Further adjust description font size */
+    }
+
+    .food-details-counter {
+        flex-direction: column;
+        /* Stack counter elements vertically */
+        align-items: flex-start;
+        /* Align items to the start */
+    }
+
+    .food-details-counter button {
+        width: 100%;
+        /* Full width buttons */
+    }
+
+    .order-button,
+    .wishlist-button {
+        width: 100%;
+        /* Full width buttons */
+        margin-top: 10px;
+        /* Add space between buttons */
+    }
+}

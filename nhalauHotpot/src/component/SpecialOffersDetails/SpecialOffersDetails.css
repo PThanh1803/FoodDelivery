@@ -1,0 +1,62 @@
+/* Toàn bộ container của trang chi tiết ưu đãi */
+.special-offers-details-container {
+    align-items: flex-start;
+    border-radius: 10px;
+    max-width: 1200px;
+    margin: 40px auto;
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+}
+
+/* Hình ảnh ưu đãi */
+.special-offers-details-container img {
+    width: 70%;
+    height: auto;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+
+/* Tiêu đề ưu đãi */
+.special-offers-title {
+    font-size: 2rem;
+}
+
+/* Thời gian ưu đãi */
+.special-offers-time {
+    font-size: 1rem;
+    color: #555;
+}
+
+/* Mô tả ưu đãi */
+.special-offers-description {
+    font-size: 1.2rem;
+    margin-top: 50px;
+}
+
+
+/* Mã voucher */
+.special-offers-code {
+    font-size: 1.2rem;
+    color: #f39c12;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .special-offers-description {
+        font-size: 1.1rem;
+        /* Slightly smaller font size for medium screens */
+        margin-top: 40px;
+        /* Reduced margin for medium screens */
+    }
+}
+
+@media (max-width: 480px) {
+    .special-offers-description {
+        font-size: 1rem;
+        /* Further reduced font size for small screens */
+        margin-top: 30px;
+        /* Further reduced margin for small screens */
+    }
+}
