@@ -9,7 +9,7 @@ const loginUser = async (req, res) => {
     try {
         const user = await userModel.findOne({ email });
 
-        if (!user) {    
+        if (!user) {
             return res.json({ success: false, message: "User not found" });
         }
 
@@ -20,11 +20,18 @@ const loginUser = async (req, res) => {
         }
 
         const token = createToken(user._id);
-        res.json({ success: true,  token });
+        res.json({
+            success: true, token, user: {
+                name: user.name,
+                email: user.email,
+                avatar: user.avatar,
+                wishlist: user.wishlist
+            }
+        });
     } catch (error) {
         console.log(error);
         res.json({ success: false, message: "error" });
-        
+
     }
 
 }
@@ -42,7 +49,7 @@ const registerUser = async (req, res) => {
         if (exist) {
             return res.json({ success: false, message: "User already exist" });
         }
-       // validate email format and password 
+        // validate email format and password 
         if (!validator.isEmail(email)) {
             return res.json({ success: false, message: "Invalid email" });
         }
