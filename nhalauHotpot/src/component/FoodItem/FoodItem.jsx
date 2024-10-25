@@ -3,13 +3,17 @@ import './FoodItem.css'
 import { assets } from '../../assets/assets'
 import { StoreContext } from '../../Context/StoreContext'
 import { useNavigate } from 'react-router-dom';
+import CryptoJS from 'crypto-js';
 // eslint-disable-next-line react/prop-types
 const FoodItem = ({ id, name, price, description, image }) => {
 
     const { cardItems, addToCard, removeFromCard, url } = React.useContext(StoreContext);
     const navigate = useNavigate();
+
+
     const handleClick = () => {
-        navigate(`/menu/${id}`, { state: { id, name, price, description, image } }); // Điều hướng đến trang FoodDetails với id của món ăn
+        const encryptedID = CryptoJS.AES.encrypt(id, 'secret-key').toString();
+        navigate(`/menu/${encryptedID}`, { state: { id, name, price, description, image } }); // Điều hướng đến trang FoodDetails với id của món ăn
     };
     return (
         <div className='food-item' id='food-item' onClick={handleClick}> {/* Thêm onClick */}
