@@ -3,21 +3,23 @@ import { useParams } from 'react-router-dom';
 import { StoreContext } from '../../Context/StoreContext';
 import './FoodDetails.css';
 import { useNavigate } from 'react-router-dom';
+import CryptoJS from 'crypto-js';
 
 const FoodDetails = () => {
     const { id } = useParams();
+    const decryptedID = CryptoJS.AES.decrypt(id, 'secret-key').toString(CryptoJS.enc.Utf8);
     const { food_list, cardItems, addToCard, removeFromCard, url } = useContext(StoreContext);
     const navigate = useNavigate();
 
-    const foodItem = food_list.find(item => item._id === id);
+    const foodItem = food_list.find(item => item._id === decryptedID);
 
     if (!foodItem) {
         return <p>Food not found!</p>;
     }
 
     const handleRemove = () => {
-        if (cardItems[id] > 0) {
-            removeFromCard(id);
+        if (cardItems[decryptedID] > 0) {
+            removeFromCard(decryptedID);
         }
     };
 
