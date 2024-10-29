@@ -11,62 +11,53 @@ const VoucherListPage = ({url}) => {
   const [statusFilter, setStatusFilter] = useState('All');
   const [dateFilter, setDateFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [vouchersPerPage] = useState(5);  // Limit to 8 vouchers per page
+  const [vouchersPerPage] = useState(1);  // Limit to 8 vouchers per page
   const [showPopup, setShowPopup] = useState(false);  // State for showing the popup
   const [selectedVoucher, setSelectedVoucher] = useState(null);  // To store selected voucher details for editing
-
+  const [totalPages, setTotalPages] = useState(0);
   // Fetch vouchers when component mounts
  // useEffect with showPopup dependency to refresh the voucher list when popup closes
  const [reload, setReload] = useState(false);
 
  useEffect(() => {
    fetchVouchers();
- }, [showPopup, reload, url]);
+ }, [showPopup, reload, url, currentPage, vouchersPerPage]);
  
  const closePopup = async () => {
    await fetchVouchers();
    setShowPopup(false);
-   setReload(prev => !prev); // Toggle reload to refresh data
+   setReload(prev => !prev); 
  };
  
 
 
-  const fetchVouchers = async () => {
-    try {
-      const response = await axios.get(`${url}/api/voucher/list`);
-      if (response.data.success) {
-        // Map over the vouchers to format dates, checking if the date is valid
-        const formattedVouchers = response.data.vouchers.map(voucher => ({
-          ...voucher,
-          startDate: voucher.startDate ? new Date(voucher.startDate).toISOString().split('T')[0] : "", // Set to empty string if null or invalid
-          expiryDate: voucher.expiryDate ? new Date(voucher.expiryDate).toISOString().split('T')[0] : "", // Set to empty string if null or invalid
-        }));
-        
-        setVouchers(formattedVouchers);
-      } else {
-        toast.error(response.data.message);
+ const fetchVouchers = async () => {
+  try {
+    const response = await axios.get(`${url}/api/voucher/list`, {
+      params: {
+        page: currentPage,
+        limit: vouchersPerPage,
+        status: statusFilter,
+        date: dateFilter,
+        code: searchTerm,
       }
-    } catch (error) {
-      console.error("Error fetching vouchers:", error);
-      toast.error("Failed to fetch data");
+    });
+    if (response.data.success) {
+      setVouchers(response.data.vouchers);
+      setTotalPages(response.data.pagination.totalPages); 
+      console.log("Data:", response.data);
+    } else {
+      toast.error(response.data.message);
+      setTotalPages(0);
     }
-  };
+  } catch (error) {
+    console.error("Error fetching vouchers:", error);
+    toast.error("Failed to fetch data");
+  }
+};
   
-  // Handle filter logic
-  const filteredVouchers = vouchers.filter((voucher) => {
-    return (
-      (statusFilter === 'All' || voucher.status === statusFilter) &&
-      (searchTerm === '' || voucher.voucherCode.toLowerCase().includes(searchTerm.toLowerCase())) &&
-      (dateFilter === '' || new Date(voucher.expiryDate) >= new Date(dateFilter))
-    );
-  });
+  
 
-  // Pagination logic
-  const indexOfLastVoucher = currentPage * vouchersPerPage;
-  const indexOfFirstVoucher = indexOfLastVoucher - vouchersPerPage;
-  const currentVouchers = filteredVouchers.slice(indexOfFirstVoucher, indexOfLastVoucher);
-
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const toggleVoucherStatus = (id) => {
     setVouchers(vouchers.map(voucher =>
@@ -98,7 +89,7 @@ const VoucherListPage = ({url}) => {
           onChange={(e) => setSearchTerm(e.target.value)}
         />
         <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-          <option value="All">All</option>
+          <option >All</option>
           <option value="Active">Active</option>
           <option value="Expired">Expired</option>
         </select>
@@ -107,6 +98,8 @@ const VoucherListPage = ({url}) => {
           value={dateFilter}
           onChange={(e) => setDateFilter(e.target.value)}
         />
+
+        <button onClick={() => fetchVouchers()}>Filter</button>
       </div>
 
       {/* Add Voucher Button */}
@@ -115,8 +108,9 @@ const VoucherListPage = ({url}) => {
       </div>
 
       {/* Voucher Cards */}
-      <div className="voucher-cards">
-        {currentVouchers.map((voucher) => (
+      {totalPages === 0 && <p>No vouchers found</p>}
+      {totalPages > 0 && <div className="voucher-cards">
+        {vouchers.map((voucher) => (
           <div className="voucher-card" key={voucher.id}>
             <div className="voucher-details">
               <h3>{voucher.voucherCode}</h3>
@@ -134,12 +128,16 @@ const VoucherListPage = ({url}) => {
             <img src={url + "/images/vouchers/" + voucher.image} alt={voucher.voucherCode} className="voucher-image" />
           </div>
         ))}
-      </div>
+      </div>}
 
-      {/* Pagination */}
+      {/* Phân trang */}
       <div className="pagination">
-        {Array.from({ length: Math.ceil(filteredVouchers.length / vouchersPerPage) }, (_, index) => (
-          <button key={index + 1} onClick={() => paginate(index + 1)}>
+        {Array.from({ length: totalPages }, (_, index) => (
+          <button
+            key={index + 1}
+            onClick={() => setCurrentPage(index + 1)}
+            className={currentPage === index + 1 ? 'active-page' : ''}
+          >
             {index + 1}
           </button>
         ))}

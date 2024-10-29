@@ -21,5 +21,4 @@ foodRouter.post("/remove", removeFood);
 foodRouter.post("/update",upload.single("image"),updateFood);
 
 
-
 export default foodRouter       

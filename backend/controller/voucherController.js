@@ -3,13 +3,70 @@ import voucherModel from "../models/voucherModel.js";
 
 const getListVoucher = async (req, res) => {
     try {
-        const voucherData = await voucherModel.find();
-        res.json({ success: true, vouchers: voucherData });
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 5;
+
+        const statusFilter = req.query.status || null;
+        const dateFilter = req.query.date || null;
+        const code = req.query.code || null;
+        console.log("statusFilter:", statusFilter, "dateFilter:", dateFilter ,"code:", code);
+        // Tạo một đối tượng filter để lưu các điều kiện lọc
+        const filter = {};
+
+        if (statusFilter && statusFilter !== "All") {
+            filter.status = statusFilter; // Thêm điều kiện trạng thái nếu có
+        }
+
+        if (dateFilter) {
+            filter.expiryDate = { $gte: new Date(dateFilter) }; // Thêm điều kiện ngày nếu có
+        }
+
+        if (code) {
+            // Sử dụng regex để tìm các mã voucher chứa dãy code
+            filter.voucherCode = { $regex: code, $options: 'i' }; // 'i' là tùy chọn không phân biệt chữ hoa chữ thường
+        }
+        // Tổng số voucher
+        const totalVouchers = await voucherModel.countDocuments(filter);
+
+        console.log("Total vouchers:", totalVouchers);
+
+        // Tính tổng số trang
+        const totalPages = Math.ceil(totalVouchers / limit);
+
+        console.log("Total pages:", totalPages);
+
+        // Kiểm tra nếu số trang yêu cầu vượt quá số trang hiện có
+        if (page > totalPages) {
+            return res.json({
+                success: false,
+                message: "No more vouchers available",
+                totalPages,
+                totalVouchers
+            });
+        }
+
+        // Thực hiện phân trang nếu page hợp lệ
+        const skip = (page - 1) * limit;
+        const voucherData = await voucherModel.find(filter).skip(skip).limit(limit);
+
+        res.json({
+            success: true,
+            vouchers: voucherData,
+            pagination: {
+                totalVouchers,
+                currentPage: page,
+                totalPages,
+                limit
+            }
+        });
     } catch (error) {
         console.log(error);
         res.json({ success: false, message: "Error fetching vouchers" });
     }
 };
+
+
+
 
 // Lấy thông tin mã giảm giá bằng id 
 const getVoucherById = async (req, res) => {
