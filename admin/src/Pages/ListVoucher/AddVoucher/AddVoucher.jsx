@@ -4,12 +4,16 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./AddVoucher.css";
 import { FaEdit, FaTimes, FaSave } from "react-icons/fa"; // Import icons
+import axios from "axios";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-const AddVoucherForm = ({ isOpen, closeModal, voucher }) => {
+const AddVoucherForm = ({ isOpen, closeModal, voucher, url }) => {
   const navigate = useNavigate();
 
   const [voucherCode, setVoucherCode] = useState("");
   const [discountAmount, setDiscountAmount] = useState("");
+  const [discountType, setDiscountType] = useState("Percentage"); // State cho loại giảm giá
   const [expiryDate, setExpiryDate] = useState("");
   const [startDate, setStartDate] = useState("");
   const [status, setStatus] = useState("Active");
@@ -17,7 +21,8 @@ const AddVoucherForm = ({ isOpen, closeModal, voucher }) => {
   const [minOrder, setMinOrder] = useState("");
   const [maxDiscount, setMaxDiscount] = useState("");
   const [image, setImage] = useState(null);
-  const [isEditing, setIsEditing] = useState(false); // Trạng thái để kiểm soát chế độ chỉnh sửa
+  const [isEditing, setIsEditing] = useState(true);
+  const [previewImage, setPreviewImage] = useState(null);
 
   // Fetch voucher details if editing
   useEffect(() => {
@@ -25,13 +30,15 @@ const AddVoucherForm = ({ isOpen, closeModal, voucher }) => {
       fetchVoucherDetails(voucher); // Pass voucher object to the function
       setIsEditing(false); // Đặt lại chế độ chỉnh sửa mỗi khi voucher được cập nhật
     } else {
-      resetForm(); // Reset the form if no voucher is passed (for adding new voucher)
+      resetForm(); 
+      setIsEditing(true);
     }
   }, [voucher]);
 
   const fetchVoucherDetails = (voucher) => {
     setVoucherCode(voucher.voucherCode);
     setDiscountAmount(voucher.discountAmount);
+    setDiscountType(voucher.discountType);
     setExpiryDate(voucher.expiryDate);
     setStartDate(voucher.startDate);
     setStatus(voucher.status);
@@ -45,6 +52,7 @@ const AddVoucherForm = ({ isOpen, closeModal, voucher }) => {
   const resetForm = () => {
     setVoucherCode("");
     setDiscountAmount("");
+    setDiscountType("Percentage");
     setExpiryDate("");
     setStartDate("");
     setStatus("Active");
@@ -60,6 +68,7 @@ const AddVoucherForm = ({ isOpen, closeModal, voucher }) => {
     const voucherData = {
       voucherCode,
       discountAmount,
+      discountType,
       expiryDate,
       startDate,
       status,
@@ -69,7 +78,7 @@ const AddVoucherForm = ({ isOpen, closeModal, voucher }) => {
       image,
     };
 
-    if (isEditing) {
+    if (voucher) {
       updateVoucher(voucherData);
       console.log("Updating voucher:", voucherData);
     } else {
@@ -77,22 +86,55 @@ const AddVoucherForm = ({ isOpen, closeModal, voucher }) => {
       addVoucher(voucherData);
       console.log("Adding new voucher:", voucherData);
     }
-
-    navigate("/voucher");
     closeModal(); // Close the modal after submission
   };
 
-  const updateVoucher = (voucherData) => {
-    // Replace with API call to update voucher
+  const updateVoucher = async (voucherData) => {
+     try{
+      voucherData={...voucherData,id:voucher._id}
+      console.log(voucherData);
+      const formData = new FormData();
+      formData.append("image", image);
+      formData.append("voucherData", JSON.stringify(voucherData));
+
+        const response = await axios.put(`${url}/api/voucher/update`,formData);
+        
+        if (response && response.data && response.data.success) {
+          // Handle success response
+          console.log("Voucher updated successfully:", response.data.message);
+          toast.success(response.data.message);
+        } else {
+          // Handle error response if success is false
+          const errorMessage = response?.data?.message || "An unexpected error occurred.";
+          toast.error(errorMessage);
+        }
+     }
+     catch(error){
+        toast.error("Failed to update voucher");
+        console.log(error);
+     }
+     
   };
 
-  const addVoucher = (voucherData) => {
-    // Replace with API call to add new voucher
-  };
+  const addVoucher = async (voucherData) => {
+    try {
+      const formData = new FormData();
+      formData.append("image", image);
+      formData.append("voucherData", JSON.stringify(voucherData));
+      const response = await axios.post(`${url}/api/voucher/create`, formData);
+      if (response.data.success) {
+        toast.success(response.data.message);
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      toast.error("Failed to add voucher");
+    }
+   };
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    setImage(URL.createObjectURL(file));
+    setImage( e.target.files[0]);
+    setPreviewImage(URL.createObjectURL(e.target.files[0]));
   };
 
   const handleEditClick = () => {
@@ -120,17 +162,26 @@ const AddVoucherForm = ({ isOpen, closeModal, voucher }) => {
                   disabled={!isEditing} // Disable input if not in edit mode
                 />
               </div>
-
               <div className="form-group">
                 <h3>Discount Amount:</h3>
-                <input
-                  type="text"
-                  value={discountAmount}
-                  onChange={(e) => setDiscountAmount(e.target.value)}
-                  required
-                  placeholder="Enter discount amount"
-                  disabled={!isEditing} // Disable input if not in edit mode
-                />
+                <div className="discount-input">
+                  <input
+                    type="number" // Thay đổi loại input thành text
+                    value={discountAmount}
+                    onChange={(e) => setDiscountAmount(e.target.value)} // Giữ nguyên giá trị
+                    required
+                    placeholder="Enter amount"
+                    disabled={!isEditing}
+                  />
+                  <select
+                    value={discountType}
+                    onChange={(e) => {setDiscountType(e.target.value), console.log(discountType)}}
+                    disabled={!isEditing}
+                  >
+                    <option value="Percentage">%</option>
+                    <option value="Fixed">vnd</option>
+                  </select>
+                </div>
               </div>
 
               <div className="form-group">
@@ -207,8 +258,10 @@ const AddVoucherForm = ({ isOpen, closeModal, voucher }) => {
                   onChange={handleImageChange}
                   disabled={!isEditing}
                 />
-                {image && (
-                  <img src={image} alt="Voucher" className="voucher-image" />
+                {voucher ? (
+                  <img src={previewImage ? previewImage :  `${url}/images/vouchers/${voucher.image}`} alt="Voucher" className="voucher-image" />
+                ): (
+                  <img src={previewImage && previewImage} alt="Voucher" className="voucher-image" />
                 )}
               </div>
 

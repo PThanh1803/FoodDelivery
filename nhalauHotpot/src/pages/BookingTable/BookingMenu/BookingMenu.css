@@ -1,0 +1,120 @@
+.booking-menu-container {
+    max-width: 1200px; /* Set max width for the container */
+    margin: 0 auto; /* Center the container */
+    padding: 20px; /* Add padding */
+    background-color: #f9f9f9; /* Light background for contrast */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    margin-bottom: 40px;
+    margin-top: 40px;
+  
+  
+  h2 {
+    text-align: center; /* Center the title */
+    margin-bottom: 20px; /* Spacing below title */
+    color: #333; /* Darker text color */
+  }
+  
+  .menu-categories {
+    display: flex; /* Use flexbox for the categories */
+    justify-content: center; /* Center the buttons */
+    margin-bottom: 20px; /* Spacing below categories */
+  }
+  
+  .menu-category-btn {
+    background-color: #007bff; /* Bootstrap primary color */
+    color: white; /* White text */
+    border: none; /* Remove border */
+    border-radius: 20px; /* More rounded corners for a modern look */
+    padding: 10px 20px; /* Padding for the buttons */
+    margin: 0 10px; /* Spacing between buttons */
+    cursor: pointer; /* Pointer cursor on hover */
+    font-size: 16px; /* Increased font size for readability */
+    transition: background 0.3s, transform 0.2s, box-shadow 0.2s; /* Smooth transition */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Add a subtle shadow for depth */
+  }
+  
+  .menu-category-btn.active {
+    background-color: #0056b3; /* Darker blue for active button */
+    box-shadow: 0 4px 10px rgba(0, 86, 179, 0.3); /* Stronger shadow for active button */
+  }
+  
+  .menu-category-btn:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+    transform: translateY(-2px); /* Slightly raise on hover */
+  }
+  
+  .food-list {
+    display: grid; /* Use grid layout for food items */
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Responsive columns */
+    gap: 20px; /* Spacing between food items */
+  }
+  
+  .food-item {
+    background-color: white; /* White background for food items */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Shadow for depth */
+    overflow: hidden; /* Clip overflow for rounded corners */
+    transition: transform 0.2s; /* Smooth transform */
+  }
+  
+  .food-item:hover {
+    transform: translateY(-5px); /* Slightly raise on hover */
+  }
+  
+  .food-item img {
+    width: 100%; /* Full width of the food item */
+    height: 150px; /* Fixed height for uniformity */
+    object-fit: cover; /* Cover to maintain aspect ratio */
+  }
+  
+  .food-info {
+    padding: 15px; /* Padding inside food info */
+    text-align: center; /* Center text */
+  }
+  
+  .food-info h3 {
+    margin: 10px 0; /* Spacing for the food name */
+    color: #333; /* Darker text color */
+  }
+  
+  .food-info p {
+    font-size: 18px; /* Slightly larger price font */
+    color: #555; /* Medium gray color */
+  }
+  
+  .food-quantity {
+    margin: 15px 0; /* Spacing around quantity input */
+    display: flex; /* Flex layout for alignment */
+    justify-content: center; /* Center the quantity input */
+    align-items: center; /* Center vertically */
+  }
+  
+  .food-quantity label {
+    margin-right: 10px; /* Space between label and input */
+    color: #333; /* Darker text color */
+  }
+  
+  .food-quantity input {
+    width: 60px; /* Fixed width for quantity input */
+    padding: 5px; /* Padding inside input */
+    border: 1px solid #ddd; /* Light border */
+    border-radius: 4px; /* Rounded corners */
+  }
+  
+  .add-to-cart-btn {
+    background-color: #28a745; /* Bootstrap success color */
+    color: white; /* White text */
+    border: none; /* Remove border */
+    border-radius: 5px; /* Rounded corners */
+    padding: 10px 15px; /* Padding for the button */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background 0.3s, transform 0.2s; /* Smooth transition */
+    margin-top: 10px; /* Space above button */
+  }
+  
+  .add-to-cart-btn:hover {
+    background-color: #218838; /* Darker green on hover */
+    transform: scale(1.05); /* Slightly enlarge on hover */
+  }
+}

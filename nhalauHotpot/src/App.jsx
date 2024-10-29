@@ -14,6 +14,8 @@ import SpecialOffers from './component/SpecialOffers/SpecialOffers'
 import Rate from './component/Rate/Rate'
 import SpecialOffersDetails from './component/SpecialOffersDetails/SpecialOffersDetails'
 import UserProfile from './component/UserProfile/UserProfile'
+import BookingTable from './pages/BookingTable/BookingTable'
+
 const App = () => {
 
   const [showLogin, setShowLogin] = React.useState(false)
@@ -35,6 +37,7 @@ const App = () => {
           <Route path='/specialoffers' element={<SpecialOffers />} />
           <Route path='/specialoffers/:id' element={<SpecialOffersDetails />} />
           <Route path='/rate' element={<Rate />} />
+          <Route path='/bookingtable' element={<BookingTable />} />
         </Routes>
       </div>
       <Footer />

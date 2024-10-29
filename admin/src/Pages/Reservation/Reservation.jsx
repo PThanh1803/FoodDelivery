@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import './Reservation.css';
-import { FaPhone, FaEnvelope, FaCheckCircle, FaClock, FaUserFriends } from 'react-icons/fa'; // Import icons from react-icons
+import { FaPhone, FaEnvelope, FaCheckCircle, FaClock, FaUserFriends } from 'react-icons/fa'; 
 import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css'; // Import the datepicker styles
-import './Reservation.css';
-// Sample reservation data (same as before)
+import 'react-datepicker/dist/react-datepicker.css';
+
 const reservationsData = [
   {
     reservationId: 'reservation_id_1',
@@ -31,39 +30,47 @@ const reservationsData = [
     preOrderedItems: [],
     status: 'accepted',
   },
-  // Add more reservations as needed
+  {
+    reservationId: 'reservation_id_3',
+    userId: 'user_id_3',
+    phone: '+1111111111',
+    email: 'user3@example.com',
+    reservationTime: '2024-10-16T18:00:00Z',
+    numberOfPeople: 3,
+    notes: 'Table for a meeting.',
+    preOrderedItems: [],
+    status: 'cancelled',
+    cancellationReason: 'Change of plans.',
+  },
 ];
 
 const Reservation = () => {
   const [selectedReservation, setSelectedReservation] = useState(null);
   const [statusFilter, setStatusFilter] = useState('all');
-  const [selectedDate, setSelectedDate] = useState(null); // State for date filter
+  const [selectedDate, setSelectedDate] = useState(null);
 
   const handleReservationClick = (reservation) => {
     setSelectedReservation(reservation);
   };
 
-  const handleStatusChange = (reservation, newStatus) => {
+  const handleStatusChange = (reservation, newStatus, cancellationReason = '') => {
+    if (newStatus === 'cancelled') {
+      reservation.cancellationReason = cancellationReason; // Set the cancellation reason
+    }
     reservation.status = newStatus;
     setSelectedReservation({ ...reservation });
   };
 
   const handleFilterChange = (e) => {
     setStatusFilter(e.target.value);
-    setSelectedReservation(null); // Reset selection when filtering
+    setSelectedReservation(null);
   };
 
   const filteredReservations = reservationsData.filter((reservation) => {
-    const isStatusMatch =
-      statusFilter === 'all' || reservation.status === statusFilter;
-    
-    const isDateMatch =
-      !selectedDate || 
-      new Date(reservation.reservationTime).toDateString() === selectedDate.toDateString();
-
-    return isStatusMatch && isDateMatch; // Filter by both status and date
+    const isStatusMatch = statusFilter === 'all' || reservation.status === statusFilter;
+    const isDateMatch = !selectedDate || new Date(reservation.reservationTime).toDateString() === selectedDate.toDateString();
+    return isStatusMatch && isDateMatch;
   });
-
 
   return (
     <div className="reservation-container">
@@ -71,33 +78,32 @@ const Reservation = () => {
         <h1>Reservation List</h1>
       </div>
       <div className="reservation-filter">
-      <div className="date-filter">        
-            <DatePicker
+        <div className="date-filter">
+          <DatePicker
             selected={selectedDate}
-            onChange={(date) => setSelectedDate(date)} // Update selected date
-            dateFormat="yyyy-MM-dd" // Set desired format
+            onChange={(date) => setSelectedDate(date)}
+            dateFormat="yyyy-MM-dd"
             placeholderText="Select a date"
-            />
+          />
         </div>
-
         <div className="status-filter">
-            <h3>Filter by status:</h3>
-            <select value={statusFilter} onChange={handleFilterChange}>
+          <h3>Filter by status:</h3>
+          <select value={statusFilter} onChange={handleFilterChange}>
             <option value="all">All</option>
             <option value="pending">Pending</option>
             <option value="accepted">Accepted</option>
             <option value="completed">Completed</option>
-            </select>
+            <option value="cancelled">Cancelled</option> {/* Added cancelled option */}
+          </select>
         </div>
-        
       </div>
-      
+
       <div className="reservation-list-container">
         <div className="reservation-list">
           {filteredReservations.map((reservation) => (
             <div
               key={reservation.reservationId}
-              className={`reservation-card ${reservation.status}`} // Apply class based on status
+              className={`reservation-card ${reservation.status}`}
               onClick={() => handleReservationClick(reservation)}
             >
               <h3 className="reservation-title">
@@ -115,11 +121,11 @@ const Reservation = () => {
               <p className="reservation-email">
                 <FaEnvelope className="icon" /> Email: <span className="highlight">{reservation.email}</span>
               </p>
-              <p className="reservation-status">
+              <p className={`reservation-status ${reservation.status}`}>
                 <FaCheckCircle className="icon" /> Status: <span className="highlight">{reservation.status}</span>
               </p>
               <div className="status-actions">
-                {reservation.status !== 'completed' && (
+                {reservation.status !== 'completed' && reservation.status !== 'cancelled' && (
                   <>
                     <button className="action-button" onClick={() => handleStatusChange(reservation, 'accepted')}>Accept</button>
                     <button className="action-button" onClick={() => handleStatusChange(reservation, 'completed')}>Complete</button>
@@ -131,29 +137,34 @@ const Reservation = () => {
         </div>
         {selectedReservation ? (
           <div className="reservation-details">
-          <h2>Reservation Details</h2>
-          <p><strong>Number of People:</strong> {selectedReservation.numberOfPeople}</p>
-          <p><strong>Date:</strong> {new Date(selectedReservation.reservationTime).toLocaleDateString()}</p>
-          <p><strong>Time:</strong> {new Date(selectedReservation.reservationTime).toLocaleTimeString()}</p>
-          <p><strong>Phone:</strong> {selectedReservation.phone}</p>
-          <p><strong>Email:</strong> {selectedReservation.email}</p>
-          <p><strong>Notes:</strong> {selectedReservation.notes}</p>
-          
-          {selectedReservation.preOrderedItems.length > 0 && (
+            <h2>Reservation Details</h2>
+            <p><strong>Number of People:</strong> {selectedReservation.numberOfPeople}</p>
+            <p><strong>Date:</strong> {new Date(selectedReservation.reservationTime).toLocaleDateString()}</p>
+            <p><strong>Time:</strong> {new Date(selectedReservation.reservationTime).toLocaleTimeString()}</p>
+            <p><strong>Phone:</strong> {selectedReservation.phone}</p>
+            <p><strong>Email:</strong> {selectedReservation.email}</p>
+            <p><strong>Notes:</strong> {selectedReservation.notes}</p>
+
+            {selectedReservation.status === 'cancelled' && (
+              <p className="cancellation-reason">
+                Reason for Cancellation: {selectedReservation.cancellationReason}
+              </p>
+            )}
+
+            {selectedReservation.preOrderedItems.length > 0 && (
               <div className="pre-ordered-items">
-                  <h3>Pre-Ordered Items:</h3>
-                  <ul>
-                      {selectedReservation.preOrderedItems.map(item => (
-                          <li key={item.menuItemId}>
-                              <strong>Menu Item ID:</strong> {item.menuItemId} 
-                              <span>Quantity: {item.quantity}</span>
-                          </li>
-                      ))}
-                  </ul>
+                <h3>Pre-Ordered Items:</h3>
+                <ul>
+                  {selectedReservation.preOrderedItems.map(item => (
+                    <li key={item.menuItemId}>
+                      <strong>Menu Item ID:</strong> {item.menuItemId} 
+                      <span>Quantity: {item.quantity}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-          )}
-      </div>
-      
+            )}
+          </div>
         ) : (
           <div className="reservation-details">
             <p>No reservation selected.</p>

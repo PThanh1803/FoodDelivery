@@ -27,6 +27,7 @@ const Add = ({url}) => {
     formData.append('description',data.description)
     formData.append('category',data.category)
     formData.append('price',data.price)
+    console.log(formData)
     const respone = await axios.post(`${url}/api/food/add`,formData)
     if(respone.data.success){
         setData({
@@ -84,7 +85,7 @@ const Add = ({url}) => {
                 <div className="add-price flex-col">
                     <p>Product Price</p>
                     <input onChange={onChangeHandeler} value={data.price} type="number" name="price" id="price" required placeholder='20$'/>
-                </div>  
+                </div>                                
             </div>
 
             <button type="submit" className="add-btn">Add Product</button>

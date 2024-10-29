@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
 import './ListVoucher.css';
 import AddVoucher from './AddVoucher/AddVoucher';  // Import the AddVoucherForm component
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
-const VoucherListPage = () => {
+// eslint-disable-next-line react/prop-types
+const VoucherListPage = ({url}) => {
   const [vouchers, setVouchers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
@@ -13,82 +16,42 @@ const VoucherListPage = () => {
   const [selectedVoucher, setSelectedVoucher] = useState(null);  // To store selected voucher details for editing
 
   // Fetch vouchers when component mounts
-  useEffect(() => {
-    fetchVouchers();
-  }, []);
+ // useEffect with showPopup dependency to refresh the voucher list when popup closes
+ const [reload, setReload] = useState(false);
 
-  const fetchVouchers = () => {
-    const dummyVouchers = [
-        {
-          id: 1,
-          voucherCode: 'SAVE10',
-          discountAmount: '10%',
-          expiryDate: '2024-11-30',
-          status: 'Active',
-          description: 'Giảm giá 10% cho tất cả các đơn hàng từ 100,000 VNĐ.',
-          image: 'https://via.placeholder.com/150',
-          startDate: '2024-10-01',
-          usageLimit: 100,  // Số lượt sử dụng tối đa
-          minOrder: 50000,  // Đơn hàng tối thiểu
-          maxDiscount: 20000,  // Giảm giá tối đa
-        },
-        {
-          id: 2,
-          voucherCode: 'SUMMER25',
-          discountAmount: '25%',
-          expiryDate: '2024-08-31',
-          status: 'Expired',
-          description: 'Giảm giá 25% cho các đơn hàng mùa hè từ 200,000 VNĐ.',
-          image: 'https://via.placeholder.com/150',
-          startDate: '2024-06-01',
-          usageLimit: 200,
-          minOrder: 200000,
-          maxDiscount: 50000,
-        },
-        {
-          id: 3,
-          voucherCode: 'FREESHIP',
-          discountAmount: 'Free Shipping',
-          expiryDate: '2024-12-15',
-          status: 'Active',
-          description: 'Miễn phí giao hàng cho các đơn hàng trên 150,000 VNĐ.',
-          image: 'https://via.placeholder.com/150',
-          startDate: '2024-09-01',
-          usageLimit: 50,
-          minOrder: 150000,
-          maxDiscount: 0,  // Không có giảm giá tối đa
-        },
-        {
-          id: 4,
-          voucherCode: 'XMAS30',
-          discountAmount: '30%',
-          expiryDate: '2024-12-25',
-          status: 'Active',
-          description: 'Giảm giá 30% cho các đơn hàng giáng sinh từ 300,000 VNĐ.',
-          image: 'https://via.placeholder.com/150',
-          startDate: '2024-12-01',
-          usageLimit: 300,
-          minOrder: 300000,
-          maxDiscount: 90000,
-        },
-        {
-          id: 5,
-          voucherCode: 'WINTER15',
-          discountAmount: '15%',
-          expiryDate: '2024-01-15',
-          status: 'Expired',
-          description: 'Giảm giá 15% cho các sản phẩm mùa đông từ 100,000 VNĐ.',
-          image: 'https://via.placeholder.com/150',
-          startDate: '2023-12-01',
-          usageLimit: 150,
-          minOrder: 100000,
-          maxDiscount: 30000,
-        },
-      ];
-    // Replace with API call to fetch vouchers
-    setVouchers(dummyVouchers);
+ useEffect(() => {
+   fetchVouchers();
+ }, [showPopup, reload, url]);
+ 
+ const closePopup = async () => {
+   await fetchVouchers();
+   setShowPopup(false);
+   setReload(prev => !prev); // Toggle reload to refresh data
+ };
+ 
+
+
+  const fetchVouchers = async () => {
+    try {
+      const response = await axios.get(`${url}/api/voucher/list`);
+      if (response.data.success) {
+        // Map over the vouchers to format dates, checking if the date is valid
+        const formattedVouchers = response.data.vouchers.map(voucher => ({
+          ...voucher,
+          startDate: voucher.startDate ? new Date(voucher.startDate).toISOString().split('T')[0] : "", // Set to empty string if null or invalid
+          expiryDate: voucher.expiryDate ? new Date(voucher.expiryDate).toISOString().split('T')[0] : "", // Set to empty string if null or invalid
+        }));
+        
+        setVouchers(formattedVouchers);
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      console.error("Error fetching vouchers:", error);
+      toast.error("Failed to fetch data");
+    }
   };
-
+  
   // Handle filter logic
   const filteredVouchers = vouchers.filter((voucher) => {
     return (
@@ -121,11 +84,6 @@ const VoucherListPage = () => {
   };
   
 
-  // Close the popup
-  const closePopup = () => {
-    setShowPopup(false);
-    setSelectedVoucher(null);  // Clear selected voucher when closing the popup
-  };
 
   return (
     <div className="voucher-list">
@@ -163,8 +121,9 @@ const VoucherListPage = () => {
             <div className="voucher-details">
               <h3>{voucher.voucherCode}</h3>
               <p>{voucher.description}</p>
-              <p>Discount: {voucher.discountAmount}</p>
-              <p>Expiry Date: {voucher.expiryDate}</p>
+              <p>Discount: {voucher.discountAmount} {voucher.discountType === 'Percentage' ? '%' : 'VND'}</p>          
+              <p>Start Date: {voucher.startDate.slice(0, 10).split('-').reverse().join('-')}</p>
+              <p>Expiry Date: {voucher.expiryDate.slice(0, 10).split('-').reverse().join('-')}</p>
               <p>Status: {voucher.status}</p>
               <button onClick={() => toggleVoucherStatus(voucher.id)} className={voucher.status === 'Active' ? 'active' : 'inactive'}>
                 {voucher.status === 'Active' ? 'Unactive' : 'Active'}
@@ -172,7 +131,7 @@ const VoucherListPage = () => {
               {/* View Details (opens the popup with voucher details) */}
               <button onClick={() => openPopup(voucher)}>View Details</button>
             </div>
-            <img src={voucher.image} alt={voucher.voucherCode} className="voucher-image" />
+            <img src={url + "/images/vouchers/" + voucher.image} alt={voucher.voucherCode} className="voucher-image" />
           </div>
         ))}
       </div>
@@ -190,7 +149,7 @@ const VoucherListPage = () => {
       {showPopup && (
         <div className="modal">
           
-            <AddVoucher voucher={selectedVoucher} isOpen={showPopup} closeModal={closePopup} />
+            <AddVoucher voucher={selectedVoucher} isOpen={showPopup} closeModal={closePopup} url={url} />
 
         </div>
       )}

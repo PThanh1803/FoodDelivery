@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Promotion.css';
 import PromotionForm from './PromotionForm/PromotionForm';
-
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import axios from 'axios';
 const promotionsData = [
   {
     id: 1,
@@ -22,11 +24,40 @@ const promotionsData = [
   // Thêm các mục khuyến mãi khác...
 ];
 
-const Promotions = () => {
+const Promotions = ({url}) => {
   const [promotions, setPromotions] = useState(promotionsData);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentPromotion, setCurrentPromotion] = useState(null);
   const [modalType, setModalType] = useState(''); // add, edit, or details
+
+  const fetchPromotions = async () => {
+    try {
+      const response = await axios.get(url +'/api/promotion/list');
+      if(response.data.success) {
+        const formattedPromotions = response.data.promotions.map(promotion => ({
+          ...promotion,
+          dateCreated: new Date(promotion.dateCreated).toISOString().split('T')[0],
+          startDate: promotion.startDate ? new Date(promotion.startDate).toISOString().split('T')[0] : "", // Set to empty string if null or invalid
+          expiryDate: promotion.expiryDate ? new Date(promotion.expiryDate).toISOString().split('T')[0] : "", // Set to empty string if null or invalid
+        }));
+
+        setPromotions(formattedPromotions);
+        
+      }
+      else {
+        console.error('Error fetching promotions:', response.data.message);
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      toast.error('Failed to fetch promotions');
+      console.error('Error fetching promotions:');
+    }
+  }
+
+  useEffect(() => {
+    fetchPromotions();
+  }, []);
+
 
   const handleAddPromotion = () => {
     setModalType('add');
@@ -46,14 +77,54 @@ const Promotions = () => {
     setIsModalVisible(true);
   };
 
-  const handleFormSubmit = (newPromotion) => {
+  const handleFormSubmit = async (newPromotion) => {
+    const formData = new FormData();
+    formData.append('image', newPromotion.image);
+    formData.append('title', newPromotion.title);
+    formData.append('dateCreated', newPromotion.dateCreated);
+    formData.append('expiryDate', newPromotion.expiryDate);
+    formData.append('startDate', newPromotion.startDate);
+    formData.append('status', newPromotion.status);
+    formData.append('description', newPromotion.description);
+    formData.append('content', newPromotion.content);
     if (modalType === 'add') {
-      setPromotions([...promotions, { ...newPromotion, id: promotions.length + 1 }]);
-    } else if (modalType === 'edit') {
-      setPromotions(promotions.map(p => p.id === currentPromotion.id ? newPromotion : p));
+      try {
+        console.log("newPromotion: ", newPromotion);
+      
+        const response = await axios.post(url +'/api/promotion/create', formData);
+        if (response.data.success) {
+          toast.success('Promotion added successfully');
+        } else {
+          toast.error(response.data.message);
+        }
+      } catch (error) {
+        toast.error('Failed to add promotion');
+        console.error('Error adding promotion:');
+      }
+      setPromotions([...promotions, { ...newPromotion }]);
+    }
+     else if (modalType === 'edit') {
+      try {
+        formData.append('id', currentPromotion._id);
+        const response = await axios.put(url +'/api/promotion/update', formData);
+        if (response.data.success) {
+          toast.success('Promotion updated successfully');
+        } else {
+          toast.error(response.data.message);
+        }
+      }
+      catch (error) {
+        toast.error('Failed to update promotion');
+        console.error('Error updating promotion:');
+      }
+      setPromotions(promotions.map(p => p._id === currentPromotion._id ? newPromotion : p));
     }
     setIsModalVisible(false);
   };
+
+  if (promotions=== null) {
+    return <div className="promotions-container"><h1>Loading...</h1></div>;
+  }
 
   return (
     <div className="promotions-container">
@@ -61,13 +132,13 @@ const Promotions = () => {
       <button className="add-btn" onClick={handleAddPromotion}>
         + Thêm Khuyến Mãi
       </button>
-
-      <ul>
+      {promotions.length === 0 && <p>Không có khuyến mãi nào</p>}
+      {promotions.length > 0 && <ul>
         {promotions.map((promo) => (
           <li key={promo.id} className="promotion-item">
-            <img src={promo.image} alt={promo.title} />
+            <img src={url + '/images/promotions/' + promo.image} alt={promo.title} />
             <div className="promotion-details">
-              <h3>{promo.title}</h3>
+              <div> <h3>{promo.title}</h3> <p>Ngày đăng: {promo.dateCreated}</p></div>
               <p>{promo.date}</p>
               <p>{promo.description}</p>
               <div className="action-buttons">
@@ -77,7 +148,7 @@ const Promotions = () => {
             </div>
           </li>
         ))}
-      </ul>
+      </ul>}
 
       <PromotionForm
         isVisible={isModalVisible}
@@ -85,6 +156,7 @@ const Promotions = () => {
         onSubmit={handleFormSubmit}
         initialData={currentPromotion}
         modalType={modalType}
+        url={url}
       />
     </div>
   );
