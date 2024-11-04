@@ -2,7 +2,6 @@
     display: flex;
     justify-content: space-between;
     padding: 20px;
-
 }
 
 /* Menu will be on the left */
@@ -10,12 +9,11 @@
     flex: 1;
     max-width: 300px;
     padding-right: 20px;
-    margin-top: 30px;
 
 }
 
 .menu-header {
-    background-color: #169496;
+    background-color: #14278D;
     padding: 15px;
     margin-top: 30px;
     text-align: center;
