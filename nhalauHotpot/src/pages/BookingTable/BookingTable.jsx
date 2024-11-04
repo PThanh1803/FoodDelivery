@@ -2,9 +2,10 @@ import React, { useState, useContext } from 'react';
 import './BookingTable.css';
 import BookingMenu from './BookingMenu/BookingMenu'; // Import custom BookingMenu component
 import { StoreContext } from '../../context/StoreContext';
+import axios from 'axios';
 
 const BookingTable = () => {
-    const { food_list, url } = useContext(StoreContext);
+    const { food_list, url , userInfo } = useContext(StoreContext);
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [email, setEmail] = useState('');
@@ -50,27 +51,46 @@ const BookingTable = () => {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         
         const formData = {
-            reservationId: 'reservation_id_1', // Replace with dynamic ID generation if needed
-            userId: 'user_id_1', // Replace with actual user ID if available
+            userId: userInfo?._id || null, 
+            name, // Replace with actual user ID if available
             phone,
             email,
-            reservationTime: new Date(`${date}T${time}:00Z`).toISOString(), // Combine date and time
+            reservationTime: new Date(`${date}T${time}:00Z`).toISOString(),
             numberOfPeople: guests,
             notes: note,
             preOrderedItems: Object.values(selectedFoods).map(food => ({
-                menuItemId: food._id,
+                foodId: food._id,
                 quantity: food.quantity,
             })),
-            status: 'pending', // Default status
+            status: 'pending',
         };
-
-        console.log(formData); // Use formData as needed
-        alert(`Bạn đã đặt bàn cho ${guests} khách vào lúc ${time} ngày ${date}.`);
+    
+        try {
+            const response = await axios.post(`${url}/api/booking/create`, formData);
+            console.log('Response:', response.data);
+            if (response.data.success) {
+                alert(`Đặt bàn thành công cho ${guests} khách vào lúc ${time} ngày ${date}.`);
+                setName('');
+                setPhone('');
+                setEmail('');
+                setGuests(1);
+                setDate('');
+                setTime('');
+                setNote('');
+                setSelectedFoods({});
+            } else {
+                alert('Đặt bàn thất bại.');
+            }
+        } catch (error) {
+            console.error('Error creating booking:', error);
+            alert('Có lỗi xảy ra khi đặt bàn.');s
+        }
     };
+    
 
     return (
         <div className="booking-table-container">
@@ -167,7 +187,7 @@ const BookingTable = () => {
                                 name="preOrder"
                                 value="no"
                                 checked={preOrder === false}
-                                onChange={() => setPreOrder(false)}
+                                onChange={() => {setPreOrder(false) , setSelectedFoods({})}}
                             />
                             <label htmlFor="preOrderNo">Không</label>
                         </div>

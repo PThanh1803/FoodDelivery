@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import "./Menu.css"
 import { menu_list } from '../../assets/assets'
-import PropTypes from 'prop-types';
 import FoodDisplay from '../../component/FoodDisplay/FoodDisplay';
 
 const Menu = () => {
@@ -32,9 +31,6 @@ const Menu = () => {
     )
 }
 
-Menu.propTypes = {
-    category: PropTypes.string.isRequired,
-    setCategory: PropTypes.func.isRequired
-};
+
 
 export default Menu;

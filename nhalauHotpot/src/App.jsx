@@ -15,6 +15,7 @@ import Rate from './component/Rate/Rate'
 import SpecialOffersDetails from './component/SpecialOffersDetails/SpecialOffersDetails'
 import UserProfile from './component/UserProfile/UserProfile'
 import BookingTable from './pages/BookingTable/BookingTable'
+import MyBooking from './pages/MyBooking/MyBooking'
 
 const App = () => {
 
@@ -38,6 +39,7 @@ const App = () => {
           <Route path='/specialoffers/:id' element={<SpecialOffersDetails />} />
           <Route path='/rate' element={<Rate />} />
           <Route path='/bookingtable' element={<BookingTable />} />
+          <Route path='/mybookings' element={<MyBooking />} />
         </Routes>
       </div>
       <Footer />

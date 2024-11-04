@@ -82,6 +82,7 @@ const StoreContextProvider = (props) => {
             if (response.data.success) {
                 setToken(response.data.token);
                 localStorage.setItem("token", response.data.token);
+                localStorage.setItem("user", JSON.stringify(response.data.user));
                 setUserInfo(response.data.user);
                 console.log(response.data.user);
                 // Lưu thông tin người dùng
@@ -100,6 +101,7 @@ const StoreContextProvider = (props) => {
             const storedToken = localStorage.getItem("token");
             if (storedToken) {
                 setToken(storedToken);
+                setUserInfo(JSON.parse(localStorage.getItem("user")));
                 await loadCartData(); // Tải dữ liệu giỏ hàng
             }
         };
