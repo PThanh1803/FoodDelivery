@@ -49,7 +49,7 @@ const RateComponent = () => {
         <div className='rate-container'>
             <div className='rate-content-header'>
                 <div className='header-title'>
-                    <h1>Tomato.</h1>
+                    <h1>2T Food.</h1>
                     <div className='rate-score-header'>
                         <span className='rate-number'>3,7</span>
                         <span className='stars'>★★★★☆</span>

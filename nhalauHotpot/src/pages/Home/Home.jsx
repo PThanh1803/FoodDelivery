@@ -8,10 +8,10 @@ const Home = () => {
   const [category, setCategory] = useState("All")
   return (
     <div >
-        <Header/>
-        <ExploreMenu category={category} setCategory={setCategory}/>
-        <FoodDisplay category={category}/>
-        <AppDownload/>
+      <Header />
+      <ExploreMenu category={category} setCategory={setCategory} />
+
+      <AppDownload />
     </div>
   )
 }

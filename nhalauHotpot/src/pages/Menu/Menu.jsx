@@ -5,7 +5,6 @@ import FoodDisplay from '../../component/FoodDisplay/FoodDisplay';
 
 const Menu = () => {
     const [category, setCategory] = useState('All')
-
     return (
         <div className='menu-container'>
             <div className='menu'>
