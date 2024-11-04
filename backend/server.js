@@ -11,6 +11,7 @@ import { Server } from 'socket.io'; // Import Socket.IO
 import voucherRouter from "./routes/voucherRoute.js";
 import promotionRouter from "./routes/promotionRoute.js";
 import bookingRouter from "./routes/bookingRoute.js";
+import reviewRouter from "./routes/reviewRoute.js";
 //app config
 const app = express();
 const port = 4000;
@@ -54,6 +55,7 @@ app.use("/api/order", orderRouter);
 app.use("/api/voucher",voucherRouter)
 app.use("/api/promotion",promotionRouter)
 app.use("/api/booking",bookingRouter)
+app.use("/api/review",reviewRouter)
 
 //api routes
 app.get("/", (req, res) => {

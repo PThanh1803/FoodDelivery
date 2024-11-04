@@ -115,11 +115,11 @@ const createVoucher = async (req, res) => {
 const deleteVoucher = async (req, res) => {
     try {
         const deletedVoucher = await voucherModel.findByIdAndDelete(req.body.id);
-        fs.unlink(`uploads/${deletedVoucher.image}`,()=>{});
+        
         if (!deletedVoucher) {
             return res.json({ success: false, message: "Voucher not found" });
         }
-
+        await fs.unlink(`uploads/vouchers/${deletedVoucher.image}`,()=>{});
         res.json({ success: true, message: "Voucher deleted successfully" });
     } catch (error) {
         console.log(error);
@@ -152,7 +152,8 @@ const updateVoucher = async (req, res) => {
 
         if (req.file) {
             const image_filename = `${req.file.filename}`;
-            updateData.image = image_filename; // Update with new image filename
+            updateData.image = image_filename;
+            await fs.unlink(`uploads/vouchers/${updatedVoucher.image}`); // Update with new image filename
         } else {
             updateData.image = updatedVoucher.image; // Retain the old image filename
         }

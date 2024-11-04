@@ -1,29 +1,33 @@
-import React, { useContext } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useContext, useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { StoreContext } from '../../Context/StoreContext';
 import './FoodDetails.css';
-import { useNavigate } from 'react-router-dom';
 import CryptoJS from 'crypto-js';
 
 const FoodDetails = () => {
-    const { id } = useParams();
-    const decryptedID = CryptoJS.AES.decrypt(id, 'secret-key').toString(CryptoJS.enc.Utf8);
     const { food_list, cardItems, addToCard, removeFromCard, url } = useContext(StoreContext);
     const navigate = useNavigate();
+    const { id } = useParams(); // Call useParams at the top level of the component
 
-    const foodItem = food_list.find(item => item._id === decryptedID);
+    const [foodItem, setFoodItem] = useState(null);
+
+    useEffect(() => {
+        window.scrollTo(0, 0);      
+
+        // Decrypt the ID
+        const decryptedID = CryptoJS.AES.decrypt(id, 'secret-key').toString(CryptoJS.enc.Utf8);
+        setFoodItem(food_list.find(item => item._id === decryptedID));
+    }, [id, food_list]); // Add dependencies to avoid unnecessary re-renders
 
     if (!foodItem) {
         return <p>Food not found!</p>;
     }
 
     const handleRemove = () => {
-        if (cardItems[decryptedID] > 0) {
-            removeFromCard(decryptedID);
+        if (cardItems[foodItem._id] > 0) {
+            removeFromCard(foodItem._id);
         }
     };
-
-
 
     const handleClick = () => {
         navigate(`/card`);
@@ -44,8 +48,8 @@ const FoodDetails = () => {
 
                 <div className='food-details-counter'>
                     <button onClick={handleRemove}>-</button>
-                    <p>{cardItems[id] || 0}</p>
-                    <button onClick={() => addToCard(id)}>+</button>
+                    <p>{cardItems[foodItem._id] || 0}</p>
+                    <button onClick={() => addToCard(foodItem._id)}>+</button>
                 </div>
 
                 <button className='order-button' onClick={handleClick}>Đặt món</button>

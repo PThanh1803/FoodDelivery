@@ -16,7 +16,7 @@ const upload = multer({ storage: storage });
 
 // Promotion routes
 promotionRouter.post("/create", upload.single("image"), createPromotion);
-promotionRouter.get("/getbyid", getPromotionById);
+promotionRouter.post("/promo/getbyid", getPromotionById);
 promotionRouter.delete("/delete", deletePromotion);
 promotionRouter.put("/update", upload.single("image"), updatePromotion);
 promotionRouter.get("/list", getListPromotion);

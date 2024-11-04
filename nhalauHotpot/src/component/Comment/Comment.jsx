@@ -1,119 +1,36 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable react/prop-types */
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { StoreContext } from '../../context/StoreContext';
+import axios from 'axios';
 import './Comment.css';
 
-const reviews = [
-    {
-        ID: 1,
-        userImage: "https://randomuser.me/api/portraits/women/1.jpg",
-        userID: "Arlene McCoy",
-        date: "2 October 2012",
-        star: 5,
-        type: "Online",
-        foodRate: 4,
-        serviceRate: 5,
-        pictures: [],
-        comment: "Good Tour, Really Well Organised!"
-    },
-    {
-        ID: 2,
-        userImage: "https://randomuser.me/api/portraits/women/2.jpg",
-        userID: "Jenny Wilson",
-        date: "2 October 2012",
-        star: 4,
-        type: "Offline",
-        foodRate: 3,
-        serviceRate: 4,
-        pictures: [],
-        comment: "Informative But Disappointed Not Seeing Changing Of The Guards"
-    },
-    {
-        ID: 3,
-        userImage: "https://randomuser.me/api/portraits/men/3.jpg",
-        userID: "Ralph Edwards",
-        date: "2 October 2012",
-        star: 4,
-        type: "Online",
-        foodRate: 5,
-        serviceRate: 4,
-        pictures: [],
-        comment: "I Love Their Way Of Style. The tour was very well organised. One minus is that you get completely bombarded with information..."
-    },
-    {
-        ID: 4,
-        userImage: "https://randomuser.me/api/portraits/women/4.jpg",
-        userID: "Courtney Henry",
-        date: "2 October 2012",
-        star: 4,
-        type: "Online",
-        foodRate: 4,
-        serviceRate: 5,
-        pictures: [],
-        comment: "Enjoyed Very Much. The tour was very well organised. One minus is that you get completely bombarded with information..."
-    },
-    {
-        ID: 5,
-        userImage: "https://randomuser.me/api/portraits/men/5.jpg",
-        userID: "Devon Lane",
-        date: "2 October 2012",
-        star: 4,
-        type: "Offline",
-        foodRate: 5,
-        serviceRate: 4,
-        pictures: [],
-        comment: "Nice!!!!!!! The tour was very well organised. One minus is that you get completely bombarded with information..."
-    },
-    {
-        ID: 6,
-        userImage: "https://randomuser.me/api/portraits/men/6.jpg",
-        userID: "Mark Simpson",
-        date: "2 October 2012",
-        star: 5,
-        type: "Online",
-        foodRate: 5,
-        serviceRate: 5,
-        pictures: [],
-        comment: "Amazing experience, great guide and wonderful service..."
-    },
-    {
-        ID: 7,
-        userImage: "https://randomuser.me/api/portraits/women/7.jpg",
-        userID: "Alice Brown",
-        date: "2 October 2012",
-        star: 3,
-        type: "Offline",
-        foodRate: 3,
-        serviceRate: 4,
-        pictures: [],
-        comment: "It was good, but could have been better..."
-    }
-];
+const reviewsPerPage = 5;
 
-// Tính tổng số sao trung bình
-const totalRating = reviews.reduce((acc, review) => acc + review.star, 0) / reviews.length;
+const StarRating = ({ rating }) => (
+    <div className="star-rating">
+        {Array.from({ length: 5 }).map((_, index) => (
+            <span key={index} className={index < rating ? "filled-star" : "empty-star"}>
+                ★
+            </span>
+        ))}
+    </div>
+);
 
-const StarRating = ({ rating }) => {
-    return (
-        <div className="star-rating">
-            {Array.from({ length: 5 }).map((_, index) => (
-                <span key={index} className={index < rating ? "filled-star" : "empty-star"}>
-                    ★
-                </span>
-            ))}
-        </div>
-    );
+// Format date using .toLocaleDateString()
+const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB'); // 'en-GB' formats as dd/mm/yyyy
 };
 
-const ReviewCard = ({ review }) => (
+
+const ReviewCard = ({ review, url }) => (
     <div className="review-card">
         <div className="review-avatar">
             <img src={review.userImage} alt={`${review.userID} avatar`} />
         </div>
         <div className="review-content">
             <div className="review-header">
-                <h4>{review.userID}</h4>
-                <p>{review.date}</p>
+                <h4>{review.userName}</h4>
+                <p>{formatDate(review.date)}</p>
             </div>
             <div className="review-quality">
                 <p>FoodRate: {review.foodRate}/5</p>
@@ -123,9 +40,10 @@ const ReviewCard = ({ review }) => (
             <StarRating rating={review.star} />
             <p>{review.comment}</p>
             <div className="review-images">
-                {review.pictures.length > 0 ? (
+                {review.pictures && review.pictures.length > 0 ? (
                     review.pictures.map((img, index) => (
-                        <img key={index} src={img} alt={`Review image ${index + 1}`} />
+                        <img key={index} src={`${url}/images/reviews/${img}`} alt={`Review image ${index + 1}`} />
+
                     ))
                 ) : (
                     <img src={review.userImage} alt="Default avatar" className="default-avatar" />
@@ -136,36 +54,44 @@ const ReviewCard = ({ review }) => (
 );
 
 const PlaceReview = () => {
-    const [visibleReviews, setVisibleReviews] = useState(5); // Hiển thị 5 review đầu tiên
-    const [filterRating, setFilterRating] = useState(0); // Lọc theo số sao, 0 là không lọc
-    const [showAllReviews, setShowAllReviews] = useState(true); // Trạng thái của "Show More/Less"
+    const [reviews, setReviews] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [filterRating, setFilterRating] = useState(0);
+    const { url } = useContext(StoreContext);
+    useEffect(() => {
+        const fetchReviews = async () => {
+            try {
+                const response = await axios.get(`${url}/api/review?page=${currentPage}&limit=${reviewsPerPage}`);
+                setReviews(response.data.reviews);
+                setTotalPages(response.data.totalPages);
+            } catch (error) {
+                console.error("Error fetching reviews:", error);
+            }
+        };
 
-    // Hàm hiển thị toàn bộ review
-    const showMoreReviews = () => {
-        setVisibleReviews(filteredReviews.length); // Hiển thị toàn bộ review
-        setShowAllReviews(false); // Đổi trạng thái để hiển thị nút "Show Less"
-    };
-
-    // Hàm thu gọn lại review
-    const showLessReviews = () => {
-        setVisibleReviews(5); // Thu gọn lại chỉ hiển thị 5 review
-        setShowAllReviews(true); // Đổi trạng thái về "Show More"
-    };
+        fetchReviews();
+    }, [currentPage]);
 
     const handleRatingFilter = (rating) => {
         setFilterRating(rating);
-        setVisibleReviews(5); // Reset lại số review hiển thị khi lọc
-        setShowAllReviews(true); // Khi lọc mới, đặt lại trạng thái nút về "Show More"
+        setCurrentPage(1); // Reset to the first page after filter change
     };
 
-    // Lọc các review theo số sao đã chọn (nếu có)
-    const filteredReviews = filterRating > 0
-        ? reviews.filter(review => review.star === filterRating)
-        : reviews;
+    const goToPreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
+    const goToNextPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
 
     return (
         <div className="reviews-container">
-            {/* Bộ lọc theo số sao */}
             <div className="filter-container">
                 <button onClick={() => handleRatingFilter(0)} className={filterRating === 0 ? 'active' : ''}>All</button>
                 <button onClick={() => handleRatingFilter(5)} className={filterRating === 5 ? 'active' : ''}>5 Stars</button>
@@ -176,22 +102,19 @@ const PlaceReview = () => {
             </div>
 
             <div className="reviews-list">
-                {filteredReviews.slice(0, visibleReviews).map((review) => (
-                    <ReviewCard key={review.ID} review={review} />
+                {reviews.map(review => (
+                    <ReviewCard key={review._id} review={review} url={url} />
                 ))}
             </div>
-            <div className="show-more-container">
-                {visibleReviews < filteredReviews.length && (
-                    <button onClick={showMoreReviews} className="show-more-btn">
-                        Show More
-                    </button>
-                )}
 
-                {visibleReviews === filteredReviews.length && visibleReviews > 5 && (
-                    <button onClick={showLessReviews} className="show-more-btn">
-                        Show Less
-                    </button>
-                )}
+            <div className="pagination-controls">
+                <button onClick={goToPreviousPage} disabled={currentPage === 1}>
+                    Previous
+                </button>
+                <span>Page {currentPage} of {totalPages}</span>
+                <button onClick={goToNextPage} disabled={currentPage === totalPages}>
+                    Next
+                </button>
             </div>
         </div>
     );

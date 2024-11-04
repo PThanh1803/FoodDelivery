@@ -134,14 +134,15 @@ const getBooking = async (req, res) => {
 
         const totalBookings = await bookingModel.countDocuments();
         res.status(200).json({
+            success: true,
             bookings: bookingsWithFoodDetails,
-            listFood: foodList,
             currentPage: Number(page),
             totalPages: Math.ceil(totalBookings / limit),
             totalBookings
         });
     } catch (error) {
         res.status(500).json({ message: 'Failed to retrieve bookings', error: error.message });
+        console.error('Error retrieving bookings:', error);
     }
 };
 

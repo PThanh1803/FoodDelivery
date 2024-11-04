@@ -25,12 +25,13 @@ const PromotionForm = ({ isVisible, onClose, onSubmit, initialData = {}, modalTy
     setStatus(initialData?.status || 'active');
     setStartDate(initialData?.startDate || '');
     setExpiryDate(initialData?.expiryDate || '');
-    setDateCreated(initialData?.dateCreated || Date.now());
+    setDateCreated( Date.now());
     
   }, [initialData]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setImagePreview(null);
     onSubmit({ title, description, content, image, status, startDate, expiryDate, dateCreated });
   };
 
