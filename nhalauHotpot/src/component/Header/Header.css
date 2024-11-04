@@ -1,81 +1,108 @@
-.header{
-    height: 34vw;
-    margin: 30px auto;
-    background: url('../../assets/header_img.png') no-repeat;
-    background-size:contain;
+.header {
+    height: 90vh;
+    width: 99vw;
+    margin-left: calc(-10vw);
+    background-size: contain;
     position: relative;
 }
 
-.header-contents{
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    align-items: start;
-    gap: 1.5vw;
-    max-width: 50%;
-    bottom: 10%;
-    left: 6vw;
-    animation: fadeIn 3s;
-}
 
-.header-contents h2{
-    font-weight: 600;
-    font-size: max(2.5vw, 22px);
-    color: white; 
-}
-
-.header-contents p{
-    font-weight: 400;
-    font-size: 1vw;
-    color: white; 
-}
-
-.header-contents button{
-    color: #212020;
-    border: none;
-    font-weight: 500;
-    padding: 1vw 2.3vw;
-    background-color: white;
-    border-radius: 50px;
-    font-size: 0.9vw;
-    transition: 0.5s;
-}
-
-.header-contents button:hover{
-   
-    background-color: #636161;
-    cursor: pointer;
-}
 
 @media (max-width: 1050px) {
 
-    .header-contents{
+    .header-contents {
         max-width: 45%;
-    }  
+    }
 }
 
 @media (max-width: 750px) {
-    .header-contents{
+    .header-contents {
         max-width: 55%;
     }
 
     .header-contents p {
         display: none;
-    }  
+    }
 
-    .header-contents button{
+    .header-contents button {
         padding: 2vw 4vw;
         font-size: 2vw;
+    }
+
+    .header {
+        height: vh;
     }
 }
 
 .swiper-container {
     width: 100%;
     height: 300px;
-  }
-  
-  .slider-image {
+}
+
+.slider-image {
     width: 80%;
     height: 100%;
     object-fit: cover;
-  }
+}
+
+.header-img {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.promotion-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    z-index: 1;
+}
+
+.promotion-image.active {
+    opacity: 1;
+}
+
+.prev-button,
+.next-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.1);
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 2;
+    /* Đảm bảo nút nằm trên hình ảnh */
+    pointer-events: auto;
+    /* Đảm bảo nút nhận sự kiện click */
+
+}
+
+.prev-button {
+    left: 10px;
+    cursor: pointer;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    font-size: 30px;
+}
+
+.next-button {
+    right: 10px;
+    cursor: pointer;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    font-size: 30px;
+}
+
+.prev-button:hover,
+.next-button:hover {
+    background-color: rgba(0, 0, 0, 0.5);
+}

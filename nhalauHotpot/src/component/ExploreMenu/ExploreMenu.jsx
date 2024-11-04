@@ -1,22 +1,57 @@
 import './ExploreMenu.css'
 import { menu_list } from '../../assets/assets'
 import PropTypes from 'prop-types';
+import { StoreContext } from '../../Context/StoreContext';
+import React, { useEffect } from 'react';
+import axios from 'axios';
+import FoodItem from '../FoodItem/FoodItem';
 const ExploreMenu = ({ category, setCategory }) => {
+  const [bestSellers, setBestSellers] = React.useState([]);
+  const { url } = React.useContext(StoreContext);
+  const fetchBestSellers = async () => {
+    try {
+      // Step 1: Fetch bestseller IDs
+      const response = await axios.get(`${url}/api/order/topseller`);
+      if (response.data.success) {
+        const bestSellerIds = response.data.topItems.map(item => item._id);
+        // Log the bestseller IDs to
+        const foodResponse = await axios.get(`${url}/api/food/topseller`, {
+          params: { ids: bestSellerIds }, // Use params to send query parameters
+        });
+        if (foodResponse.data.success) {
+          setBestSellers(foodResponse.data.data);// Set the full food data in state
+        } else {
+          console.error("Failed to fetch food details");
+        }
+      } else {
+        console.error("Failed to fetch bestseller IDs");
+      }
+    } catch (error) {
+      console.error("Error fetching bestsellers:", error);
+    }
+  };
+  // Fetch bestseller list on component mount
+  useEffect(() => {
+
+
+    fetchBestSellers();
+  }, []);
   return (
     <div className='explore-menu ' id='explore-menu'>
-      <h1>Explore Menu</h1>
-      <p className='explore-menu-text'>Chose from a diverted selection of dishes to suit your taste and occasion. Our </p>
-      <div className='explore-menu-list'>
-        {menu_list.map((item, index) => (
-          <div
-            onClick={() => setCategory(prev => prev === item.menu_name ? 'All' : item.menu_name)}
-            className='explore-menu-list-item'
+      <h1 className='explore-menu-title'> BEST SELLER</h1>
+      <div className='explore-best-seller'>
+        {bestSellers.map((item, index) => (
+          <FoodItem
             key={index}
-          >
-            <img src={item.menu_image} alt="menu" className={category === item.menu_name ? 'active' : ''} />
-            <p>{item.menu_name}</p>
-          </div>
-        ))}
+            id={item._id}
+            name={item.name}
+            price={item.price}
+            description={item.description}
+            image={item.image}
+          />))}
+        <div className='more'>
+          <a href='/menu'>More Foods</a>
+        </div>
       </div>
     </div>
   )

@@ -24,7 +24,7 @@ const placeOrder = async (req, res) => {
                     product_data: {
                         name: item.name
                     },
-                    unit_amount: item.price * 100 ,
+                    unit_amount: item.price * 100,
                 },
                 quantity: item.quantity
             }
@@ -37,7 +37,7 @@ const placeOrder = async (req, res) => {
                 product_data: {
                     name: "Delivery Charge"
                 },
-                unit_amount: 2*100
+                unit_amount: 2 * 100
             },
             quantity: 1
         })
@@ -48,24 +48,24 @@ const placeOrder = async (req, res) => {
             success_url: frontend_url + `/verify?success=true&orderId=${newOrder._id}`,
             cancel_url: `${frontend_url}/verify?success=false&orderId=${newOrder._id}`,
         })
-        
+
         res.json({ success: true, session_url: session.url });
 
     } catch (error) {
         console.log(error);
         res.json({ success: false, message: "error" });
-        
+
     }
 }
 
 
 const verifyOrder = async (req, res) => {
-    const { success,orderId } = req.body;
+    const { success, orderId } = req.body;
 
     try {
         if (success == "true") {
-           await orderModel.findByIdAndUpdate(orderId, { payment:true });
-           console.log("paid");
+            await orderModel.findByIdAndUpdate(orderId, { payment: true });
+            console.log("paid");
             res.json({ success: true, message: "Paid" });
         } else {
             await orderModel.findByIdAndDelete(orderId);
@@ -75,7 +75,7 @@ const verifyOrder = async (req, res) => {
         console.log(error);
         res.json({ success: false, message: "error" });
     }
-    
+
 }
 
 
@@ -111,6 +111,42 @@ const updateStatus = async (req, res) => {
         console.log(error);
         res.json({ success: false, message: "error" });
     }
-    
+
 }
-export { placeOrder , verifyOrder, userOrders , listOrders, updateStatus}
+const getTopSellingItems = async (req, res) => {
+    try {
+        // Aggregate to count item occurrences in paid and delivered orders
+        const topItems = await orderModel.aggregate([
+            {
+                $match: { status: "Delivered", payment: true }
+            },
+            {
+                $unwind: "$items" // Unwind items to count each item separately
+            },
+            {
+                $group: {
+                    _id: "$items._id",
+                    totalSold: { $sum: "$items.quantity" }
+                }
+            },
+            {
+                $sort: { totalSold: -1 }
+            },
+            {
+                $limit: 4
+            },
+            {
+                $project: {
+                    itemId: "$_id",
+                    totalSold: 1
+                }
+            }
+        ]);
+
+        res.json({ success: true, topItems });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: "Error fetching top items" });
+    }
+};
+export { placeOrder, verifyOrder, userOrders, listOrders, updateStatus, getTopSellingItems };

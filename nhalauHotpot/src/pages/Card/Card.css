@@ -1,8 +1,8 @@
-.card{
-    margin-top: 100px;
+.card {
+    margin-top: 120px;
 }
 
-.card-items-title{
+.card-items-title {
     display: grid;
     grid-template-columns: 1fr 1.5fr 1fr 1fr 1fr 0.5fr;
     font-weight: 600;
@@ -11,53 +11,54 @@
     color: rgb(142, 142, 142);
 }
 
-.card-items-item{
+.card-items-item {
     margin: 10px 0px;
     color: rgb(0, 0, 0);
 }
 
-.card-items-item img{
+.card-items-item img {
     border-radius: 8px;
     width: 120px;
     cursor: pointer;
 }
 
-.card-items-item .cross{
+.card-items-item .cross {
     cursor: pointer;
 }
 
-.card-items-item .cross:hover{
+.card-items-item .cross:hover {
     color: tomato;
 }
 
-.card hr{
+.card hr {
     margin: 10px 0;
     height: 1px;
-    background-color: rgb(142, 142, 142,0.1);
-    border-color: rgb(142, 142, 142,0.1);;
+    background-color: rgb(142, 142, 142, 0.1);
+    border-color: rgb(142, 142, 142, 0.1);
+    ;
 }
 
-.card-bottom{
+.card-bottom {
     margin-top: 80px;
     display: flex;
     justify-content: space-between;
     gap: max(12vw, 20px);
 }
 
-.card-total{
+.card-total {
     flex: 1;
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-.card-total-details{
+.card-total-details {
     display: flex;
     justify-content: space-between;
     color: #555;
 }
 
-.card-total button{
+.card-total button {
     width: 60%;
     align-self: center;
     border: none;
@@ -71,21 +72,21 @@
     transition: 0.5s;
 }
 
-.card-total button:disabled{
+.card-total button:disabled {
     cursor: not-allowed;
-    background-color: tomato ;
+    background-color: tomato;
     opacity: 0.5;
 }
 
-.card-promocode{
+.card-promocode {
     flex: 1;
 }
 
-.card-promocode p{
+.card-promocode p {
     color: #555;
 }
 
-.card-promocode-input{
+.card-promocode-input {
     margin-top: 10px;
     display: flex;
     gap: 10px;
@@ -95,14 +96,14 @@
     border-radius: 4px;
 }
 
-.card-promocode-input input{
+.card-promocode-input input {
     background: transparent;
     border: none;
     outline: none;
     padding-left: 10px;
 }
 
-.card-promocode-input button{
+.card-promocode-input button {
     width: 35%;
     border: none;
     border-radius: 5px;
@@ -117,11 +118,11 @@
 
 @media (max-width: 750px) {
 
-    .card-bottom{
+    .card-bottom {
         flex-direction: column-reverse;
     }
-    
-    .card-promocode{
+
+    .card-promocode {
         justify-self: start;
     }
 }

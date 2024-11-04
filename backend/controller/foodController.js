@@ -4,35 +4,35 @@ import fs from "fs";
 
 //add food item
 
- const addFood = async (req, res) => {
+const addFood = async (req, res) => {
     let image_filename = `${req.file.filename}`;
 
     const food = new foodModel({
         name: req.body.name,
-        description : req.body.description,
+        description: req.body.description,
         price: req.body.price,
         category: req.body.category,
         image: image_filename
-        
+
     })
 
     try {
         await food.save();
-        res.json({success: true,message:"Food added"})
+        res.json({ success: true, message: "Food added" })
     } catch (error) {
         console.log(error);
-        res.json({success: false, message: "error"})
+        res.json({ success: false, message: "error" })
     }
 }
 
 //all food list
-const listFood = async(req, res) => {
+const listFood = async (req, res) => {
     try {
         const foods = await foodModel.find({});
-        res.json({success: true, data: foods});
+        res.json({ success: true, data: foods });
     } catch (error) {
         console.log(error);
-        res.json({success: false, message: "error"})
+        res.json({ success: false, message: "error" })
     }
 }
 
@@ -40,12 +40,12 @@ const listFood = async(req, res) => {
 const removeFood = async (req, res) => {
     try {
         const food = await foodModel.findById(req.body.id);
-        fs.unlink(`uploads/${food.image}`,()=>{});
+        fs.unlink(`uploads/${food.image}`, () => { });
         await foodModel.findByIdAndDelete(req.body.id);
-        res.json({success: true, message: "food removed"});
+        res.json({ success: true, message: "food removed" });
     } catch (error) {
         console.log(error);
-        res.json({success: false, message: "error"})
+        res.json({ success: false, message: "error" })
     }
 }
 
@@ -83,6 +83,34 @@ const updateFood = async (req, res) => {
         res.json({ success: false, message: "Error updating food item" });
     }
 }
+// New function: Get food by ID
+const getFoodById = async (ids) => {
+    try {
+        const foods = await foodModel.find({ _id: { $in: ids } });
 
+        return foods;
+    } catch (error) {
+        console.log(error);
+        throw new Error("Error retrieving food items by IDs");
+    }
+};
 
-export {addFood, listFood, removeFood, updateFood};
+// Example usage of getFoodById in topseller route
+const topSeller = async (req, res) => {
+    try {
+        const foodIds = Array.isArray(req.query.ids) ? req.query.ids : req.query.ids.split(',');
+        // Handle array or string
+        const foods = await getFoodById(foodIds);
+
+        if (foods.length > 0) { // Check if there are any foods returned
+            res.json({ success: true, data: foods });
+        } else {
+            res.json({ success: false, message: "Food not found" });
+        }
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: "Error retrieving top seller" });
+    }
+};
+
+export { addFood, listFood, removeFood, updateFood, getFoodById, topSeller };

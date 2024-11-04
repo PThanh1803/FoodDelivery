@@ -1,0 +1,131 @@
+.special-offers-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.special-offers-list {
+    margin-top: 30px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    background-color: #fafafa;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    flex-wrap: wrap;
+    /* Allow wrapping on smaller screens */
+}
+
+.special-offers-list img {
+    width: 300px;
+    /* Default width */
+    height: 200px;
+    /* Default height */
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.special-offers-info {
+    margin-left: 20px;
+}
+
+.special-offers-info h3 {
+    cursor: pointer;
+}
+
+.special-offers-info h3:hover {
+    color: tomato;
+}
+
+.special-offers-info p {
+    margin: 10px 0;
+    font-size: 1rem;
+    color: #333;
+}
+
+.special-offers-code img {
+    width: 20px;
+    cursor: pointer;
+    width: 15px;
+    height: 15px;
+}
+
+.special-offers-code {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+/* Responsive Styles */
+@media (max-width: 1200px) {
+    .special-offers-list {
+        flex-direction: column;
+        /* Stack items on smaller screens */
+        align-items: flex-start;
+        /* Align to start */
+    }
+
+    .special-offers-info {
+        margin-left: 0;
+        /* Remove left margin */
+        margin-top: 10px;
+        /* Add some margin on top for spacing */
+    }
+
+    .special-offers-list img {
+        width: 100%;
+        /* Make image full width on small screens */
+        height: auto;
+        /* Maintain aspect ratio */
+    }
+}
+
+@media (max-width: 768px) {
+    .special-offers-list {
+        padding: 10px;
+        /* Reduce padding */
+    }
+
+    .special-offers-info h3 {
+        font-size: 1.2rem;
+        /* Adjust font size */
+    }
+
+    .special-offers-info p {
+        font-size: 0.9rem;
+        /* Adjust font size */
+    }
+
+    .special-offers-code img {
+        width: 15px;
+        /* Smaller icon size */
+        height: 15px;
+        /* Smaller icon size */
+    }
+}
+
+@media (max-width: 480px) {
+    .special-offers-info h3 {
+        font-size: 1rem;
+        /* Further adjust font size for mobile */
+    }
+
+    .special-offers-info p {
+        font-size: 0.8rem;
+        /* Further adjust font size for mobile */
+    }
+
+    .special-offers-list {
+        margin-top: 20px;
+        /* Adjust margin */
+    }
+
+    .special-offers-code {
+        flex-direction: column;
+        /* Stack code and icons vertically */
+        align-items: flex-start;
+        /* Align to start */
+    }
+}
