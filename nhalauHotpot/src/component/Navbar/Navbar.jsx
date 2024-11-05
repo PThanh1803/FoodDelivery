@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import './Navbar.css'
 import { assets } from '../../assets/assets'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { StoreContext } from '../../Context/StoreContext'
 import { useNavigate } from 'react-router-dom'
 
@@ -12,26 +12,36 @@ const Navbar = ({ setShowLogin }) => {
     const { getTotalCartAmount, token, setToken } = React.useContext(StoreContext)
 
     const navigate = useNavigate();
+    const location = useLocation();
     const logout = () => {
         localStorage.removeItem("token")
         setToken("");
         navigate("/");
     }
+    const getActiveClass = (path) => {
+        if (path === "/") {
+            return location.pathname === "/" ? "Active" : "";
+        }
+        return location.pathname.startsWith(path) ? "Active" : "";
+    };
     return (
 
         <div className="navbar">
             <Link to='/'>
-                <img src={assets.logo} alt="logo" className='logo' />
+
+                <div className="navbar-logo">
+                    <span>2T Food.</span>
+                </div>
             </Link>
             <ul className='navbar-menu'>
-                <Link to="/" onClick={() => setMenu("Home")} className={menu === "Home" ? "Active" : ""}>Home</Link>
-                <Link to="/menu" onClick={() => setMenu("Menu")} className={menu === "Menu" ? "Active" : ""} >Menu</Link>
-                <Link to="/promotions" onClick={() => setMenu("Promotions")} className={menu === "Promotions" ? "Active" : ""} >Promotions</Link>
-                <Link to="/rate" onClick={() => setMenu("Rate")} className={menu === "Rate" ? "Active" : ""} >Rate</Link>
-                {/* <a href='#explore-menu' onClick={()=>setMenu("Menu")} className={menu==="Menu" ? "Active" : ""} >Menu</a> */}
-                {/* <a href='#app-download' onClick={() => setMenu("Order")} className={menu === "Order" ? "Active" : ""} >Mobile app</a>
-                <a href='#footer' onClick={() => setMenu("Gift")} className={menu === "Gift" ? "Active" : ""} >Contact</a> */}
-                <Link to="/bookingtable" onClick={() => setMenu("Booking")} className={menu === "Booking" ? "Active" : ""} >Booking Table</Link>
+                <ul className='navbar-menu'>
+                    <Link to="/" className={getActiveClass("/")}>Home</Link>
+                    <Link to="/menu" className={getActiveClass("/menu")}>Menu</Link>
+                    <Link to="/promotions" className={getActiveClass("/promotions")}>Promotions</Link>
+                    <Link to="/rate" className={getActiveClass("/rate")}>Rate</Link>
+                    <Link to="/bookingtable" className={getActiveClass("/bookingtable")}>Booking Table</Link>
+                </ul>
+
 
             </ul>
             <div className='navbar-right'>

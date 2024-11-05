@@ -1,7 +1,7 @@
 .rate-container {
     font-family: Arial, sans-serif;
     max-width: 1200px;
-    margin: 120px 0 0 0;
+    margin: 120px auto 0 auto;
 }
 
 .rate-score-header {

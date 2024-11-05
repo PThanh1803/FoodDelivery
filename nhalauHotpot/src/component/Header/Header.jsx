@@ -2,7 +2,7 @@ import './Header.css';
 import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { StoreContext } from '../../Context/StoreContext';
-
+import CryptoJS from 'crypto-js';
 const Header = () => {
   const { url } = useContext(StoreContext);
   const [promotions, setPromotions] = useState([]);
@@ -46,6 +46,10 @@ const Header = () => {
     );
   };
 
+  const handlePromoClick = (promoId) => {
+    const encryptedID = encodeURIComponent(CryptoJS.AES.encrypt(promoId, 'secret-key').toString());
+    window.location.href = `/promotions/${encryptedID}`;
+  };
   return (
     <div className='header'>
       <div className='header-img'>
@@ -55,6 +59,7 @@ const Header = () => {
             src={`${url}/images/promotions/${promo.image}`}
             alt={promo.title || `Promotion ${index + 1}`}
             className={`promotion-image ${index === currentIndex ? 'active' : ''}`}
+            onClick={() => handlePromoClick(promo._id)}
           />
         ))}
         <button onClick={handlePrev} className='prev-button'>❮</button>

@@ -15,7 +15,6 @@ const FoodDisplay = ({ category, wishlist }) => {
     // Nếu không có wishlist (tức là đang gọi từ menu), lọc theo category
     filteredFoodList = food_list.filter(item => category === "All" || category === item.category);
   }
-  console.log(food_list)
   return (
     <div className='food-display' id='food-display'>
       <div className="food-display-list">
