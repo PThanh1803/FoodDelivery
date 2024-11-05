@@ -1,6 +1,8 @@
 import express from 'express';
 import multer from 'multer';
+
 import { addReview, deleteReview, getReviews, updateReview, getGoodReview } from '../controller/reviewController.js';
+
 
 const reviewRouter = express.Router();
 
@@ -19,6 +21,8 @@ reviewRouter.post("/create", upload.array("images", 5), addReview); // Allow up 
 reviewRouter.delete("/:id", deleteReview);
 reviewRouter.get("/", getReviews);
 reviewRouter.put("/:id", upload.array("images", 5), updateReview); // Allow up to 5 images when updating
+
 reviewRouter.get("/good", getGoodReview);
+
 
 export default reviewRouter;
