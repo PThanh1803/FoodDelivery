@@ -1,53 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import './Reservation.css';
-import { FaPhone, FaEnvelope, FaCheckCircle, FaClock, FaUserFriends } from 'react-icons/fa'; 
+import { FaPhone, FaEnvelope, FaCheckCircle, FaClock, FaUserFriends } from 'react-icons/fa';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import axios from 'axios';
 
-const reservationsData = [
-  {
-    reservationId: 'reservation_id_1',
-    userId: 'user_id_1',
-    phone: '+1234567890',
-    email: 'user@example.com',
-    reservationTime: '2024-10-14T19:00:00Z',
-    numberOfPeople: 4,
-    notes: 'Prefer a window seat.',
-    preOrderedItems: [
-      { menuItemId: 'menu_item_id_1', quantity: 2 },
-      { menuItemId: 'menu_item_id_2', quantity: 1 },
-    ],
-    status: 'pending',
-  },
-  {
-    reservationId: 'reservation_id_2',
-    userId: 'user_id_2',
-    phone: '+0987654321',
-    email: 'anotheruser@example.com',
-    reservationTime: '2024-10-15T20:00:00Z',
-    numberOfPeople: 2,
-    notes: 'Birthday celebration.',
-    preOrderedItems: [],
-    status: 'accepted',
-  },
-  {
-    reservationId: 'reservation_id_3',
-    userId: 'user_id_3',
-    phone: '+1111111111',
-    email: 'user3@example.com',
-    reservationTime: '2024-10-16T18:00:00Z',
-    numberOfPeople: 3,
-    notes: 'Table for a meeting.',
-    preOrderedItems: [],
-    status: 'cancelled',
-    cancellationReason: 'Change of plans.',
-  },
-];
-
-const Reservation = () => {
+const Reservation = ({ url }) => {
+  const [reservations, setReservations] = useState(null);
   const [selectedReservation, setSelectedReservation] = useState(null);
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedDate, setSelectedDate] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const limit = 3;
+
+
+  // Fetch reservations from the backend
+  useEffect(() => {
+    
+     fetchReservations(); 
+  }, [url, currentPage, limit]);
+
+  const fetchReservations = async () => {
+    try {
+      const response = await axios.get(url + '/api/booking/getall', { params: { page: currentPage, limit: limit } });
+      if(response.data.success){
+        setReservations(response.data.bookings);
+        setTotalPages(response.data.totalPages);
+      }
+      else{
+        console.error("Failed to fetch reservations:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Failed to fetch reservations:", error);
+    }
+  };
 
   const handleReservationClick = (reservation) => {
     setSelectedReservation(reservation);
@@ -55,7 +42,7 @@ const Reservation = () => {
 
   const handleStatusChange = (reservation, newStatus, cancellationReason = '') => {
     if (newStatus === 'cancelled') {
-      reservation.cancellationReason = cancellationReason; // Set the cancellation reason
+      reservation.cancellationReason = cancellationReason;
     }
     reservation.status = newStatus;
     setSelectedReservation({ ...reservation });
@@ -66,12 +53,18 @@ const Reservation = () => {
     setSelectedReservation(null);
   };
 
-  const filteredReservations = reservationsData.filter((reservation) => {
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const filteredReservations = reservations?.filter((reservation) => {
     const isStatusMatch = statusFilter === 'all' || reservation.status === statusFilter;
     const isDateMatch = !selectedDate || new Date(reservation.reservationTime).toDateString() === selectedDate.toDateString();
     return isStatusMatch && isDateMatch;
   });
-
+  if (!reservations) {
+    return <div>Loading...</div>;
+  }
   return (
     <div className="reservation-container">
       <div className="reservation-list-header">
@@ -93,7 +86,7 @@ const Reservation = () => {
             <option value="pending">Pending</option>
             <option value="accepted">Accepted</option>
             <option value="completed">Completed</option>
-            <option value="cancelled">Cancelled</option> {/* Added cancelled option */}
+            <option value="cancelled">Cancelled</option>
           </select>
         </div>
       </div>
@@ -134,6 +127,23 @@ const Reservation = () => {
               </div>
             </div>
           ))}
+          <div className="pagination-controls">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
+            <span>
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
+          </div>
         </div>
         {selectedReservation ? (
           <div className="reservation-details">
@@ -155,10 +165,12 @@ const Reservation = () => {
               <div className="pre-ordered-items">
                 <h3>Pre-Ordered Items:</h3>
                 <ul>
-                  {selectedReservation.preOrderedItems.map(item => (
+                  {selectedReservation.foodDetails.map((item) => (
                     <li key={item.menuItemId}>
-                      <strong>Menu Item ID:</strong> {item.menuItemId} 
+                      <img src={`${url}/images/${item.image}`} alt={item.image} ></img>
+                      {item.name}
                       <span>Quantity: {item.quantity}</span>
+                      <span>Price: {item.price}</span>
                     </li>
                   ))}
                 </ul>

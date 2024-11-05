@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+import { StoreContext } from '../../context/StoreContext';
 import './Rate.css';
 import write_icon from '../../assets/edit-alt-regular-24.png';
 import Comment from '../Comment/Comment';
@@ -6,25 +7,33 @@ import FormRating from '../FormRating/FormRating';
 import left from '../../assets/chevron-left-regular-24.png';
 import right from '../../assets/chevron-right-regular-24.png';
 
-const images = [
-    "https://www.highlandscoffee.com.vn/vnt_upload/product/HLCPOSTOFFICE_DRAFT/PNG_FINAL/3_MENU_NGUYEN_BAN/thumbs/270_crop_Phin_Den_Da.jpg",
-    "https://www.highlandscoffee.com.vn/vnt_upload/product/HLCPOSTOFFICE_DRAFT/PNG_FINAL/1_SPECIALTY_COFFEE/thumbs/270_crop_Cold_Brew_Milk_Foam.jpg",
-    "https://via.placeholder.com/300x200",
-    "https://www.highlandscoffee.com.vn/vnt_upload/product/06_2024/Phindi_Cassia/thumbs/270_crop_Phindi_Cassia_Highlands_products_Image1.jpg",
-    "https://www.highlandscoffee.com.vn/vnt_upload/product/HLCPOSTOFFICE_DRAFT/PNG_FINAL/3_MENU_NGUYEN_BAN/thumbs/270_crop_Phin_Den_Da.jpg",
-    "https://www.highlandscoffee.com.vn/vnt_upload/product/HLCPOSTOFFICE_DRAFT/PNG_FINAL/1_SPECIALTY_COFFEE/thumbs/270_crop_Cold_Brew_Milk_Foam.jpg",
-    "https://via.placeholder.com/300x200",
-    "https://www.highlandscoffee.com.vn/vnt_upload/product/06_2024/Phindi_Cassia/thumbs/270_crop_Phindi_Cassia_Highlands_products_Image1.jpg",
-    "https://www.highlandscoffee.com.vn/vnt_upload/product/HLCPOSTOFFICE_DRAFT/PNG_FINAL/3_MENU_NGUYEN_BAN/thumbs/270_crop_Phin_Den_Da.jpg",
-    "https://www.highlandscoffee.com.vn/vnt_upload/product/HLCPOSTOFFICE_DRAFT/PNG_FINAL/1_SPECIALTY_COFFEE/thumbs/270_crop_Cold_Brew_Milk_Foam.jpg",
-    "https://via.placeholder.com/300x200",
-    "https://www.highlandscoffee.com.vn/vnt_upload/product/06_2024/Phindi_Cassia/thumbs/270_crop_Phindi_Cassia_Highlands_products_Image1.jpg",
-];
-
 const RateComponent = () => {
     const [showPopup, setShowPopup] = useState(false);
-    const [currentIndex, setCurrentIndex] = useState(0); // for image popup
-    const [showImagePopup, setShowImagePopup] = useState(false); // controls image popup visibility
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [showImagePopup, setShowImagePopup] = useState(false);
+    const [images, setImages] = useState([]); // State for fetched images
+    const [loading, setLoading] = useState(true); // Loading state
+    const [error, setError] = useState(null); // Error state
+    const { url } = useContext(StoreContext);
+
+    useEffect(() => {
+        const fetchImages = async () => {
+            try {
+                const response = await fetch(url + '/api/review/'); // Replace with your API endpoint
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                setImages(data.images); // Assuming your API returns an array of images in an 'images' field
+            } catch (error) {
+                setError(error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchImages();
+    }, []);
 
     // Show only the first 5 images
     const visibleImages = images.slice(0, 5);
@@ -32,7 +41,7 @@ const RateComponent = () => {
 
     const handleImageClick = (index) => {
         setCurrentIndex(index);
-        setShowImagePopup(true); // show popup on click
+        setShowImagePopup(true);
     };
 
     const handleNextImage = () => {
@@ -44,6 +53,9 @@ const RateComponent = () => {
             prevIndex === 0 ? images.length - 1 : prevIndex - 1
         );
     };
+
+    if (loading) return <div>Loading images...</div>;
+    if (error) return <div>Error loading images: {error.message}</div>;
 
     return (
         <div className='rate-container'>
@@ -67,7 +79,7 @@ const RateComponent = () => {
                 {visibleImages.map((src, index) => (
                     <img
                         key={index}
-                        src={src}
+                        src={`${url}/images/reviews/${src}`}
                         alt={`Illustration ${index + 1}`}
                         onClick={() => handleImageClick(index)}
                     />
@@ -136,7 +148,7 @@ const RateComponent = () => {
                             {images.map((src, index) => (
                                 <img
                                     key={index}
-                                    src={src}
+                                    src={`${url}/images/reviews/${src}`}
                                     alt={`Thumbnail ${index + 1}`}
                                     className={`thumbnail ${currentIndex === index ? 'active' : ''}`}
                                     onClick={() => {
@@ -150,7 +162,7 @@ const RateComponent = () => {
                             <button onClick={handlePrevImage}>
                                 <img src={left} alt="left" />
                             </button>
-                            <img src={images[currentIndex]} alt={`Full view ${currentIndex + 1}`} className="full-image" />
+                            <img src={`${url}/images/reviews/${images[currentIndex]}` }alt={`Full view ${currentIndex + 1}`} className="full-image" />
                             <button onClick={handleNextImage}>
                                 <img src={right} alt="right" />
                             </button>
@@ -159,8 +171,6 @@ const RateComponent = () => {
                     </div>
                 </div>
             )}
-
-
         </div>
     );
 };

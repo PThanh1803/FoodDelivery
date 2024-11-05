@@ -12,9 +12,11 @@ const FoodItem = ({ id, name, price, description, image }) => {
 
 
     const handleClick = () => {
-        const encryptedID = CryptoJS.AES.encrypt(id, 'secret-key').toString();
-        navigate(`/menu/${encryptedID}`, { state: { id, name, price, description, image } }); // Điều hướng đến trang FoodDetails với id của món ăn
+        const encryptedID = encodeURIComponent(CryptoJS.AES.encrypt(id, 'secret-key').toString());
+        navigate(`/menu/${encryptedID}`, { state: { id, name, price, description, image } });
     };
+    
+    
     return (
         <div className='food-item' id='food-item' onClick={handleClick}> {/* Thêm onClick */}
             <div className='food-item-img-container'>

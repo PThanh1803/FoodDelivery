@@ -1,39 +1,88 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import './FormRating.css';
+import { StoreContext } from '../../context/StoreContext';
 
 // eslint-disable-next-line react/prop-types
 const FormRating = ({ setShowPopup }) => {
     const [selectedOption, setSelectedOption] = useState(null);
-    const [overallRating, setOverallRating] = useState(0); // Đánh giá tổng quan
-    const [foodRating, setFoodRating] = useState(0); // Đánh giá chất lượng đồ ăn
-    const [serviceRating, setServiceRating] = useState(0); // Đánh giá dịch vụ
-    const [imageFiles, setImageFiles] = useState([]); // State to hold selected images
+    const [overallRating, setOverallRating] = useState(0);
+    const [foodRating, setFoodRating] = useState(0);
+    const [serviceRating, setServiceRating] = useState(0);
+    const [imageFiles, setImageFiles] = useState([]);
+    const [reviewText, setReviewText] = useState('');
+    const { url, userInfo } = useContext(StoreContext);
+    const [isLoading, setIsLoading] = useState(false);
 
-    // Hàm để xử lý click vào ngôi sao tổng quan
     const handleOverallStarClick = (index) => {
         setOverallRating(index + 1);
     };
 
-    // Hàm để xử lý click vào ngôi sao cho Food Quality
     const handleFoodStarClick = (index) => {
         setFoodRating(index + 1);
     };
 
-    // Hàm để xử lý click vào ngôi sao cho Service
     const handleServiceStarClick = (index) => {
         setServiceRating(index + 1);
     };
 
-    // Hàm để xử lý thay đổi hình ảnh
     const handleImageChange = (event) => {
         const files = Array.from(event.target.files);
-        const fileURLs = files.map(file => URL.createObjectURL(file)); // Tạo URL tạm cho các file
-        setImageFiles(prevFiles => [...prevFiles, ...fileURLs]); // Cập nhật state với các file mới
+        setImageFiles(prevFiles => [...prevFiles, ...files]);
     };
 
-    // Hàm để xóa hình ảnh
     const handleImageRemove = (index) => {
-        setImageFiles(prevFiles => prevFiles.filter((_, i) => i !== index)); // Xóa hình ảnh theo chỉ số
+        setImageFiles(prevFiles => prevFiles.filter((_, i) => i !== index));
+    };
+
+    const addReview = async () => {
+        if (!overallRating || !foodRating || !serviceRating || !selectedOption || !reviewText) {
+            alert('Please fill in all fields before submitting.');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('star', overallRating);
+        formData.append('foodRate', foodRating);
+        formData.append('serviceRate', serviceRating);
+        formData.append('type', selectedOption);
+        formData.append('comment', reviewText);
+        formData.append('userImage', userInfo.avatar || 'https://via.placeholder.com/50x50');
+        formData.append('userName', userInfo.name || 'John Doe');
+        formData.append('userID', userInfo._id || '123456789');
+        
+        // Append images to the form data
+        imageFiles.forEach(file => {
+            formData.append('images', file); // Append the actual file object
+        });
+
+        setIsLoading(true); // Set loading state to true
+
+        try {
+            const response = await fetch(url + '/api/review/create', {
+                method: 'POST',
+                body: formData,
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                alert('Review submitted successfully!');
+                // Reset form fields
+                setOverallRating(0);
+                setFoodRating(0);
+                setServiceRating(0);
+                setImageFiles([]);
+                setReviewText('');
+                setSelectedOption(null);
+                setShowPopup(false);
+            } else {
+                alert('Error submitting review: ' + data.message);
+            }
+        } catch (error) {
+            console.error("Error submitting review:", error);
+            alert('An error occurred while submitting your review. Please try again.');
+        } finally {
+            setIsLoading(false); // Reset loading state
+        }
     };
 
     return (
@@ -41,14 +90,14 @@ const FormRating = ({ setShowPopup }) => {
             <div className="form-rating-container">
                 <h2>Rate Your Experience</h2>
                 <div className="form-rating-user">
-                    <img src='https://via.placeholder.com/50x50' alt='user' />
+                    <img src={userInfo.avatar || 'https://via.placeholder.com/50x50'} alt='user' />
                     <div className='form-rating-user-info'>
-                        <p>John Doe</p>
+                        <p>{userInfo.name || 'John Doe'}</p>
                         <p>Đăng công khai trên Fanpage</p>
                     </div>
                 </div>
 
-                {/* Đánh giá tổng quan */}
+                {/* Overall rating */}
                 <div className="stars-form">
                     {[...Array(5)].map((_, index) => (
                         <span
@@ -61,7 +110,7 @@ const FormRating = ({ setShowPopup }) => {
                     ))}
                 </div>
 
-                {/* Đánh giá chất lượng đồ ăn */}
+                {/* Food Quality rating */}
                 <div className="form-rating-content">
                     <h3>Food Quality</h3>
                     <div className="stars-form">
@@ -77,7 +126,7 @@ const FormRating = ({ setShowPopup }) => {
                     </div>
                 </div>
 
-                {/* Đánh giá dịch vụ */}
+                {/* Service rating */}
                 <div className="form-rating-content">
                     <h3>Service</h3>
                     <div className="stars-form">
@@ -109,7 +158,12 @@ const FormRating = ({ setShowPopup }) => {
                     </div>
                 </div>
 
-                <textarea className="rating-textarea" placeholder='Nhập đánh giá' />
+                <textarea
+                    className="rating-textarea"
+                    placeholder='Nhập đánh giá'
+                    value={reviewText}
+                    onChange={(e) => setReviewText(e.target.value)}
+                />
 
                 {/* Button to add images */}
                 <input
@@ -126,9 +180,9 @@ const FormRating = ({ setShowPopup }) => {
 
                 {/* Display selected images */}
                 <div className="selected-images">
-                    {imageFiles.map((img, index) => (
+                    {imageFiles.map((file, index) => (
                         <div key={index} className="image-preview">
-                            <img src={img} alt={`Preview ${index + 1}`} />
+                            <img src={URL.createObjectURL(file)} alt={`Preview ${index + 1}`} />
                             <button onClick={() => handleImageRemove(index)} className="remove-image-btn">X</button>
                         </div>
                     ))}
@@ -136,11 +190,13 @@ const FormRating = ({ setShowPopup }) => {
 
                 <div className="form-rating-actions">
                     <button className="cancel-btn" onClick={() => setShowPopup(false)}>Cancel</button>
-                    <button className="submit-btn">Submit</button>
+                    <button className="submit-btn" onClick={addReview} disabled={isLoading}>
+                        {isLoading ? 'Submitting...' : 'Submit'}
+                    </button>
                 </div>
             </div>
         </div>
     );
-}
+};
 
 export default FormRating;

@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import './BookingMenu.css'; // Import custom styles
 import { menu_list } from '../../../assets/assets';
 import { StoreContext } from '../../../context/StoreContext';
-
+import CryptoJS from 'crypto-js';
 const BookingMenu = ({ onFoodSelect }) => {
   const { food_list, url } = useContext(StoreContext); // Get food list from context
   const [category, setCategory] = useState('All');
@@ -20,7 +20,8 @@ const BookingMenu = ({ onFoodSelect }) => {
 
   // Open food details in a new tab
   const handleFoodClick = (foodId) => {
-    const newTab = window.open(`/menu/${foodId}`, '_blank'); // Open in a new tab
+    const encryptedID = encodeURIComponent(CryptoJS.AES.encrypt(foodId, 'secret-key').toString());
+    const newTab = window.open(`/menu/${encryptedID}`, '_blank'); // Open in a new tab
     if (newTab) newTab.focus(); // Focus on the new tab
   };
 

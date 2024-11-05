@@ -20,20 +20,20 @@ const Navbar = ({ setShowLogin }) => {
     return (
 
         <div className="navbar">
-            <div className='navbar-left'>
-                <Link to='/'>
-                    <span className='navbar-logo'>2T Food.</span>
-                </Link>
-                <ul className='navbar-menu'>
-                    <Link to="/" onClick={() => setMenu("Home")} className={menu === "Home" ? "Active" : ""}>Home</Link>
-                    <Link to="/menu" onClick={() => setMenu("Menu")} className={menu === "Menu" ? "Active" : ""} >Menu</Link>
-                    <Link to="/specialoffers" onClick={() => setMenu("SpecialOffers")} className={menu === "SpecialOffers" ? "Active" : ""} >Special Offers</Link>
-                    <Link to="/rate" onClick={() => setMenu("Rate")} className={menu === "Rate" ? "Active" : ""} >Rate</Link>
-                    {/* <a href='#explore-menu' onClick={()=>setMenu("Menu")} className={menu==="Menu" ? "Active" : ""} >Menu</a> */}
-                    {/* <a href='#app-download' onClick={() => setMenu("Order")} className={menu === "Order" ? "Active" : ""} >Mobile app</a>
+            <Link to='/'>
+                <img src={assets.logo} alt="logo" className='logo' />
+            </Link>
+            <ul className='navbar-menu'>
+                <Link to="/" onClick={() => setMenu("Home")} className={menu === "Home" ? "Active" : ""}>Home</Link>
+                <Link to="/menu" onClick={() => setMenu("Menu")} className={menu === "Menu" ? "Active" : ""} >Menu</Link>
+                <Link to="/promotions" onClick={() => setMenu("Promotions")} className={menu === "Promotions" ? "Active" : ""} >Promotions</Link>
+                <Link to="/rate" onClick={() => setMenu("Rate")} className={menu === "Rate" ? "Active" : ""} >Rate</Link>
+                {/* <a href='#explore-menu' onClick={()=>setMenu("Menu")} className={menu==="Menu" ? "Active" : ""} >Menu</a> */}
+                {/* <a href='#app-download' onClick={() => setMenu("Order")} className={menu === "Order" ? "Active" : ""} >Mobile app</a>
                 <a href='#footer' onClick={() => setMenu("Gift")} className={menu === "Gift" ? "Active" : ""} >Contact</a> */}
-                </ul>
-            </div>
+                <Link to="/bookingtable" onClick={() => setMenu("Booking")} className={menu === "Booking" ? "Active" : ""} >Booking Table</Link>
+
+            </ul>
             <div className='navbar-right'>
                 <img src={assets.search_icon} alt="search" className='navbar-search-icon' />
                 <div className='navbar-search-icon'>

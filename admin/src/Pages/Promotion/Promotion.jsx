@@ -56,7 +56,7 @@ const Promotions = ({url}) => {
 
   useEffect(() => {
     fetchPromotions();
-  }, []);
+  }, [url]);
 
 
   const handleAddPromotion = () => {
@@ -94,6 +94,7 @@ const Promotions = ({url}) => {
         const response = await axios.post(url +'/api/promotion/create', formData);
         if (response.data.success) {
           toast.success('Promotion added successfully');
+          fetchPromotions();
         } else {
           toast.error(response.data.message);
         }
@@ -109,6 +110,7 @@ const Promotions = ({url}) => {
         const response = await axios.put(url +'/api/promotion/update', formData);
         if (response.data.success) {
           toast.success('Promotion updated successfully');
+          fetchPromotions();
         } else {
           toast.error(response.data.message);
         }

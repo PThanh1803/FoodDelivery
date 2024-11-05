@@ -35,7 +35,7 @@ const promotionSchema = new mongoose.Schema({
     type: String,
     required: true
   }
-});
+}, { timestamps: true });
 const promotionModel =  mongoose.models.Promotion || mongoose.model('Promotion', promotionSchema);
 
 export default promotionModel
