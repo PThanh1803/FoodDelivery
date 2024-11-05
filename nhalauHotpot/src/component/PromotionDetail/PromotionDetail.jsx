@@ -1,5 +1,5 @@
-import React, { useEffect, useState , useContext} from 'react';
-import { StoreContext } from '../../context/StoreContext';
+import React, { useEffect, useState, useContext } from 'react';
+import { StoreContext } from '../../Context/StoreContext';
 import { useLocation, useParams } from 'react-router-dom';
 import axios from 'axios';
 import './PromotionDetail.css';
@@ -10,7 +10,7 @@ const PromotionDetail = () => {
     const [offerDetails, setOfferDetails] = useState(null);
     const [error, setError] = useState(null);
     const { id } = useParams();
-    const decryptedID = CryptoJS.AES.decrypt(id, 'secret-key').toString(CryptoJS.enc.Utf8); 
+    const decryptedID = CryptoJS.AES.decrypt(id, 'secret-key').toString(CryptoJS.enc.Utf8);
 
     useEffect(() => {
         const fetchPromotionDetails = async () => {
@@ -19,7 +19,7 @@ const PromotionDetail = () => {
                 console.log("Decrypted ID: ", decryptedID);
 
                 // Fetch promotion details by ID
-                const response = await axios.post(`${url}/api/promotion/promo/getbyid`, {id: decryptedID}); 
+                const response = await axios.post(`${url}/api/promotion/promo/getbyid`, { id: decryptedID });
                 console.log(response.data);
                 if (response.data.success) {
                     setOfferDetails(response.data.promotion);
@@ -47,15 +47,15 @@ const PromotionDetail = () => {
         <div className='special-offers-details-container'>
             <h1 className='special-offers-title'>{offerDetails.title}</h1>
             <p className='special-offers-time'>
-               Start at: {new Date(offerDetails.startDate).toLocaleDateString('vi-VN')} - End at: {new Date(offerDetails.expiryDate).toLocaleDateString('vi-VN')}
+                Start at: {new Date(offerDetails.startDate).toLocaleDateString('vi-VN')} - End at: {new Date(offerDetails.expiryDate).toLocaleDateString('vi-VN')}
             </p>
             <p className='special-offers-description'>Description: {offerDetails.description}</p>
             <img className='special-offers-image' src={`${url}/images/promotions/${offerDetails.image}`} alt={offerDetails.title} />
             <div>
-                
-                <div 
-                    className='special-offers-content' 
-                    dangerouslySetInnerHTML={{ __html: offerDetails.content }} 
+
+                <div
+                    className='special-offers-content'
+                    dangerouslySetInnerHTML={{ __html: offerDetails.content }}
                 />
             </div>
         </div>

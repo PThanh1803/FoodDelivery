@@ -79,11 +79,14 @@
     /* Cho phép các thẻ xuống hàng */
     justify-content: space-between;
     /* Để phân phối không gian giữa các thẻ */
-    gap: 20px;
+    align-items: center;
+    gap: 30px;
+    justify-content: center;
 }
 
 .more {
     width: 250px;
+    height: 30px;
     border-radius: 15px;
     box-shadow: 1px 1px 10px #00000015;
     transition: 0.5s;
@@ -91,6 +94,7 @@
     justify-content: center;
     display: flex;
     align-items: center;
+
 }
 
 .more :hover {
