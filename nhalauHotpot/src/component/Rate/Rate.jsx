@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { StoreContext } from '../../context/StoreContext';
+import { StoreContext } from '../../Context/StoreContext';
 import './Rate.css';
 import write_icon from '../../assets/edit-alt-regular-24.png';
 import Comment from '../Comment/Comment';
@@ -162,6 +162,7 @@ const RateComponent = () => {
                             <button onClick={handlePrevImage}>
                                 <img src={left} alt="left" />
                             </button>
+
                             <img src={`${url}/images/reviews/${images[currentIndex]}` }alt={`Full view ${currentIndex + 1}`} className="full-image" />
                             <button onClick={handleNextImage}>
                                 <img src={right} alt="right" />

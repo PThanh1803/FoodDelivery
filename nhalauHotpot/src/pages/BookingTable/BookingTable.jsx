@@ -1,11 +1,11 @@
 import React, { useState, useContext } from 'react';
 import './BookingTable.css';
 import BookingMenu from './BookingMenu/BookingMenu'; // Import custom BookingMenu component
-import { StoreContext } from '../../context/StoreContext';
+import { StoreContext } from '../../Context/StoreContext';
 import axios from 'axios';
 
 const BookingTable = () => {
-    const { food_list, url , userInfo } = useContext(StoreContext);
+    const { food_list, url, userInfo } = useContext(StoreContext);
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [email, setEmail] = useState('');
@@ -30,12 +30,12 @@ const BookingTable = () => {
     const handleIncreaseQuantity = (food) => {
         const currentFood = selectedFoods[food._id];
         const quantityToAdd = currentFood ? currentFood.quantity : 0;
-        
+
         setSelectedFoods((prev) => ({
-          ...prev,
-          [food._id]: { ...food, quantity: quantityToAdd + food.quantity } // Update with new quantity
+            ...prev,
+            [food._id]: { ...food, quantity: quantityToAdd + food.quantity } // Update with new quantity
         }));
-      };
+    };
     const handleDecreaseQuantity = (foodId) => {
         setSelectedFoods((prev) => {
             const currentFood = prev[foodId];
@@ -55,7 +55,7 @@ const BookingTable = () => {
         e.preventDefault();
         const vietnamOffset = 7 * 60 * 60 * 1000; 
         const formData = {
-            userId: userInfo?._id || null, 
+            userId: userInfo?._id || null,
             name, // Replace with actual user ID if available
             phone,
             email,
@@ -68,7 +68,7 @@ const BookingTable = () => {
             })),
             status: 'pending',
         };
-    
+
         try {
             const response = await axios.post(`${url}/api/booking/create`, formData);
             console.log('Response:', response.data);
@@ -87,10 +87,10 @@ const BookingTable = () => {
             }
         } catch (error) {
             console.error('Error creating booking:', error);
-            alert('Có lỗi xảy ra khi đặt bàn.');s
+            alert('Có lỗi xảy ra khi đặt bàn.'); s
         }
     };
-    
+
 
     return (
         <div className="booking-table-container">
@@ -160,7 +160,7 @@ const BookingTable = () => {
                     </div>
                     <div className="form-group">
                         <label htmlFor="note">Ghi chú:</label>
-                        <textarea         
+                        <textarea
                             id="note"
                             value={note}
                             onChange={(e) => setNote(e.target.value)}
@@ -187,7 +187,7 @@ const BookingTable = () => {
                                 name="preOrder"
                                 value="no"
                                 checked={preOrder === false}
-                                onChange={() => {setPreOrder(false) , setSelectedFoods({})}}
+                                onChange={() => { setPreOrder(false), setSelectedFoods({}) }}
                             />
                             <label htmlFor="preOrderNo">Không</label>
                         </div>

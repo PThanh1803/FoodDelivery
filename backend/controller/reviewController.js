@@ -1,44 +1,44 @@
-    import reviewModel from "../models/reviewModel.js";
-    import fs from "fs";
+import reviewModel from "../models/reviewModel.js";
+import fs from "fs";
 
 
 
-    //add review
-    const addReview = async (req, res) => {
-        try {
-            const newReview = new reviewModel({
-                userImage: req.body.userImage,
-                userID: req.body.userID,
-                userName: req.body.userName,
-                date: req.body.date,
-                star: req.body.star,
-                type: req.body.type,
-                foodRate: req.body.foodRate,
-                serviceRate: req.body.serviceRate,
-                comment: req.body.comment,
-                response: req.body.response,
-                pictures: [] // Initialize pictures array
+//add review
+const addReview = async (req, res) => {
+    try {
+        const newReview = new reviewModel({
+            userImage: req.body.userImage,
+            userID: req.body.userID,
+            userName: req.body.userName,
+            date: req.body.date,
+            star: req.body.star,
+            type: req.body.type,
+            foodRate: req.body.foodRate,
+            serviceRate: req.body.serviceRate,
+            comment: req.body.comment,
+            response: req.body.response,
+            pictures: [] // Initialize pictures array
+        });
+
+        // Check if there are files uploaded
+        if (req.files) {
+            // Loop through each file and push the filename to the pictures array
+            req.files.forEach(file => {
+                newReview.pictures.push(file.filename);
             });
-    
-            // Check if there are files uploaded
-            if (req.files) {
-                // Loop through each file and push the filename to the pictures array
-                req.files.forEach(file => {
-                    newReview.pictures.push(file.filename);
-                });
-            }
-    
-            await newReview.save();
-            res.json({ success: true, message: "Review added successfully", review: newReview });
-        } catch (error) {
-            console.log(error);
-            res.json({ success: false, message: "Error adding review" });
         }
-    };
-    
-   // In reviewController.js
 
-   const getReviews = async (req, res) => {
+        await newReview.save();
+        res.json({ success: true, message: "Review added successfully", review: newReview });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: "Error adding review" });
+    }
+};
+
+// In reviewController.js
+
+const getReviews = async (req, res) => {
     try {
         const { page = 1, limit = 5 } = req.query;
 
@@ -73,24 +73,24 @@
 
 
 
-    const deleteReview = async (req, res) => {
-        try {
-            const review = await reviewModel.findById(req.params.id);
+const deleteReview = async (req, res) => {
+    try {
+        const review = await reviewModel.findById(req.params.id);
 
-            if (!review) {
-                return res.json({ success: false, message: "Review not found" });
-            }
-            review.pictures.forEach(async (picture) => {
-                fs.unlink(`uploads/reviews/${picture}`, () => { });
-            })
-            await reviewModel.findByIdAndDelete(req.params.id);
-            
-            res.json({ success: true, message: "Review deleted successfully" });
-        } catch (error) {
-            console.log(error);
-            res.json({ success: false, message: "Error deleting review" });
+        if (!review) {
+            return res.json({ success: false, message: "Review not found" });
         }
-    };
+        review.pictures.forEach(async (picture) => {
+            fs.unlink(`uploads/reviews/${picture}`, () => { });
+        })
+        await reviewModel.findByIdAndDelete(req.params.id);
+
+        res.json({ success: true, message: "Review deleted successfully" });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: "Error deleting review" });
+    }
+};
 
     const updateReview = async (req, res) => {
         try {

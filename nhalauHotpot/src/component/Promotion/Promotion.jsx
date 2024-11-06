@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import './Promotion.css';
-import { StoreContext } from '../../context/StoreContext';
+
+import { StoreContext } from '../../Context/StoreContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import CryptoJS from 'crypto-js';
@@ -43,24 +44,38 @@ const Promotions = () => {
         const encryptedID = encodeURIComponent(CryptoJS.AES.encrypt(promoId, 'secret-key').toString());
         window.location.href = `/promotions/${encryptedID}`;
     };
-    
+
+    const formatDate = (dateString) => {
+        const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+        const date = new Date(dateString);
+        return date.toLocaleDateString('vi-VN', options);
+    };
+
     return (
         <div className="promotions-container">
             <h1>Promotions</h1>
             {promotions.length === 0 ? (
+
                 <p>No promotions available</p>
             ) : (
                 <ul className="promotion-list">
                     {promotions.map((promo) => (
-    <li key={promo.id} className="promotion-item" onClick={() => handlePromoClick(promo._id)}>
-        <img src={`${url}/images/promotions/${promo.image}`} alt={promo.title} className="promotion-image" />
-        <div className="promotion-details">
-            <h3 className="promotion-title">{promo.title}</h3>
-            <p className="promotion-date">{new Date(promo.dateCreated).toLocaleDateString()}</p>
-            <p className="promotion-description">{promo.description}</p>
-        </div>
-    </li>
-))}
+
+                        <li key={promo.id} className="promotion-item">
+                            <img src={`${url}/images/promotions/${promo.image}`} alt={promo.title} className="promotion-image-size" onClick={() => handlePromoClick(promo._id)} />
+                            <div className="promotion-details">
+                                <h3 className="promotion-title">{promo.title}</h3>
+                                <p className="promotion-description">{promo.description}</p>
+                            </div>
+                            <div className="promotion-date-button">
+                                <p className="promotion-date">
+                                    {formatDate(promo.startDate)} - {formatDate(promo.expiryDate)}
+                                </p>
+                                <button className="promotion-button" onClick={() => handlePromoClick(promo._id)}>View Details</button>
+                            </div>
+                        </li>
+                    ))}
+
 
                 </ul>
             )}
