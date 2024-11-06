@@ -6,6 +6,7 @@ import { io } from "socket.io-client"; // Import Socket.IO client
 import { assets } from "../../assets/assets"; // Giữ lại assets
 import Notification from "../Notification/Notification"; // Import Notification component
 import "./Navbar.css";
+import calendar from "../../assets/calendar-solid-24.png";
 const NotificationItem = ({ notification }) => {
   return (
     <li className="notification-item">
@@ -112,6 +113,11 @@ const Navbar = ({ setShowLogin }) => {
               <li onClick={() => navigate("/myprofile")}>
                 <img src={assets.profile_icon_regular} alt="" />
                 <p>Profile</p>
+              </li>
+              <hr />
+              <li onClick={() => navigate("/mybookings")}>
+                <img src={calendar} alt="" />
+                <p>My Booking</p>
               </li>
               <hr />
               <li onClick={logout}>
