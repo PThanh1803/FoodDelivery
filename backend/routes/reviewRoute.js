@@ -22,5 +22,6 @@ reviewRouter.put("/:id", upload.array("images", 5), updateReview);
 reviewRouter.post("/:id/response", responseReview); // Allow up to 5 images when updating
 reviewRouter.get("/getreviews", getReviewsAdmin);
 reviewRouter.get("/admin/stats", getReviewStats);
+reviewRouter.get("/good", getReviews);
 
 export default reviewRouter;

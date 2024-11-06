@@ -33,7 +33,7 @@
     transition: transform 0.3s ease-in-out;
 }
 
-.promotions-container .promotion-image {
+.promotion-image {
     width: 150px;
     height: 100px;
     object-fit: cover;
@@ -47,7 +47,7 @@
 .promotion-image-size:hover {
     transform: scale(1.05);
     transition: transform 0.3s ease-in-out;
-
+}
 
 .promotion-details {
     flex-grow: 1;
