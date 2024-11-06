@@ -1,3 +1,9 @@
+.order {
+  padding: 20px;
+  width: 90%;
+ margin-left: max(5vw, 35px);
+}
+
 .order-item{
     display: grid;
     grid-template-columns: 0.5fr 2fr 1fr 1fr 1fr;

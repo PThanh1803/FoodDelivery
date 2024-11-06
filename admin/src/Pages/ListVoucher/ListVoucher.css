@@ -1,137 +1,272 @@
-/* ListVoucher.css */
-
-/* General styles */
+/* Main Voucher List Page */
 .voucher-list {
-    padding: 20px;
-    font-family: Arial, sans-serif;
-    width: 90%;
-    margin-left: max(5vw, 35px);
-  }
+  width: 80%;
+  padding: 20px;
+  margin-right: 50px;
+  margin-left: max(5vw, 35px);
+  font-family: Arial, sans-serif;
+}
+
+.voucher-list h1 {  
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* Filters Section */
+.filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.filters input[type="text"],
+.filters select,
+.filters input[type="date"],
+.filters .filter-button {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.filter-button {
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.filter-button:hover {
+  background-color: #0056b3;
+}
+
+/* Add Voucher Button */
+.add-voucher {
+  margin-bottom: 20px;
+}
+
+.add-voucher button {
+  padding: 10px 20px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #28a745;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.add-voucher button:hover {
+  background-color: #218838;
+}
+
+/* Voucher Cards */
+.voucher-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.voucher-card {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  position: relative;
+  transition: box-shadow 0.3s;
+  background-color: #f9f9f9;
+}
+
+.voucher-card:hover {
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Voucher Details Section */
+.voucher-details {
+  flex: 1;
+  padding-right: 40px;
   
-  .filters {
-    margin-bottom: 20px;
-  }
-  
-  .filters input, .filters select {
-    margin-right: 10px;
-    padding: 5px;
-  }
-  
-  .add-voucher {
-    margin-bottom: 20px;
-  }
-  
-  .add-voucher button {
-    padding: 10px;
-    background-color: #28a745;
-    color: white;
-    border-radius: 5px;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .add-voucher button:hover {
-    background-color: #218838;
-  }
-  
-  /* Voucher Cards */
-  .voucher-cards {
-    display: flex;
-    width:80%;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-  }
-  
-  .voucher-card {
-    display: flex;
-    flex-direction: row;
-    border: 1px solid #ccc;
-    padding: 15px;
-    border-radius: 8px;
-    background-color: #fff;
-    width: 100%;
-  }
-  
-  .voucher-card img {
-    width: 100%;
-    height: 300px;
-    object-fit: cover;
-    border-radius: 5px;
-  }
-  
-  .voucher-card h3 {
-    margin: 10px 0;
-    font-size: 1.2em;
-  }
-  
-  .voucher-card p {
-    margin: 5px 0;
-  }
-  
-  .voucher-card button {
-    margin: 10px 20px 0 0;
-    padding: 10px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
-  }
-  
-  .voucher-card button:hover {
-    background-color: #0056b3;
-  }
-  
-  /* Pagination */
-  .pagination {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-  }
-  
-  .pagination button {
-    margin: 0 5px;
-    padding: 5px 10px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .pagination button:hover {
-    background-color: #0056b3;
-  }
-  
-  .modal {
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.4);
-    display: flex;
-    flex-direction: column;
-    justify-content: center !important;
-    align-items: center;
-  }
-  
-  .modal-content {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    width: 80%;
-    max-width: 600px;
-    position: relative;
-  }
-  
-  .close {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 20px;
-    cursor: pointer;
-  }
+}
+
+.voucher-details h3 {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.voucher-details p {
+  font-size: 18px;
+  color: #666;
+  margin: 4px 0;
+}
+
+.voucher-details .view-button {
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+/* Highlighting the Voucher Code */
+.voucher-details h3 {
+  display: flex;
+  align-items: center;
+}
+
+.voucher-code {
+  font-weight: bold;
+  color: #007bff;
+  background-color: #eef6ff;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.voucher-code:hover {
+  background-color: #cfe8ff;
+}
+
+/* Image Section */
+.voucher-image {
+  width: 800px;
+  max-height: 300px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+/* Overlay for Expired/Usage Limit Reached */
+.voucher-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  font-size: 18px;
+  border-radius: 8px;
+}
+
+.voucher-overlay h3 {
+  margin: 0;
+  font-size: larger;
+  font-weight: bold;
+  color: #fff;
+}
+
+.voucher-overlay a {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.voucher-overlay a:hover {
+  color: #fff;
+  text-decoration: underline;
+  cursor: pointer;
+}
+/* Pagination Controls */
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.pagination-controls button {
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.pagination-controls button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.pagination-controls span {
+  font-size: 14px;
+  color: #333;
+}
+
+/* Popup Modal Styling */
+/* Modal */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 600px;
+  position: relative;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* Voucher code styling */
+.voucher-code {
+  font-weight: bold;
+  color: #007bff;
+  background-color: #eef6ff;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+/* Change color when the voucher code is copied */
+.voucher-code.copied {
+  color: #28a745; /* Green color when copied */
+  background-color: #d4edda; /* Light green background */
+}
+
+/* Copy icon styling */
+.copy-icon {
+  font-size: 18px;
+  color: #007bff;
+  margin-left: 10px;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.copy-icon:hover {
+  color: #0056b3;
+}
+
+/* Optional: Add a slight hover effect to the voucher code as well */
+.voucher-code:hover {
+  background-color: #cfe8ff;
+}

@@ -1,43 +1,153 @@
-.add{
-    width: 70%;
-    margin-left: max(5vw,35px);
-    margin-top: 50px;
-    color: #6d6d6d;
-    font-size:16px
+/* Add.css */
+.add {
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    width: 700px;
+    margin: auto;
+    font-family: 'Arial', sans-serif;
+    overflow-y: scroll;
+    max-height: 90vh;
 }
 
-.add form{
-    gap:20px;
-}
-
-.add-img-upload img{
-    width: 120px;
-}
-
-.add-product-name , .add-product-desc{
-    width: max(40%,300px);
-}
-
-.add-product-name input, .add-product-desc input
-{
-    padding:10px;
-}
-
-.add-category-price{
+.flex-col {
     display: flex;
-    gap:20px;
+    flex-direction: column;
+    gap: 20px;
 }
 
-.add-category-price select, .add-category-price input
-{
-    padding:10px;
+.add-img-upload {
+    position: relative; 
+    /* For positioning the remove image button */
 }
 
-.add-btn{
-    max-width: 120px;
-    padding:10px;
-    border: none;
-    background-color: black;
-    color: white;
+.add-img-upload p {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.food-image-preview {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+    border-radius: 8px;
+    border: 2px dashed #09abe1;
+    object-fit: cover;
     cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.food-image-preview:hover {
+    opacity: 0.8;
+}
+
+.remove-image {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #ff4d4d;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+}
+
+.remove-image:hover {
+    background-color: #ff1a1a;
+}
+
+.add-product-name,
+.add-product-desc,
+.add-category-price {
+    margin-bottom: 15px;
+}
+
+.add-product-name p,
+.add-product-desc p,
+.add-category-price p {
+    font-weight: bold;
+    color: #555;
+}
+
+.add-product-name input,
+.add-product-desc textarea,
+.add-category-price select,
+.add-price input {
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.add-product-name input:focus,
+.add-product-desc textarea:focus,
+.add-category-price select:focus,
+.add-price input:focus {
+    border-color: #09abe1;
+    box-shadow: 0 0 5px rgba(9, 171, 225, 0.5);
+}
+
+.add-product-desc textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.add-category-price {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.add-category,
+.add-price {
+    flex: 1;
+}
+
+.add-category select,
+.add-price input {
+    width: 100%;
+}
+
+.add .add-btn {
+    padding: 12px 24px;
+    background-color: #09abe1;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+}
+
+.add .add-btn:hover {
+    background-color: #08a1d2;
+}
+
+.add .add-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+    .add {
+        padding: 20px;
+    }
+
+    .add-category-price {
+        flex-direction: column;
+        gap: 10px;
+    }
 }

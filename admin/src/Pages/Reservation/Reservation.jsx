@@ -1,9 +1,12 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Reservation.css';
 import { FaPhone, FaEnvelope, FaCheckCircle, FaClock, FaUserFriends } from 'react-icons/fa';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import axios from 'axios';
+import { toast } from 'react-toastify';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
 
 const Reservation = ({ url }) => {
   const [reservations, setReservations] = useState(null);
@@ -12,23 +15,27 @@ const Reservation = ({ url }) => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [highlightedDates, setHighlightedDates] = useState([]);
+
   const limit = 3;
 
-
-  // Fetch reservations from the backend
+  // Fetch reservations for pagination
   useEffect(() => {
-    
-     fetchReservations(); 
+    fetchReservations();
   }, [url, currentPage, limit]);
+
+  // Fetch confirmed and incomplete reservations for calendar highlighting
+  useEffect(() => {
+    fetchCalendarBookings();
+  }, [url]);
 
   const fetchReservations = async () => {
     try {
-      const response = await axios.get(url + '/api/booking/getall', { params: { page: currentPage, limit: limit } });
-      if(response.data.success){
+      const response = await axios.get(url + '/api/booking/getall', { params: { page: currentPage, limit } });
+      if (response.data.success) {
         setReservations(response.data.bookings);
         setTotalPages(response.data.totalPages);
-      }
-      else{
+      } else {
         console.error("Failed to fetch reservations:", response.data.message);
       }
     } catch (error) {
@@ -36,16 +43,45 @@ const Reservation = ({ url }) => {
     }
   };
 
+  // Fetch all confirmed but incomplete bookings for calendar
+  const fetchCalendarBookings = async () => {
+    try {
+      const response = await axios.get(url + '/api/booking/getall');
+      if (response.data.success) {
+        const dates = response.data.bookings
+        .filter(booking => booking.status === 'confirmed') // Filter bookings that are confirmed
+        .map(booking => new Date(booking.reservationTime)); // Map to reservation dates
+        setHighlightedDates(dates);
+      } else {
+        console.error("Failed to fetch calendar bookings:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Failed to fetch calendar bookings:", error);
+    }
+  };
+
   const handleReservationClick = (reservation) => {
     setSelectedReservation(reservation);
   };
 
-  const handleStatusChange = (reservation, newStatus, cancellationReason = '') => {
-    if (newStatus === 'cancelled') {
-      reservation.cancellationReason = cancellationReason;
+  const updateReservationStatus = async (reservationId, newStatus) => {
+    try {
+      const response = await axios.post(url + '/api/booking/update/status', { bookingId: reservationId, status: newStatus });
+      if (response.data.success) {
+        fetchReservations(); // Refresh list
+        fetchCalendarBookings(); // Refresh highlighted dates
+        setSelectedReservation(null); // Clear selected reservation
+        toast.success(response.data.message);
+      } else {
+        console.error("Failed to update reservation status:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error updating reservation status:", error);
     }
-    reservation.status = newStatus;
-    setSelectedReservation({ ...reservation });
+  };
+
+  const handleStatusChange = (reservation, newStatus) => {
+    updateReservationStatus(reservation._id, newStatus);
   };
 
   const handleFilterChange = (e) => {
@@ -62,13 +98,42 @@ const Reservation = ({ url }) => {
     const isDateMatch = !selectedDate || new Date(reservation.reservationTime).toDateString() === selectedDate.toDateString();
     return isStatusMatch && isDateMatch;
   });
+
+
+  const tileClassName = ({ date, view }) => {
+    if (view === 'month') {
+      // Check if this date is in the highlightedDates array
+      const isHighlighted = highlightedDates.some(
+        (highlightedDate) => date.toDateString() === highlightedDate.toDateString()
+      );
+      return isHighlighted ? 'highlight-blue' : null;
+    }
+    return null;
+  };
+
   if (!reservations) {
     return <div>Loading...</div>;
   }
+
+  const convertUTCToLocalTime = (utcTimeString) => {
+    const utcTime = new Date(utcTimeString);
+    const localTime = new Date(utcTime.getTime() + utcTime.getTimezoneOffset() * 60 * 1000); // Adjust for UTC+7
+    return localTime.toLocaleTimeString( "en-US", { timeStyle: "short" }); // Returns time in local format
+};
+
+const convertUTCToLocalDate = (utcDateString) => {
+  const utcDate = new Date(utcDateString);
+  const localDate = new Date(utcDate.getTime() + utcDate.getTimezoneOffset() * 60 * 1000); // Adjust for UTC+7
+  return localDate.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }); // Returns date in local format
+};
   return (
     <div className="reservation-container">
       <div className="reservation-list-header">
         <h1>Reservation List</h1>
+        <Calendar
+          tileClassName={tileClassName}
+          onClickDay={(date) => setSelectedDate(date)}
+        />
       </div>
       <div className="reservation-filter">
         <div className="date-filter">
@@ -77,6 +142,7 @@ const Reservation = ({ url }) => {
             onChange={(date) => setSelectedDate(date)}
             dateFormat="yyyy-MM-dd"
             placeholderText="Select a date"
+            highlightDates={highlightedDates.map((date) => ({ date, className: 'highlight-blue' }))}
           />
         </div>
         <div className="status-filter">
@@ -84,7 +150,7 @@ const Reservation = ({ url }) => {
           <select value={statusFilter} onChange={handleFilterChange}>
             <option value="all">All</option>
             <option value="pending">Pending</option>
-            <option value="accepted">Accepted</option>
+            <option value="confirmed">Confirmed</option>
             <option value="completed">Completed</option>
             <option value="cancelled">Cancelled</option>
           </select>
@@ -95,7 +161,7 @@ const Reservation = ({ url }) => {
         <div className="reservation-list">
           {filteredReservations.map((reservation) => (
             <div
-              key={reservation.reservationId}
+              key={reservation._id}
               className={`reservation-card ${reservation.status}`}
               onClick={() => handleReservationClick(reservation)}
             >
@@ -103,10 +169,10 @@ const Reservation = ({ url }) => {
                 <FaUserFriends className="icon" /> Reservation for {reservation.numberOfPeople} people
               </h3>
               <p className="reservation-date">
-                <FaClock className="icon" /> Date: {new Date(reservation.reservationTime).toLocaleDateString()}
+                <FaClock className="icon" /> Date: {convertUTCToLocalDate(reservation.reservationTime)}
               </p>
               <p className="reservation-time">
-                Time: {new Date(reservation.reservationTime).toLocaleTimeString()}
+                Time: {convertUTCToLocalTime(reservation.reservationTime)}
               </p>
               <p className="reservation-phone">
                 <FaPhone className="icon" /> Phone: <span className="highlight">{reservation.phone}</span>
@@ -120,8 +186,8 @@ const Reservation = ({ url }) => {
               <div className="status-actions">
                 {reservation.status !== 'completed' && reservation.status !== 'cancelled' && (
                   <>
-                    <button className="action-button" onClick={() => handleStatusChange(reservation, 'accepted')}>Accept</button>
-                    <button className="action-button" onClick={() => handleStatusChange(reservation, 'completed')}>Complete</button>
+                    {reservation.status === 'pending' && <button className="action-button" onClick={() => handleStatusChange(reservation, 'confirmed')}>Confirm</button>}
+                    {reservation.status === 'confirmed' && <button className="action-button" onClick={() => handleStatusChange(reservation, 'completed')}>Complete</button>}
                   </>
                 )}
               </div>
@@ -149,25 +215,23 @@ const Reservation = ({ url }) => {
           <div className="reservation-details">
             <h2>Reservation Details</h2>
             <p><strong>Number of People:</strong> {selectedReservation.numberOfPeople}</p>
-            <p><strong>Date:</strong> {new Date(selectedReservation.reservationTime).toLocaleDateString()}</p>
-            <p><strong>Time:</strong> {new Date(selectedReservation.reservationTime).toLocaleTimeString()}</p>
+            <p><strong>Date:</strong> {convertUTCToLocalDate(selectedReservation.reservationTime)}</p>
+            <p><strong>Time:</strong> {convertUTCToLocalTime(selectedReservation.reservationTime)}</p>
             <p><strong>Phone:</strong> {selectedReservation.phone}</p>
             <p><strong>Email:</strong> {selectedReservation.email}</p>
             <p><strong>Notes:</strong> {selectedReservation.notes}</p>
-
             {selectedReservation.status === 'cancelled' && (
               <p className="cancellation-reason">
                 Reason for Cancellation: {selectedReservation.cancellationReason}
               </p>
             )}
-
             {selectedReservation.preOrderedItems.length > 0 && (
               <div className="pre-ordered-items">
                 <h3>Pre-Ordered Items:</h3>
                 <ul>
                   {selectedReservation.foodDetails.map((item) => (
                     <li key={item.menuItemId}>
-                      <img src={`${url}/images/${item.image}`} alt={item.image} ></img>
+                      <img src={`${url}/images/${item.image}`} alt={item.image} />
                       {item.name}
                       <span>Quantity: {item.quantity}</span>
                       <span>Price: {item.price}</span>

@@ -41,8 +41,8 @@
     align-items: center;
     gap: 40px;
 }
-
-.navbar-right button {
+/* 
+.navbar .navbar-right button {
     background-color: transparent;
     color: white;
     border: 1px solid tomato;
@@ -53,20 +53,15 @@
     transition: 0.5s;
 }
 
-.navbar-right button:hover {
+.navbar .navbar-right button:hover {
     background-color: tomato;
     color: white;
-}
+} */
 
 .navbar .Active {
     border-bottom: 1px solid;
     padding-bottom: 1px;
     color: tomato;
-}
-
-.navbar :hover {
-    color: tomato;
-    transition: 0.2s;
 }
 
 .navbar li {
@@ -189,3 +184,43 @@
         display: none;
     }
 }
+
+/* Navbar.css */
+.notification-icon-container {
+    position: relative;
+    cursor: pointer;
+  }
+  
+  .notification-icon-container .notification-icon {
+    font-size: 24px;
+    color: #ffffff;
+  }
+  
+  .notification-count {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+  }
+  
+  .notification-dropdown {
+    position: absolute;
+    top: 50px;
+    right: 120px;
+    padding: 10px;
+    width: 380px;
+    z-index: 10;
+  }
+  
+  .notification-dropdown p {
+    margin: 5px 0;
+  }
+  

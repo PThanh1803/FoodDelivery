@@ -40,6 +40,10 @@ const voucherSchema = new mongoose.Schema({
     type: Number,
     default: 1
   },
+  used: {
+    type: Number,
+    default: 0
+  },
   minOrder: {
     type: Number,
     required: true
