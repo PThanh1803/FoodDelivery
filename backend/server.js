@@ -12,6 +12,7 @@ import voucherRouter from "./routes/voucherRoute.js";
 import promotionRouter from "./routes/promotionRoute.js";
 import bookingRouter from "./routes/bookingRoute.js";
 import reviewRouter from "./routes/reviewRoute.js";
+import emailRouter from "./routes/emailRoute.js";
 //app config
 const app = express();
 const port = 4000;
@@ -51,17 +52,17 @@ app.use("/images/vouchers", express.static("uploads/vouchers"));
 app.use("/images/promotions", express.static("uploads/promotions"));
 app.use("/api/user", userRouter);
 app.use("/api/cart", cartRouter);
-app.use("/api/order", orderRouter); 
-app.use("/api/voucher",voucherRouter)
-app.use("/api/promotion",promotionRouter)
-app.use("/api/booking",bookingRouter)
-app.use("/api/review",reviewRouter)
-
+app.use("/api/order", orderRouter);
+app.use("/api/voucher", voucherRouter)
+app.use("/api/promotion", promotionRouter)
+app.use("/api/booking", bookingRouter)
+app.use("/api/review", reviewRouter)
+app.use('/api/email', emailRouter);
 //api routes
 app.get("/", (req, res) => {
     res.send("API WORKING");
 });
 
 //listen
-server.listen(port, () => 
+server.listen(port, () =>
     console.log(`Server started on http://localhost:${port}`));

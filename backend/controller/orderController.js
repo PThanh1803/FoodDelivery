@@ -1,12 +1,13 @@
 import orderModel from "../models/orderModel.js";
 import userModel from "../models/userModel.js";
 import Stripe from "stripe";
-
+import { sendOrderEmail } from "./emailController.js";
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 //placing user order for fontend
 const placeOrder = async (req, res) => {
     const frontend_url = "http://localhost:5173";
+
     try {
         const newOrder = new orderModel({
             userId: req.body.userId,
@@ -48,7 +49,10 @@ const placeOrder = async (req, res) => {
             success_url: frontend_url + `/verify?success=true&orderId=${newOrder._id}`,
             cancel_url: `${frontend_url}/verify?success=false&orderId=${newOrder._id}`,
         })
-
+        const user = await userModel.findById(req.body.userId);
+        if (user && user.email) {
+            await sendOrderEmail(user.email, 'Processing', req.body.items);
+        }
         res.json({ success: true, session_url: session.url });
 
     } catch (error) {
@@ -105,13 +109,18 @@ const listOrders = async (req, res) => {
 //api for updating order status
 const updateStatus = async (req, res) => {
     try {
-        await orderModel.findByIdAndUpdate(req.body.orderId, { status: req.body.status });
-        res.json({ success: true, message: "Status updated" });
+        const order = await orderModel.findByIdAndUpdate(req.body.orderId, { status: req.body.status });
+        // res.json({ success: true, message: "Status updated" });
+        console.log(req.body.userID);
+        const user = await userModel.findById(order.userId);
+        if (user) {
+            await sendOrderEmail(user.email, req.body.status);
+        }
+        res.json({ success: true, message: "Status updated and email sent" });
     } catch (error) {
         console.log(error);
         res.json({ success: false, message: "error" });
     }
-
 }
 const getTopSellingItems = async (req, res) => {
     try {

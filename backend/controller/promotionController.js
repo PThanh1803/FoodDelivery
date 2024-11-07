@@ -8,9 +8,8 @@ const getListPromotion = async (req, res) => {
         const skip = (page - 1) * limit;
         const promotions = await promotionModel.find().skip(skip).limit(parseInt(limit));
         const totalPromotions = await promotionModel.countDocuments();
-
-        res.json({ 
-            success: true, 
+        res.json({
+            success: true,
             promotions,
             totalPromotions,
             totalPages: Math.ceil(totalPromotions / limit),
@@ -43,8 +42,8 @@ const getPromotionById = async (req, res) => {
         console.log("id: ", req.body.id);
         const promotion = await promotionModel.findById(req.body.id);
 
-        
-        
+
+
         if (!promotion) {
             return res.json({ success: false, message: "Promotion not found" });
         }
@@ -70,7 +69,6 @@ const createPromotion = async (req, res) => {
             image: image_filename,
             dateCreated: Date.now(),
         });
-
         console.log("newPromotion: ", newPromotion);
         await newPromotion.save();
         res.json({ success: true, message: "Promotion created successfully", promotion: newPromotion });
@@ -84,7 +82,7 @@ const createPromotion = async (req, res) => {
 const deletePromotion = async (req, res) => {
     try {
         const deletedPromotion = await promotionModel.findByIdAndDelete(req.params.id);
-        fs.unlink(`uploads/promotions/${deletedPromotion.image}`, () => {});
+        fs.unlink(`uploads/promotions/${deletedPromotion.image}`, () => { });
         if (!deletedPromotion) {
             return res.json({ success: false, message: "Promotion not found" });
         }
@@ -100,11 +98,9 @@ const deletePromotion = async (req, res) => {
 const updatePromotion = async (req, res) => {
     try {
         const updatedPromotion = await promotionModel.findById(req.body.id);
-
         if (!updatedPromotion) {
             return res.json({ success: false, message: "Promotion not found" });
         }
-
         const updateData = {
             title: req.body.title,
             startDate: req.body.startDate,
@@ -114,17 +110,14 @@ const updatePromotion = async (req, res) => {
             content: req.body.content,
             dateCreated: Date.now(),
         }
-
         if (req.file) {
-            const image_filename =`${req.file.filename}`;
+            const image_filename = `${req.file.filename}`;
             updateData.image = image_filename; // Update with new image filename
-            fs.unlink(`uploads/promotions/${updatedPromotion.image}`, () => {});
+            fs.unlink(`uploads/promotions/${updatedPromotion.image}`, () => { });
         } else {
             updateData.image = updatedPromotion.image; // Retain the old image filename
         }
-
         await promotionModel.findByIdAndUpdate(req.body.id, updateData);
-
         res.json({ success: true, message: "Promotion updated successfully", promotion: updatedPromotion });
     } catch (error) {
         console.log(error);

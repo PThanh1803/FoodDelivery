@@ -24,7 +24,7 @@ const promotionsData = [
   // Thêm các mục khuyến mãi khác...
 ];
 
-const Promotions = ({url}) => {
+const Promotions = ({ url }) => {
   const [promotions, setPromotions] = useState(promotionsData);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentPromotion, setCurrentPromotion] = useState(null);
@@ -32,17 +32,15 @@ const Promotions = ({url}) => {
 
   const fetchPromotions = async () => {
     try {
-      const response = await axios.get(url +'/api/promotion/list');
-      if(response.data.success) {
+      const response = await axios.get(url + '/api/promotion/list');
+      if (response.data.success) {
         const formattedPromotions = response.data.promotions.map(promotion => ({
           ...promotion,
           dateCreated: new Date(promotion.dateCreated).toISOString().split('T')[0],
           startDate: promotion.startDate ? new Date(promotion.startDate).toISOString().split('T')[0] : "", // Set to empty string if null or invalid
           expiryDate: promotion.expiryDate ? new Date(promotion.expiryDate).toISOString().split('T')[0] : "", // Set to empty string if null or invalid
         }));
-
         setPromotions(formattedPromotions);
-        
       }
       else {
         console.error('Error fetching promotions:', response.data.message);
@@ -53,12 +51,9 @@ const Promotions = ({url}) => {
       console.error('Error fetching promotions:');
     }
   }
-
   useEffect(() => {
     fetchPromotions();
   }, [url]);
-
-
   const handleAddPromotion = () => {
     setModalType('add');
     setCurrentPromotion(null);
@@ -76,7 +71,20 @@ const Promotions = ({url}) => {
     setCurrentPromotion(promo);
     setIsModalVisible(true);
   };
-
+  const handleDelete = async (promo) => {
+    try {
+      const response = await axios.delete(`${url}/api/promotion/delete/${promo._id}`);
+      if (response.data.success) {
+        toast.success('Promotion deleted successfully');
+        setPromotions(promotions.filter(p => p._id !== promo._id)); // Cập nhật danh sách promotions sau khi xóa
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      toast.error('Failed to delete promotion');
+      console.error('Error deleting promotion:', error);
+    }
+  };
   const handleFormSubmit = async (newPromotion) => {
     const formData = new FormData();
     formData.append('image', newPromotion.image);
@@ -90,8 +98,8 @@ const Promotions = ({url}) => {
     if (modalType === 'add') {
       try {
         console.log("newPromotion: ", newPromotion);
-      
-        const response = await axios.post(url +'/api/promotion/create', formData);
+
+        const response = await axios.post(url + '/api/promotion/create', formData);
         if (response.data.success) {
           toast.success('Promotion added successfully');
           fetchPromotions();
@@ -104,10 +112,10 @@ const Promotions = ({url}) => {
       }
       setPromotions([...promotions, { ...newPromotion }]);
     }
-     else if (modalType === 'edit') {
+    else if (modalType === 'edit') {
       try {
         formData.append('id', currentPromotion._id);
-        const response = await axios.put(url +'/api/promotion/update', formData);
+        const response = await axios.put(url + '/api/promotion/update', formData);
         if (response.data.success) {
           toast.success('Promotion updated successfully');
           fetchPromotions();
@@ -124,7 +132,7 @@ const Promotions = ({url}) => {
     setIsModalVisible(false);
   };
 
-  if (promotions=== null) {
+  if (promotions === null) {
     return <div className="promotions-container"><h1>Loading...</h1></div>;
   }
 
@@ -146,6 +154,7 @@ const Promotions = ({url}) => {
               <div className="action-buttons">
                 <button className="edit-btn" onClick={() => handleEditPromotion(promo)}>Edit</button>
                 <button className="details-btn" onClick={() => handleViewDetails(promo)}>Chi tiết</button>
+                <button className="edit-btn" onClick={() => handleDelete(promo)}>Xóa</button>
               </div>
             </div>
           </li>
