@@ -18,9 +18,7 @@ import Promotions from './component/Promotion/Promotion'
 import PromotionDetail from './component/PromotionDetail/PromotionDetail'
 
 const App = () => {
-
   const [showLogin, setShowLogin] = React.useState(false)
-
   return (
     <>
       {showLogin && <LoginPopup setShowLogin={setShowLogin} />}
