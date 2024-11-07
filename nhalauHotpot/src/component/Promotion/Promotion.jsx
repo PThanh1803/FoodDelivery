@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import './Promotion.css';
+
 import { StoreContext } from '../../Context/StoreContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -43,11 +44,13 @@ const Promotions = () => {
         const encryptedID = encodeURIComponent(CryptoJS.AES.encrypt(promoId, 'secret-key').toString());
         window.location.href = `/promotions/${encryptedID}`;
     };
+
     const formatDate = (dateString) => {
         const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
         const date = new Date(dateString);
         return date.toLocaleDateString('vi-VN', options);
     };
+
     return (
         <div className="promotions-container">
             <h1>Promotions</h1>
@@ -57,6 +60,7 @@ const Promotions = () => {
             ) : (
                 <ul className="promotion-list">
                     {promotions.map((promo) => (
+
                         <li key={promo.id} className="promotion-item">
                             <img src={`${url}/images/promotions/${promo.image}`} alt={promo.title} className="promotion-image-size" onClick={() => handlePromoClick(promo._id)} />
                             <div className="promotion-details">
@@ -71,6 +75,7 @@ const Promotions = () => {
                             </div>
                         </li>
                     ))}
+
 
                 </ul>
             )}

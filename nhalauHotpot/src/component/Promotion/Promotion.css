@@ -16,6 +16,7 @@
     list-style: none;
     padding: 0;
     margin: 0;
+
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -46,15 +47,17 @@
 .promotion-image-size:hover {
     transform: scale(1.05);
     transition: transform 0.3s ease-in-out;
-}
+
 
 .promotion-details {
     flex-grow: 1;
+
     margin: 15px 0;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     padding: 0 10px;
+
 }
 
 .promotion-title {
@@ -104,6 +107,7 @@
     color: #333;
 }
 
+
 .promotion-date-button {
     display: flex;
     align-items: center;
@@ -131,3 +135,4 @@
     border: none;
     border-radius: 5px;
 }
+

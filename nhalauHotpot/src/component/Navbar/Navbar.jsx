@@ -28,6 +28,7 @@ const Navbar = ({ setShowLogin }) => {
 
         <div className="navbar">
             <Link to='/'>
+
                 <div className="navbar-logo">
                     <span>2T Food.</span>
                 </div>
@@ -40,6 +41,7 @@ const Navbar = ({ setShowLogin }) => {
                     <Link to="/rate" className={getActiveClass("/rate")}>Rate</Link>
                     <Link to="/bookingtable" className={getActiveClass("/bookingtable")}>Booking Table</Link>
                 </ul>
+
 
             </ul>
             <div className='navbar-right'>

@@ -162,7 +162,8 @@ const RateComponent = () => {
                             <button onClick={handlePrevImage}>
                                 <img src={left} alt="left" />
                             </button>
-                            <img src={`${url}/images/reviews/${images[currentIndex]}`} alt={`Full view ${currentIndex + 1}`} className="full-image" />
+
+                            <img src={`${url}/images/reviews/${images[currentIndex]}` }alt={`Full view ${currentIndex + 1}`} className="full-image" />
                             <button onClick={handleNextImage}>
                                 <img src={right} alt="right" />
                             </button>
