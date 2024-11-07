@@ -12,16 +12,32 @@ import voucherRouter from "./routes/voucherRoute.js";
 import promotionRouter from "./routes/promotionRoute.js";
 import bookingRouter from "./routes/bookingRoute.js";
 import reviewRouter from "./routes/reviewRoute.js";
+
 import emailRouter from "./routes/emailRoute.js";
-//app config
+
+import notificationRouter from "./routes/notificationRoute.js";
+
+
 const app = express();
 const port = 4000;
 
 // Create HTTP server from the Express app
 const server = http.createServer(app);
 
-// Create a new instance of Socket.IO
-const io = new Server(server);
+// Enable CORS for all routes
+app.use(cors({
+    origin: "http://localhost:5173", // Update with your frontend URL
+    credentials: true
+}));
+
+// Create a new instance of Socket.IO with CORS options
+const io = new Server(server, {
+    cors: {
+        origin: "http://localhost:5173", // Update with your frontend URL
+        methods: ["GET", "POST" ],
+        credentials: true
+    }
+});
 
 // Socket.IO connection handling
 io.on('connection', (socket) => {
@@ -39,30 +55,37 @@ io.on('connection', (socket) => {
 });
 
 //middlewares
+app.use(cors({ origin: ["http://localhost:5173", "http://localhost:5174"] }));
 app.use(express.json());
-app.use(cors());
+
 
 // db connection
 connectDB();
 
-//api endpoints
+// API endpoints
 app.use("/api/food", foodRouter);
 app.use("/images", express.static("uploads"));
 app.use("/images/vouchers", express.static("uploads/vouchers"));
 app.use("/images/promotions", express.static("uploads/promotions"));
 app.use("/api/user", userRouter);
 app.use("/api/cart", cartRouter);
+
 app.use("/api/order", orderRouter);
 app.use("/api/voucher", voucherRouter)
 app.use("/api/promotion", promotionRouter)
 app.use("/api/booking", bookingRouter)
 app.use("/api/review", reviewRouter)
 app.use('/api/email', emailRouter);
-//api routes
+app.use("/api/notification", notificationRouter(io));
+
+
 app.get("/", (req, res) => {
     res.send("API WORKING");
 });
 
-//listen
-server.listen(port, () =>
-    console.log(`Server started on http://localhost:${port}`));
+
+// Start server
+server.listen(port, () => 
+    console.log(`Server started on http://localhost:${port}`)
+);
+

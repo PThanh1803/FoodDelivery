@@ -1,80 +1,85 @@
 import { useState, useEffect } from 'react';
 import './ListVoucher.css';
-import AddVoucher from './AddVoucher/AddVoucher';  // Import the AddVoucherForm component
+import AddVoucher from './AddVoucher/AddVoucher';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { FaClipboard } from 'react-icons/fa'; // Import FaClipboard from react-icons
 
-// eslint-disable-next-line react/prop-types
-const VoucherListPage = ({url}) => {
+
+const VoucherListPage = ({ url }) => {
   const [vouchers, setVouchers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [dateFilter, setDateFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [vouchersPerPage] = useState(1);  // Limit to 8 vouchers per page
-  const [showPopup, setShowPopup] = useState(false);  // State for showing the popup
-  const [selectedVoucher, setSelectedVoucher] = useState(null);  // To store selected voucher details for editing
+  const [vouchersPerPage] = useState(2);
+  const [showPopup, setShowPopup] = useState(false);
+  const [selectedVoucher, setSelectedVoucher] = useState(null);
   const [totalPages, setTotalPages] = useState(0);
-  // Fetch vouchers when component mounts
- // useEffect with showPopup dependency to refresh the voucher list when popup closes
- const [reload, setReload] = useState(false);
+  const [copiedVoucherCode, setCopiedVoucherCode] = useState(null); // Track copied code
+  const [copied, setCopied] = useState(false); // Track if the code was copied
 
- useEffect(() => {
-   fetchVouchers();
- }, [showPopup, reload, url, currentPage, vouchersPerPage]);
- 
- const closePopup = async () => {
-   await fetchVouchers();
-   setShowPopup(false);
-   setReload(prev => !prev); 
- };
- 
+  // Function to copy the voucher code
+  const copyToClipboard = (voucherCode) => {
+    navigator.clipboard.writeText(voucherCode);
+    setCopiedVoucherCode(voucherCode); // Set the copied voucher code
+    setCopied(true); // Set the copied flag to true
+    toast.success("Voucher code copied to clipboard!");
 
-
- const fetchVouchers = async () => {
-  try {
-    const response = await axios.get(`${url}/api/voucher/list`, {
-      params: {
-        page: currentPage,
-        limit: vouchersPerPage,
-        status: statusFilter,
-        date: dateFilter,
-        code: searchTerm,
-      }
-    });
-    if (response.data.success) {
-      setVouchers(response.data.vouchers);
-      setTotalPages(response.data.pagination.totalPages); 
-      console.log("Data:", response.data);
-    } else {
-      toast.error(response.data.message);
-      setTotalPages(0);
-    }
-  } catch (error) {
-    console.error("Error fetching vouchers:", error);
-    toast.error("Failed to fetch data");
-  }
-};
-  
-  
-
-
-  const toggleVoucherStatus = (id) => {
-    setVouchers(vouchers.map(voucher =>
-      voucher.id === id
-        ? { ...voucher, status: voucher.status === 'Active' ? 'Expired' : 'Active' }
-        : voucher
-    ));
+    // Reset the copied state after 2 seconds
+    setTimeout(() => {
+      setCopied(false);
+      setCopiedVoucherCode(null);
+    }, 2000);
   };
 
-  // Open popup for adding a new voucher or viewing/editing an existing voucher
+  useEffect(() => {
+    fetchVouchers();
+  }, [showPopup, url, currentPage, vouchersPerPage]);
+
+  const closePopup = async () => {
+    await fetchVouchers();
+    setShowPopup(false);
+  };
+
+  const fetchVouchers = async () => {
+    try {
+      const response = await axios.get(`${url}/api/voucher/list`, {
+        params: {
+          page: currentPage,
+          limit: vouchersPerPage,
+          status: statusFilter,
+          date: dateFilter,
+          code: searchTerm,
+        }
+      });
+      if (response.data.success) {
+        setVouchers(response.data.vouchers);
+        setTotalPages(response.data.pagination.totalPages);
+      } else {
+        toast.error(response.data.message);
+        setTotalPages(0);
+      }
+    } catch (error) {
+      console.error("Error fetching vouchers:", error);
+      toast.error("Failed to fetch data");
+    }
+  };
+
+
+
   const openPopup = (voucher) => {
-    console.log("Selected Voucher:", voucher); // Add this for debugging
-    setSelectedVoucher(voucher);  
+    setSelectedVoucher(voucher);
     setShowPopup(true);
   };
-  
 
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
+
+  const isVoucherExpired = (expiryDate) => new Date(expiryDate) < new Date();
 
   return (
     <div className="voucher-list">
@@ -89,7 +94,7 @@ const VoucherListPage = ({url}) => {
           onChange={(e) => setSearchTerm(e.target.value)}
         />
         <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-          <option >All</option>
+          <option>All</option>
           <option value="Active">Active</option>
           <option value="Expired">Expired</option>
         </select>
@@ -98,57 +103,81 @@ const VoucherListPage = ({url}) => {
           value={dateFilter}
           onChange={(e) => setDateFilter(e.target.value)}
         />
-
-        <button onClick={() => fetchVouchers()}>Filter</button>
+        <button className="filter-button" onClick={() => fetchVouchers()}>Filter</button>
       </div>
 
       {/* Add Voucher Button */}
       <div className="add-voucher">
-        <button onClick={() => openPopup()}>+ Add New Voucher</button>
+        <button onClick={() => openPopup(null)}>+ Add New Voucher</button>
       </div>
 
       {/* Voucher Cards */}
       {totalPages === 0 && <p>No vouchers found</p>}
-      {totalPages > 0 && <div className="voucher-cards">
-        {vouchers.map((voucher) => (
-          <div className="voucher-card" key={voucher.id}>
-            <div className="voucher-details">
-              <h3>{voucher.voucherCode}</h3>
-              <p>{voucher.description}</p>
-              <p>Discount: {voucher.discountAmount} {voucher.discountType === 'Percentage' ? '%' : 'VND'}</p>          
-              <p>Start Date: {voucher.startDate.slice(0, 10).split('-').reverse().join('-')}</p>
-              <p>Expiry Date: {voucher.expiryDate.slice(0, 10).split('-').reverse().join('-')}</p>
-              <p>Status: {voucher.status}</p>
-              <button onClick={() => toggleVoucherStatus(voucher.id)} className={voucher.status === 'Active' ? 'active' : 'inactive'}>
-                {voucher.status === 'Active' ? 'Unactive' : 'Active'}
-              </button>
-              {/* View Details (opens the popup with voucher details) */}
-              <button onClick={() => openPopup(voucher)}>View Details</button>
-            </div>
-            <img src={url + "/images/vouchers/" + voucher.image} alt={voucher.voucherCode} className="voucher-image" />
-          </div>
-        ))}
-      </div>}
+      {totalPages > 0 && (
+        <div className="voucher-cards">
+          {vouchers.map((voucher) => {
+            const isExpired = isVoucherExpired(voucher.expiryDate);
+            const isUsageLimitReached = voucher.used >= voucher.usageLimit;
+            const overlayText = isExpired
+              ? "Đã hết hạn"
+              : isUsageLimitReached
+              ? "Hết lượt sử dụng"
+              : voucher.status === "Expired" ? "Đã hết hợp dụng" : null;
+              const isVoucherCodeCopied = copied && copiedVoucherCode === voucher.voucherCode;
+            return (
+              <div
+                className={`voucher-card ${overlayText ? 'overlay' : ''}`}
+                key={voucher.id}
+              >
+                <div className="voucher-details">
+                <h3>
+                  <span
+                    className={`voucher-code ${isVoucherCodeCopied ? 'copied' : ''}`}
+                    onClick={() => copyToClipboard(voucher.voucherCode)}
+                  >
+                    {voucher.voucherCode}
+                  </span>
+                  <FaClipboard 
+                    className="copy-icon" 
+                    onClick={() => copyToClipboard(voucher.voucherCode)} 
+                  />
+                </h3>
+                  <p>{voucher.description}</p>
+                  <p>Discount: {voucher.discountAmount} {voucher.discountType === 'Percentage' ? '%' : 'VND'}</p>
+                  <p>Start Date: {new Date(voucher.startDate).toLocaleDateString('vi-VN')}</p>
+                  <p>Expiry Date: {new Date(voucher.expiryDate).toLocaleDateString('vi-VN')}</p>
+                  <p>Status: {voucher.status}</p>
+                  <p>Usage: {voucher.used} / {voucher.usageLimit}</p>
+                  {!overlayText &&  <button onClick={() => openPopup(voucher)} className="view-button">Xem chi tiết</button>}
+                </div>
+                <img src={`${url}/images/vouchers/${voucher.image}`} alt={voucher.voucherCode} className="voucher-image" />
+                {overlayText && 
+                <div className="voucher-overlay">
+                  <h3> {overlayText}  </h3>
+                  <a onClick={() => openPopup(voucher)}>
+                      Click để chỉnh sửa</a>
+                </div>}
+              </div>
+            );
+          })}
+        </div>
+      )}
 
-      {/* Phân trang */}
-      <div className="pagination">
-        {Array.from({ length: totalPages }, (_, index) => (
-          <button
-            key={index + 1}
-            onClick={() => setCurrentPage(index + 1)}
-            className={currentPage === index + 1 ? 'active-page' : ''}
-          >
-            {index + 1}
-          </button>
-        ))}
+      {/* Pagination */}
+      <div className="pagination-controls">
+        <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+          Previous
+        </button>
+        <span>Page {currentPage} of {totalPages}</span>
+        <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
+          Next
+        </button>
       </div>
 
       {/* Popup Modal for Add/Edit Voucher */}
       {showPopup && (
         <div className="modal">
-          
-            <AddVoucher voucher={selectedVoucher} isOpen={showPopup} closeModal={closePopup} url={url} />
-
+          <AddVoucher voucher={selectedVoucher} isOpen={showPopup} closeModal={closePopup} url={url} />
         </div>
       )}
     </div>

@@ -3,6 +3,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import './PromotionForm.css';
 import DOMPurify from 'dompurify';
+import {FaTimes} from 'react-icons/fa';
 
 const PromotionForm = ({ isVisible, onClose, onSubmit, initialData = {}, modalType ,url}) => {
   
@@ -46,9 +47,9 @@ const PromotionForm = ({ isVisible, onClose, onSubmit, initialData = {}, modalTy
   return (
     <div className="promotion-modal-overlay">
       <div className="promotion-modal-content">
-        <button className="promotion-close-btn" onClick={onClose}>
-          &times;
-        </button>
+      <button className="voucher-close-modal" onClick={onClose}>
+            <FaTimes />
+          </button>
         <form className="promotion-form" onSubmit={handleSubmit}>
           {modalType === 'add' && <h2 className="promotion-h2">Thêm Khuyến Mãi Mới</h2>}
           {modalType === 'edit' && <h2 className="promotion-h2">Chỉnh Sửa Khuyến Mãi</h2>}

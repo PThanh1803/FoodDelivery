@@ -1,5 +1,5 @@
 import voucherModel from "../models/voucherModel.js";
-
+import  fs from "fs";
 
 const getListVoucher = async (req, res) => {
     try {
@@ -119,7 +119,7 @@ const deleteVoucher = async (req, res) => {
         if (!deletedVoucher) {
             return res.json({ success: false, message: "Voucher not found" });
         }
-        await fs.unlink(`uploads/vouchers/${deletedVoucher.image}`,()=>{});
+        fs.unlink(`uploads/vouchers/${deletedVoucher.image}`, () => { });
         res.json({ success: true, message: "Voucher deleted successfully" });
     } catch (error) {
         console.log(error);
@@ -153,16 +153,24 @@ const updateVoucher = async (req, res) => {
         if (req.file) {
             const image_filename = `${req.file.filename}`;
             updateData.image = image_filename;
-            await fs.unlink(`uploads/vouchers/${updatedVoucher.image}`); // Update with new image filename
+        
+            // Delete the old image file and provide a callback function
+            fs.unlink(`uploads/vouchers/${updatedVoucher.image}`, (err) => {
+                if (err) {
+                    console.error("Error deleting old image:", err);
+                }
+            });
         } else {
             updateData.image = updatedVoucher.image; // Retain the old image filename
         }
+        
       
         await voucherModel.findByIdAndUpdate(voucherData.id, updateData);
         res.json({ success: true, message: "Voucher updated successfully", voucher: updateData });
     } catch (error) {
         console.log(error);
-        res.json({ success: false, message: "Error updating voucher" });
+        res.json({ success: false, message: `Error updating voucher`});
+        console.log(error);
     }
 };
 

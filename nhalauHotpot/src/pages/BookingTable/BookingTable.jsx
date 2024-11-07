@@ -53,13 +53,13 @@ const BookingTable = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+        const vietnamOffset = 7 * 60 * 60 * 1000; 
         const formData = {
             userId: userInfo?._id || null,
             name, // Replace with actual user ID if available
             phone,
             email,
-            reservationTime: new Date(`${date}T${time}:00Z`).toISOString(),
+            reservationTime : new Date(new Date(`${date}T${time}:00`).getTime() + vietnamOffset).toISOString(),
             numberOfPeople: guests,
             notes: note,
             preOrderedItems: Object.values(selectedFoods).map(food => ({

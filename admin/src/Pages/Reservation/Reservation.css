@@ -60,7 +60,7 @@
     border-left: 5px solid #ffc107; /* Yellow border for pending */
 }
 
-.reservation-card.accepted {
+.reservation-card.confirmed {
     border-left: 5px solid #28a745; /* Green border for accepted */
 }
 
@@ -199,6 +199,12 @@
     background-color: #e0f7fa; /* Light blue background for completed */
 }
 
+.highlight-blue {
+    background-color: #89e767 !important;
+    color: white !important;
+    border-radius: 40% !important;
+  }
+  
 .cancellation-reason {
     color: #dc3545 !important; /* Red color for cancellation reason */
     font-weight: bold; /* Bold text for emphasis */
@@ -214,6 +220,8 @@
     color: #17a2b8; /* Blue color for completed status */
     font-weight: bold; /* Bold text for emphasis */
 }
+
+
 
 
 .booking-details {
@@ -296,3 +304,73 @@
     font-size: 14px;
   }
 
+/* List.css */
+
+/* Modal Overlay */
+.modal-food-overlay {
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+  
+  /* Modal Styles */
+  .moda-food {
+    background-color: #fff; /* White background */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+    max-width: 600px; /* Set maximum width */
+    width: 100%; /* Full width */
+    padding: 20px; /* Inner spacing */
+    position: relative; /* Position relative for child elements */
+  }
+  
+  /* Modal Header */
+  .modal-food h2 {
+    margin-top: 0; /* Remove default margin */
+    color: #333; /* Dark text color */
+    font-size: 24px; /* Larger font size for the header */
+  }
+  
+  /* Modal Content */
+  .modal-foot p {
+    color: #666; /* Lighter text color */
+    font-size: 16px; /* Standard font size */
+    margin-bottom: 15px; /* Spacing below paragraph */
+  }
+  
+  /* Modal Buttons */
+  .modal-buttons {
+    display: flex;
+    justify-content: flex-end; /* Align buttons to the right */
+    gap: 10px; /* Space between buttons */
+  }
+  
+  .modal-button {
+    background-color: #09abe1; /* Primary button color */
+    color: #fff; /* White text color */
+    border: none; /* No border */
+    border-radius: 5px; /* Rounded corners for buttons */
+    padding: 10px 15px; /* Inner spacing */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+  }
+  
+  .modal-button:hover {
+    background-color: #007bb5; /* Darker shade on hover */
+  }
+  
+  /* Cancel Button */
+  .modal-button-cancel {
+    background-color: #f44336; /* Red color for cancel button */
+  }
+  
+  .modal-button-cancel:hover {
+    background-color: #c62828; /* Darker shade on hover for cancel button */
+  }
+  

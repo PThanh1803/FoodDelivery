@@ -39,8 +39,8 @@ const AddVoucherForm = ({ isOpen, closeModal, voucher, url }) => {
     setVoucherCode(voucher.voucherCode);
     setDiscountAmount(voucher.discountAmount);
     setDiscountType(voucher.discountType);
-    setExpiryDate(voucher.expiryDate);
-    setStartDate(voucher.startDate);
+    setExpiryDate(new Date(voucher.expiryDate).toISOString().split("T")[0]); // Convert to ISO format and extract date partvoucher.expiryDate);
+    setStartDate(new Date(voucher.startDate).toISOString().split("T")[0]); // Convert to ISO format and extract date partvoucher.startDate);
     setStatus(voucher.status);
     setUsageLimit(voucher.usageLimit);
     setMinOrder(voucher.minOrder);
@@ -49,6 +49,7 @@ const AddVoucherForm = ({ isOpen, closeModal, voucher, url }) => {
     setIsEditing(true); // Đặt chế độ chỉnh sửa nếu có voucher
   };
 
+  console.log("Voucher:", voucher);
   const resetForm = () => {
     setVoucherCode("");
     setDiscountAmount("");
@@ -143,26 +144,26 @@ const AddVoucherForm = ({ isOpen, closeModal, voucher, url }) => {
 
   return (
     <>
-      {isOpen && (
-        <div className="modal-overlay">
-          <div className="add-voucher-form">
-            <h2>{voucher ?( isEditing ? "Edit Voucher": "Voucher Details" ) : "Add New Voucher"}</h2>
-            <button className="close-modal" onClick={closeModal}>
-              <FaTimes />
-            </button>
-            <form onSubmit={handleSubmit}>
-              <div className="form-group">
-                <h3>Voucher Code:</h3>
-                <input
-                  type="text"
-                  value={voucherCode}
-                  onChange={(e) => setVoucherCode(e.target.value)}
-                  required
-                  placeholder="Enter voucher code"
-                  disabled={!isEditing} // Disable input if not in edit mode
-                />
-              </div>
-              <div className="form-group">
+    {isOpen && (
+      <div className="voucher-modal-overlay">
+        <div className="voucher-form-container">
+          <h2>{voucher ? (isEditing ? "Edit Voucher" : "Voucher Details") : "Add New Voucher"}</h2>
+          <button className="voucher-close-modal" onClick={closeModal}>
+            <FaTimes />
+          </button>
+          <form onSubmit={handleSubmit}>
+            <div className="voucher-form-group">
+              <h3>Voucher Code:</h3>
+              <input
+                type="text"
+                value={voucherCode}
+                onChange={(e) => setVoucherCode(e.target.value)}
+                required
+                placeholder="Enter voucher code"
+                disabled={!isEditing}
+              />
+            </div>
+              <div className="voucher-form-group">
                 <h3>Discount Amount:</h3>
                 <div className="discount-input">
                   <input
@@ -184,7 +185,7 @@ const AddVoucherForm = ({ isOpen, closeModal, voucher, url }) => {
                 </div>
               </div>
 
-              <div className="form-group">
+              <div className="voucher-form-group">
                 <h3>Start Date:</h3>
                 <input
                   type="date"
@@ -195,7 +196,7 @@ const AddVoucherForm = ({ isOpen, closeModal, voucher, url }) => {
                 />
               </div>
 
-              <div className="form-group">
+              <div className="voucher-form-group">
                 <h3>Expiry Date:</h3>
                 <input
                   type="date"
@@ -206,7 +207,7 @@ const AddVoucherForm = ({ isOpen, closeModal, voucher, url }) => {
                 />
               </div>
 
-              <div className="form-group">
+              <div className="voucher-form-group">
                 <h3>Usage Limit:</h3>
                 <input
                   type="number"
@@ -217,7 +218,7 @@ const AddVoucherForm = ({ isOpen, closeModal, voucher, url }) => {
                 />
               </div>
 
-              <div className="form-group">
+              <div className="voucher-form-group">
                 <h3>Minimum Order:</h3>
                 <input
                   type="number"
@@ -228,7 +229,7 @@ const AddVoucherForm = ({ isOpen, closeModal, voucher, url }) => {
                 />
               </div>
 
-              <div className="form-group">
+              <div className="voucher-form-group">
                 <h3>Maximum Discount:</h3>
                 <input
                   type="number"
@@ -239,7 +240,7 @@ const AddVoucherForm = ({ isOpen, closeModal, voucher, url }) => {
                 />
               </div>
 
-              <div className="form-group">
+              <div className="voucher-form-group">
                 <h3>Status:</h3>
                 <select
                   value={status}
@@ -251,7 +252,7 @@ const AddVoucherForm = ({ isOpen, closeModal, voucher, url }) => {
                 </select>
               </div>
 
-              <div className="form-group">
+              <div className="voucher-form-group">
                 <h3>Image:</h3>
                 <input
                   type="file"
@@ -265,35 +266,35 @@ const AddVoucherForm = ({ isOpen, closeModal, voucher, url }) => {
                 )}
               </div>
 
-              <div className="form-buttons">
+              <div className="voucher-form-buttons">
                 {!voucher ? (
-                  <div className="form-button">
-                    <button type="submit">
+                  <div className="voucher-action-buttons">
+                    <button type="submit" className="voucher-save-btn">
                       <FaSave /> Add Voucher
                     </button>
                     <button
                       type="button"
-                      className="cancel-button"
+                      className="voucher-cancel-btn"
                       onClick={closeModal}
                     >
                       Cancel
                     </button>
                   </div>
                 ) : isEditing ? (
-                  <div className="form-button">
-                    <button type="submit">
+                  <div className="voucher-action-buttons">
+                    <button type="submit" className="voucher-save-btn">
                       <FaSave /> Update Voucher
                     </button>
                     <button
                       type="button"
-                      className="cancel-button"
+                      className="voucher-cancel-btn"
                       onClick={() => setIsEditing(false)}
                     >
                       Cancel
                     </button>
                   </div>
                 ) : (
-                  <button type="button" onClick={handleEditClick}>
+                  <button type="button" className="voucher-edit-btn" onClick={handleEditClick}>
                     <FaEdit /> Edit
                   </button>
                 )}

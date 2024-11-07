@@ -86,7 +86,7 @@ const verifyOrder = async (req, res) => {
 //user order for frontend 
 const userOrders = async (req, res) => {
     try {
-        const orders = await orderModel.find({ userId: req.body.userId });
+        const orders = await orderModel.find({ userId: req.body.userId , payment: true });
         res.json({ success: true, data: orders });
     } catch (error) {
         console.log(error);
@@ -98,7 +98,7 @@ const userOrders = async (req, res) => {
 //listing orders for admin
 const listOrders = async (req, res) => {
     try {
-        const orders = await orderModel.find({});
+        const orders = await orderModel.find({payment: true});
         res.json({ success: true, data: orders });
     } catch (error) {
         console.log(error);

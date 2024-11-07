@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState , useContext} from 'react';
+import { StoreContext } from '../../context/StoreContext';
 import './Notification.css';
 import { FaExclamationTriangle } from 'react-icons/fa';
 import io from 'socket.io-client'; // Import Socket.IO client
@@ -11,12 +12,12 @@ const Notification = () => {
   const [filteredNotifications, setFilteredNotifications] = useState([]);
   const [statusFilter, setStatusFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
-
+  const {userInfo , url} = useContext(StoreContext);
   // Fetch notifications on component mount
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const response = await axios.get('http://localhost:4000/api/notification/admin');
+        const response = await axios.get(`http://localhost:4000/api/notification/user/${userInfo._id}`);
         setNotifications(response.data.notifications);
       } catch (error) {
         console.error('Error fetching notifications:', error);

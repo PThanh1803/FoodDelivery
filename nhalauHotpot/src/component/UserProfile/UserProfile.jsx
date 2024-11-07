@@ -4,7 +4,7 @@ import './UserProfile.css';
 import edit_icon from '../../assets/edit-alt-regular-24.png';
 import default_avatar from '../../assets/profile_icon.png'; // Placeholder avatar
 import FoodDisplay from '../FoodDisplay/FoodDisplay';
-import { StoreContext } from '../../Context/StoreContext';
+import { StoreContext } from '../../context/StoreContext';
 
 const UserProfile = () => {
     const { userInfo, setUserInfo } = useContext(StoreContext);

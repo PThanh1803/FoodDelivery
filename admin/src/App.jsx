@@ -11,6 +11,7 @@ import DashBoard from './Pages/DashBoard/DashBoard'
 import Promotions from './Pages/Promotion/Promotion'
 import Notification from './Pages/Notification/Notification'
 import Reservation from './Pages/Reservation/Reservation'
+import ReviewDashboard from './Pages/Review/ReviewDashBoard/ReviewDashBoard'
 const App = () => {
   const url = "http://localhost:4000"
   return (
@@ -24,12 +25,12 @@ const App = () => {
             <Route path='/add' element={<Add url={url}/>}/>
             <Route path='/list' element={<List url={url}/>}/>
             <Route path='/orders' element={<Orders url={url}/>}/>
-            <Route path='/voucher' element={<Voucher url={url}/>}>
-            </Route>
+            <Route path='/voucher' element={<Voucher url={url}/>}/>
             <Route path='/dashboard' element={<DashBoard url={url}/>}/>
             <Route path='/promotion' element={<Promotions url={url}/>}/>
             <Route path='/notification' element={<Notification url={url}/>}/>
             <Route path='/reservation' element={<Reservation url={url}/>}/>
+            <Route path='/review' element={<ReviewDashboard url={url}/>}/>
           </Routes>
         </div>
     </div>

@@ -95,9 +95,11 @@ const Orders = ({ url }) => {
     return 'black';
   };
 
-  return (
-    <div className="order add">
-      <h3>Order Page</h3>
+
+  return (  
+    <div className="order ">
+      <h1>Order Page</h1>
+
 
       {/* Filter Inputs */}
       <div className="filters">

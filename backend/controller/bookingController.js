@@ -85,6 +85,38 @@ const cancelBooking = async (req, res) => {
 };
 
 
+const updateBooking = async (req, res) => {
+    const { bookingId,  status } = req.body;
+
+    try {
+        // Find the booking by its ID
+        const booking = await bookingModel.findById(bookingId);
+
+        if (!booking) {
+            return res.status(404).json({ success: false, message: 'Booking not found' });
+        }
+
+        // Update the booking status to 'cancelled'
+        booking.status = status;
+
+        // Save the updated booking
+        await booking.save();
+
+        res.status(200).json({
+            success: true,
+            message: `Booking  ${status}  successfully`,
+            booking
+        });
+    } catch (error) {
+        res.status(500).json({ 
+            success: false, 
+            message: error.message || `Failed to ${status} booking`, 
+            error: error.message 
+        });
+        console.error('Error updating booking:', error);
+    }
+};
+
 // Get bookings by user ID with populated food details, pagination, and sorting
 const getBookingByUser = async (req, res) => {
     const { userId } = req.body;
@@ -167,4 +199,4 @@ const createBooking = async (req, res) => {
 export {
     createBooking,
     getBookingByUser,
-    getBooking ,cancelBooking};
+    getBooking ,cancelBooking ,updateBooking};

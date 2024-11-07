@@ -115,6 +115,108 @@ const updateReview = async (req, res) => {
         res.json({ success: false, message: "Error updating review" });
     }
 };
+
+const responseReview = async (req, res) => {
+    const { id } = req.params;
+    const { response } = req.body;
+
+    try {
+        const review = await reviewModel.findByIdAndUpdate(
+            id,
+            { response },
+            { new: true }
+        );
+        res.json({ success: true, message: 'Response submitted successfully', review });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Error submitting response', error: 'Failed to submit response' });
+        console.log(error);
+    }
+}
+
+const getReviewsAdmin = async (req, res) => {
+    const { startDate, endDate, responseStatus, starRating, page = 1, limit = 5 } = req.query;
+
+    const filters = {};
+
+    const pageNum = Math.max(1, parseInt(page, 10)); // Ensure page is at least 1
+    const limitNum = Math.max(1, parseInt(limit, 10)); // Ensure limit is at least 1
+    // Pagination: skip and limit
+
+
+    // Date range filter
+    if (startDate && endDate) {
+        filters.date = { $gte: new Date(startDate), $lte: new Date(endDate) };
+    }
+
+    // Response status filter
+    if (responseStatus === 'responded') {
+        filters.response = { $exists: true };
+    } else if (responseStatus === 'unresponded') {
+        filters.response = { $exists: false };
+    }
+
+    // Star rating filter
+    if (starRating && starRating !== 'all') {
+        filters.star = parseInt(starRating, 10);
+    }
+
+    try {
+        const reviews = await reviewModel
+            .find(filters)
+            .skip((pageNum - 1) * limitNum)
+            .limit(limitNum);
+
+        const totalReviews = await reviewModel.countDocuments(filters);
+
+        res.json({
+            success: true,
+            reviews,
+            totalPages: Math.ceil(totalReviews / limitNum || 1),
+            currentPage: pageNum,
+        });
+        console.log('Reviews fetched successfully :', reviews);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: 'Failed to fetch reviews' });
+    }
+};
+
+
+const getReviewStats = async (req, res) => {
+    try {
+        const totalReviews = await reviewModel.countDocuments();
+        const avgStarRating = await reviewModel.aggregate([
+            { $group: { _id: null, avgStar: { $avg: "$star" } } }
+        ]);
+
+        const starBreakdown = await reviewModel.aggregate([
+            { $group: { _id: "$star", count: { $sum: 1 } } },
+            { $sort: { _id: -1 } }
+        ]);
+
+        const avgServiceRating = await reviewModel.aggregate([
+            { $match: { serviceRate: { $exists: true } } },
+            { $group: { _id: null, avgService: { $avg: "$serviceRate" } } }
+        ]);
+
+        const avgFoodRating = await reviewModel.aggregate([
+            { $match: { foodRate: { $exists: true } } },
+            { $group: { _id: null, avgFood: { $avg: "$foodRate" } } }
+        ]);
+
+        res.json({
+            success: true,
+            totalReviews,
+            avgStarRating: avgStarRating[0]?.avgStar || 0,
+            starBreakdown,
+            avgServiceRating: avgServiceRating[0]?.avgService || 0,
+            avgFoodRating: avgFoodRating[0]?.avgFood || 0,
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, error: 'Failed to fetch statistics' });
+        console.log(error);
+    }
+}
 const getGoodReview = async (req, res) => {
     try {
         // Lấy 5 review gần đây nhất có số sao là 4 hoặc 5
@@ -133,5 +235,4 @@ const getGoodReview = async (req, res) => {
         res.status(500).json({ success: false, message: "Error fetching good reviews", error: error.message });
     }
 };
-
-export { addReview, getReviews, deleteReview, updateReview, getGoodReview };
+export { addReview, getReviews, deleteReview, updateReview, responseReview, getReviewsAdmin, getReviewStats, getGoodReview };
