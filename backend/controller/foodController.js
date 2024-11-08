@@ -36,7 +36,7 @@ const listFood = async (req, res) => {
 //remove food item
 const removeFood = async (req, res) => {
     try {
-        const food = await foodModel.findById(req.body.id);
+        const food = await foodModel.findById(req.params.id);
         fs.unlink(`uploads/${food.image}`, () => { });
         await foodModel.findByIdAndDelete(req.body.id);
         res.json({ success: true, message: "food removed" });
@@ -49,7 +49,7 @@ const removeFood = async (req, res) => {
 const updateFood = async (req, res) => {
     try {
         // Fetch the food item from the database to get the current image
-        const foodItem = await foodModel.findById(req.body.id);
+        const foodItem = await foodModel.findById(req.params.id);
 
         // Check if the food item exists
         if (!foodItem) {
@@ -73,7 +73,7 @@ const updateFood = async (req, res) => {
         }
 
         // Perform the update
-        await foodModel.findByIdAndUpdate(req.body.id, updateData);
+        await foodModel.findByIdAndUpdate(req.params.id, updateData);
         res.json({ success: true, message: "Food updated successfully" });
     } catch (error) {
         console.log(error);
@@ -110,4 +110,4 @@ const topSeller = async (req, res) => {
     }
 };
 
-export { addFood, listFood, removeFood, updateFood, getFoodById, topSeller };
+export { addFood, listFood, removeFood, updateFood, topSeller };

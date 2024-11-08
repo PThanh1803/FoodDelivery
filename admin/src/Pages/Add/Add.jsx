@@ -55,10 +55,11 @@ const Add = ({ url, foodData, isEditMode, closeModal }) => {
             formData.append('id', foodData._id);
         }
 
-        const endpoint = isEditMode ? `${url}/api/food/update` : `${url}/api/food/add`;
-        
+        const endpoint = isEditMode ? `${url}/api/food/${foodData._id}` : `${url}/api/food/`;
+
         try {
-            const response = await axios.post(endpoint, formData);
+            const response = isEditMode ? axios.put(endpoint, formData) : axios.post(endpoint, formData);
+            console.log(response.data)
             if (response.data.success) {
                 toast.success(response.data.message);
                 closeModal(); // Close modal on success
@@ -67,6 +68,7 @@ const Add = ({ url, foodData, isEditMode, closeModal }) => {
             }
         } catch (error) {
             toast.error("Error uploading the product");
+            console.log(error)
         }
     };
 
@@ -79,45 +81,45 @@ const Add = ({ url, foodData, isEditMode, closeModal }) => {
                         {imagePreview ? (
                             <img src={imagePreview} alt="Food" className="food-image-preview" />
                         ) : (
-                            <img 
-                                src={assets.upload_area} 
-                                alt="Upload Placeholder" 
+                            <img
+                                src={assets.upload_area}
+                                alt="Upload Placeholder"
                                 className="food-image-preview"
                             />
                         )}
                     </label>
-                    
-                    <input 
-                        onChange={onImageChange} 
-                        type="file" 
-                        name="image" 
-                        id="image" 
-                        hidden 
+
+                    <input
+                        onChange={onImageChange}
+                        type="file"
+                        name="image"
+                        id="image"
+                        hidden
                         required={!isEditMode} // Require only in add mode
                     />
-                </div> 
+                </div>
                 <div className="add-product-name flex-col">
                     <p>Product Name</p>
-                    <input 
-                        onChange={onChangeHandler} 
-                        value={data.name} 
-                        type="text" 
-                        name="name" 
-                        id="name" 
-                        required 
-                        placeholder='Product Name' 
+                    <input
+                        onChange={onChangeHandler}
+                        value={data.name}
+                        type="text"
+                        name="name"
+                        id="name"
+                        required
+                        placeholder='Product Name'
                     />
                 </div>
-                
+
                 <div className="add-product-desc flex-col">
                     <p>Product Description</p>
-                    <textarea 
-                        onChange={onChangeHandler} 
-                        value={data.description} 
+                    <textarea
+                        onChange={onChangeHandler}
+                        value={data.description}
                         required
-                        name="description" 
-                        id="desc" 
-                        cols="30" 
+                        name="description"
+                        id="desc"
+                        cols="30"
                         rows="6"
                     />
                 </div>
@@ -125,10 +127,10 @@ const Add = ({ url, foodData, isEditMode, closeModal }) => {
                 <div className="add-category-price">
                     <div className="add-category flex-col">
                         <p>Product Category</p>
-                        <select 
-                            onChange={onChangeHandler} 
-                            value={data.category} 
-                            name="category" 
+                        <select
+                            onChange={onChangeHandler}
+                            value={data.category}
+                            name="category"
                             id="category"
                         >
                             <option value="Salad">Salad</option>
@@ -141,16 +143,16 @@ const Add = ({ url, foodData, isEditMode, closeModal }) => {
                     </div>
                     <div className="add-price flex-col">
                         <p>Product Price</p>
-                        <input 
-                            onChange={onChangeHandler} 
-                            value={data.price} 
-                            type="number" 
-                            name="price" 
-                            id="price" 
-                            required 
-                            placeholder='20$' 
+                        <input
+                            onChange={onChangeHandler}
+                            value={data.price}
+                            type="number"
+                            name="price"
+                            id="price"
+                            required
+                            placeholder='20$'
                         />
-                    </div>                                 
+                    </div>
                 </div>
 
                 <button type="submit" className="add-btn">{isEditMode ? "Save" : "Add Product"}</button>

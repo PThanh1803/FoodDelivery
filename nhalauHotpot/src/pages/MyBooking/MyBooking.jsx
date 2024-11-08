@@ -38,7 +38,7 @@ const MyBooking = () => {
   const fetchBookings = async (page) => {
     try {
       const response = await axios.get(
-        `${url}/api/booking/user/getBooking?page=${page}&limit=${limit}`,
+        `${url}/api/booking/byUserId?page=${page}&limit=${limit}`,
         {
           headers: {
             token: localStorage.getItem("token"),
@@ -75,7 +75,7 @@ const MyBooking = () => {
     const isDateMatch =
       !selectedDate ||
       new Date(booking.reservationTime).toDateString() ===
-        selectedDate.toDateString();
+      selectedDate.toDateString();
     return isStatusMatch && isDateMatch;
   });
 
@@ -86,10 +86,10 @@ const MyBooking = () => {
     }
 
     try {
-      const response = await axios.post(
-        `${url}/api/booking/user/cancelBooking`,
+      const response = await axios.put(
+        `${url}/api/booking/${bookingToCancel._id}`,
         {
-          bookingId: bookingToCancel._id,
+          status: "cancelled",
           cancellationReason: cancelReason,
         },
         {
@@ -119,14 +119,14 @@ const MyBooking = () => {
   const convertUTCToLocalTime = (utcTimeString) => {
     const utcTime = new Date(utcTimeString);
     const localTime = new Date(utcTime.getTime() + utcTime.getTimezoneOffset() * 60 * 1000); // Adjust for UTC+7
-    return localTime.toLocaleTimeString( "en-US", { timeStyle: "short" }); // Returns time in local format
-};
+    return localTime.toLocaleTimeString("en-US", { timeStyle: "short" }); // Returns time in local format
+  };
 
-const convertUTCToLocalDate = (utcDateString) => {
-  const utcDate = new Date(utcDateString);
-  const localDate = new Date(utcDate.getTime() + utcDate.getTimezoneOffset() * 60 * 1000); // Adjust for UTC+7
-  return localDate.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }); // Returns date in local format
-};
+  const convertUTCToLocalDate = (utcDateString) => {
+    const utcDate = new Date(utcDateString);
+    const localDate = new Date(utcDate.getTime() + utcDate.getTimezoneOffset() * 60 * 1000); // Adjust for UTC+7
+    return localDate.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }); // Returns date in local format
+  };
 
   return (
     <div className="my-booking-container">
@@ -159,11 +159,10 @@ const convertUTCToLocalDate = (utcDateString) => {
           {filteredBookings.map((booking) => (
             <div
               key={booking.reservationId}
-              className={`booking-card ${booking.status} ${
-                selectedBooking && selectedBooking._id === booking._id
-                  ? "selected"
-                  : ""
-              }`}
+              className={`booking-card ${booking.status} ${selectedBooking && selectedBooking._id === booking._id
+                ? "selected"
+                : ""
+                }`}
               onClick={() => handleBookingClick(booking)}
             >
               <h3 className="booking-title">

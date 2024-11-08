@@ -31,7 +31,7 @@ const Reservation = ({ url }) => {
 
   const fetchReservations = async () => {
     try {
-      const response = await axios.get(url + '/api/booking/getall', { params: { page: currentPage, limit } });
+      const response = await axios.get(url + '/api/booking/', { params: { page: currentPage, limit } });
       if (response.data.success) {
         setReservations(response.data.bookings);
         setTotalPages(response.data.totalPages);
@@ -46,11 +46,11 @@ const Reservation = ({ url }) => {
   // Fetch all confirmed but incomplete bookings for calendar
   const fetchCalendarBookings = async () => {
     try {
-      const response = await axios.get(url + '/api/booking/getall');
+      const response = await axios.get(url + '/api/booking/');
       if (response.data.success) {
         const dates = response.data.bookings
-        .filter(booking => booking.status === 'confirmed') // Filter bookings that are confirmed
-        .map(booking => new Date(booking.reservationTime)); // Map to reservation dates
+          .filter(booking => booking.status === 'confirmed') // Filter bookings that are confirmed
+          .map(booking => new Date(booking.reservationTime)); // Map to reservation dates
         setHighlightedDates(dates);
       } else {
         console.error("Failed to fetch calendar bookings:", response.data.message);
@@ -66,7 +66,11 @@ const Reservation = ({ url }) => {
 
   const updateReservationStatus = async (reservationId, newStatus) => {
     try {
-      const response = await axios.post(url + '/api/booking/update/status', { bookingId: reservationId, status: newStatus });
+      const response = await axios.put(`${url}/api/booking/${reservationId}`, { status: newStatus }, {
+        headers: {
+          token: localStorage.getItem("token"),
+        }
+      });
       if (response.data.success) {
         fetchReservations(); // Refresh list
         fetchCalendarBookings(); // Refresh highlighted dates
@@ -118,14 +122,14 @@ const Reservation = ({ url }) => {
   const convertUTCToLocalTime = (utcTimeString) => {
     const utcTime = new Date(utcTimeString);
     const localTime = new Date(utcTime.getTime() + utcTime.getTimezoneOffset() * 60 * 1000); // Adjust for UTC+7
-    return localTime.toLocaleTimeString( "en-US", { timeStyle: "short" }); // Returns time in local format
-};
+    return localTime.toLocaleTimeString("en-US", { timeStyle: "short" }); // Returns time in local format
+  };
 
-const convertUTCToLocalDate = (utcDateString) => {
-  const utcDate = new Date(utcDateString);
-  const localDate = new Date(utcDate.getTime() + utcDate.getTimezoneOffset() * 60 * 1000); // Adjust for UTC+7
-  return localDate.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }); // Returns date in local format
-};
+  const convertUTCToLocalDate = (utcDateString) => {
+    const utcDate = new Date(utcDateString);
+    const localDate = new Date(utcDate.getTime() + utcDate.getTimezoneOffset() * 60 * 1000); // Adjust for UTC+7
+    return localDate.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }); // Returns date in local format
+  };
   return (
     <div className="reservation-container">
       <div className="reservation-list-header">

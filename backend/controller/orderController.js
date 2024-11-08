@@ -86,19 +86,26 @@ const verifyOrder = async (req, res) => {
 //user order for frontend 
 const userOrders = async (req, res) => {
     try {
-        const orders = await orderModel.find({ userId: req.body.userId , payment: true });
-        res.json({ success: true, data: orders });
+        const { userId, page = 1, limit = 5 } = req.body;  // mặc định là trang 1 và 5 đơn hàng mỗi trang
+        const orders = await orderModel
+            .find({ userId, payment: true })
+            .sort({ date: -1 })
+            .skip((page - 1) * limit)  // bỏ qua số lượng đơn hàng của các trang trước
+            .limit(limit);  // lấy số lượng đơn hàng theo limit
+
+        const totalOrders = await orderModel.countDocuments({ userId, payment: true });
+        res.json({ success: true, data: orders, totalOrders });
     } catch (error) {
         console.log(error);
         res.json({ success: false, message: "error" });
     }
-}
+};
 
 
 //listing orders for admin
 const listOrders = async (req, res) => {
     try {
-        const orders = await orderModel.find({payment: true});
+        const orders = await orderModel.find({ payment: true }).sort({ date: -1 });
         res.json({ success: true, data: orders });
     } catch (error) {
         console.log(error);

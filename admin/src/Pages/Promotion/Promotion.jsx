@@ -4,56 +4,34 @@ import PromotionForm from './PromotionForm/PromotionForm';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
-const promotionsData = [
-  {
-    id: 1,
-    title: 'ƯU ĐÃI SINH NHẬT DÀNH RIÊNG CHO THÀNH VIÊN HẠNG DIAMOND',
-    date: '2024-08-30 04:30:40',
-    description: 'Tặng gói trang trí sinh nhật 2.000.000đ & -20% menu đồ ăn',
-    content: '<p>Tặng ưu đãi tuyệt vời dành riêng cho bạn...</p>',
-    image: 'url-to-image1',
-  },
-  {
-    id: 2,
-    title: 'QUÀ TẶNG SINH NHẬT DÀNH RIÊNG CHO THÀNH VIÊN HẠNG VÀNG',
-    date: '2024-06-13 15:45:50',
-    description: 'Tặng gói trang trí sinh nhật 2.000.000đ & -15% menu đồ ăn',
-    content: '<p>Nhiều ưu đãi hấp dẫn...</p>',
-    image: 'url-to-image2',
-  },
-  // Thêm các mục khuyến mãi khác...
-];
 
 const Promotions = ({ url }) => {
-  const [promotions, setPromotions] = useState(promotionsData);
+  const [promotions, setPromotions] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentPromotion, setCurrentPromotion] = useState(null);
   const [modalType, setModalType] = useState(''); // add, edit, or details
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
-  const fetchPromotions = async () => {
+  const fetchPromotions = async (currentPage) => {
     try {
-      const response = await axios.get(url + '/api/promotion/list');
+      const response = await axios.get(`${url}/api/promotion/list?page=${currentPage}&limit=5`);
       if (response.data.success) {
-        const formattedPromotions = response.data.promotions.map(promotion => ({
-          ...promotion,
-          dateCreated: new Date(promotion.dateCreated).toISOString().split('T')[0],
-          startDate: promotion.startDate ? new Date(promotion.startDate).toISOString().split('T')[0] : "", // Set to empty string if null or invalid
-          expiryDate: promotion.expiryDate ? new Date(promotion.expiryDate).toISOString().split('T')[0] : "", // Set to empty string if null or invalid
-        }));
-        setPromotions(formattedPromotions);
-      }
-      else {
-        console.error('Error fetching promotions:', response.data.message);
+        setPromotions(response.data.promotions);
+        setTotalPages(response.data.totalPages);
+      } else {
         toast.error(response.data.message);
       }
     } catch (error) {
       toast.error('Failed to fetch promotions');
-      console.error('Error fetching promotions:');
+      console.error('Error fetching promotions:', error);
     }
-  }
+  };
+
   useEffect(() => {
-    fetchPromotions();
-  }, [url]);
+    fetchPromotions(page);
+  }, [url, page]);
+
   const handleAddPromotion = () => {
     setModalType('add');
     setCurrentPromotion(null);
@@ -71,12 +49,13 @@ const Promotions = ({ url }) => {
     setCurrentPromotion(promo);
     setIsModalVisible(true);
   };
+
   const handleDelete = async (promo) => {
     try {
       const response = await axios.delete(`${url}/api/promotion/delete/${promo._id}`);
       if (response.data.success) {
         toast.success('Promotion deleted successfully');
-        setPromotions(promotions.filter(p => p._id !== promo._id)); // Cập nhật danh sách promotions sau khi xóa
+        fetchPromotions(page); // Refresh promotions list after deletion
       } else {
         toast.error(response.data.message);
       }
@@ -85,6 +64,7 @@ const Promotions = ({ url }) => {
       console.error('Error deleting promotion:', error);
     }
   };
+
   const handleFormSubmit = async (newPromotion) => {
     const formData = new FormData();
     formData.append('image', newPromotion.image);
@@ -95,46 +75,37 @@ const Promotions = ({ url }) => {
     formData.append('status', newPromotion.status);
     formData.append('description', newPromotion.description);
     formData.append('content', newPromotion.content);
+
     if (modalType === 'add') {
       try {
-        console.log("newPromotion: ", newPromotion);
-
-        const response = await axios.post(url + '/api/promotion/create', formData);
+        const response = await axios.post(`${url}/api/promotion/create`, formData);
         if (response.data.success) {
           toast.success('Promotion added successfully');
-          fetchPromotions();
+          fetchPromotions(page); // Refresh after adding
         } else {
           toast.error(response.data.message);
         }
       } catch (error) {
         toast.error('Failed to add promotion');
-        console.error('Error adding promotion:');
+        console.error('Error adding promotion:', error);
       }
-      setPromotions([...promotions, { ...newPromotion }]);
-    }
-    else if (modalType === 'edit') {
+    } else if (modalType === 'edit') {
       try {
         formData.append('id', currentPromotion._id);
-        const response = await axios.put(url + '/api/promotion/update', formData);
+        const response = await axios.put(`${url}/api/promotion/update`, formData);
         if (response.data.success) {
           toast.success('Promotion updated successfully');
-          fetchPromotions();
+          fetchPromotions(page); // Refresh after update
         } else {
           toast.error(response.data.message);
         }
-      }
-      catch (error) {
+      } catch (error) {
         toast.error('Failed to update promotion');
-        console.error('Error updating promotion:');
+        console.error('Error updating promotion:', error);
       }
-      setPromotions(promotions.map(p => p._id === currentPromotion._id ? newPromotion : p));
     }
     setIsModalVisible(false);
   };
-
-  if (promotions === null) {
-    return <div className="promotions-container"><h1>Loading...</h1></div>;
-  }
 
   return (
     <div className="promotions-container">
@@ -160,6 +131,17 @@ const Promotions = ({ url }) => {
           </li>
         ))}
       </ul>}
+
+      {/* Pagination */}
+      <div className="pagination-controls">
+        <button onClick={() => setPage(page - 1)} disabled={page === 1}>
+          Previous
+        </button>
+        <span>Page {page} of {totalPages}</span>
+        <button onClick={() => setPage(page + 1)} disabled={page === totalPages}>
+          Next
+        </button>
+      </div>
 
       <PromotionForm
         isVisible={isModalVisible}

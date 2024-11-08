@@ -51,71 +51,43 @@ const populateFoodDetails = async (bookings) => {
 };
 
 
-const cancelBooking = async (req, res) => {
-    const { bookingId, cancellationReason } = req.body;
+const updateBookingStatus = async (req, res) => {
+    const { status, cancellationReason } = req.body;
+    const bookingId = req.params.id;
 
     try {
-        // Find the booking by its ID
         const booking = await bookingModel.findById(bookingId);
 
         if (!booking) {
             return res.status(404).json({ success: false, message: 'Booking not found' });
         }
 
-        // Update the booking status to 'cancelled'
-        booking.status = 'cancelled';
-        booking.cancellationReason = cancellationReason; // Store the cancellation reason
-
-        // Save the updated booking
-        await booking.save();
-
-        res.status(200).json({
-            success: true,
-            message: 'Booking cancelled successfully',
-            booking
-        });
-    } catch (error) {
-        res.status(500).json({ 
-            success: false, 
-            message: error.message || 'Failed to cancel booking', 
-            error: error.message 
-        });
-        console.error('Error cancelling booking:', error);
-    }
-};
-
-
-const updateBooking = async (req, res) => {
-    const { bookingId,  status } = req.body;
-
-    try {
-        // Find the booking by its ID
-        const booking = await bookingModel.findById(bookingId);
-
-        if (!booking) {
-            return res.status(404).json({ success: false, message: 'Booking not found' });
+        // Xử lý trạng thái hủy hoặc cập nhật trạng thái khác
+        if (status === 'cancelled') {
+            booking.status = 'cancelled';
+            booking.cancellationReason = cancellationReason || 'No reason provided';
+        } else {
+            booking.status = status;
         }
 
-        // Update the booking status to 'cancelled'
-        booking.status = status;
-
-        // Save the updated booking
         await booking.save();
 
         res.status(200).json({
             success: true,
-            message: `Booking  ${status}  successfully`,
+            message: `Booking ${status} successfully`,
             booking
         });
     } catch (error) {
-        res.status(500).json({ 
-            success: false, 
-            message: error.message || `Failed to ${status} booking`, 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: `Failed to update booking status to ${status}`,
+            error: error.message
         });
         console.error('Error updating booking:', error);
     }
 };
+
+
 
 // Get bookings by user ID with populated food details, pagination, and sorting
 const getBookingByUser = async (req, res) => {
@@ -154,7 +126,7 @@ const getBookingByUser = async (req, res) => {
 
 // Get all bookings with populated food details, pagination, and sorting
 const getBooking = async (req, res) => {
-    const { page = 1, limit = 10 } = req.query;
+    const { page = 1, limit = 5 } = req.query;
 
     try {
         const bookings = await bookingModel.find()
@@ -162,7 +134,7 @@ const getBooking = async (req, res) => {
             .skip((page - 1) * limit)
             .limit(Number(limit));
 
-        const  bookingsWithFoodDetails  = await populateFoodDetails(bookings);
+        const bookingsWithFoodDetails = await populateFoodDetails(bookings);
 
         const totalBookings = await bookingModel.countDocuments();
         res.status(200).json({
@@ -190,7 +162,7 @@ const createBooking = async (req, res) => {
 
         res.status(201).json({ success: true, message: 'Booking created successfully', booking: newBooking });
     } catch (error) {
-        res.status(500).json({success: false, message: error.message || 'Failed to create booking', error: error.message });
+        res.status(500).json({ success: false, message: error.message || 'Failed to create booking', error: error.message });
         console.error('Error creating booking:', error);
     }
 };
@@ -199,4 +171,5 @@ const createBooking = async (req, res) => {
 export {
     createBooking,
     getBookingByUser,
-    getBooking ,cancelBooking ,updateBooking};
+    getBooking, updateBookingStatus
+};

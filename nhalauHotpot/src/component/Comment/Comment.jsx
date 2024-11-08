@@ -49,6 +49,17 @@ const ReviewCard = ({ review, url }) => (
                     <img src={review.userImage} alt="Default avatar" className="default-avatar" />
                 )}
             </div>
+            {review.response && (
+                <div className="review-response">
+                    <img src={review.userImage} alt="Response avatar" className="response-avatar" />
+
+                    <p className="review-response-label">Admin Response:</p>
+                    <p className="review-response-text">
+                        {review.response}
+                    </p>
+
+                </div>
+            )}
         </div>
     </div>
 );

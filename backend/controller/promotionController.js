@@ -36,6 +36,7 @@ const getActivePromotions = async (req, res) => {
         res.json({ success: false, message: "Error fetching active promotions" });
     }
 };
+
 // Lấy thông tin chi tiết khuyến mãi by id
 const getPromotionById = async (req, res) => {
     try {

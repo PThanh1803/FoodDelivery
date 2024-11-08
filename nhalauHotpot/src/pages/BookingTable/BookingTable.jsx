@@ -53,13 +53,13 @@ const BookingTable = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const vietnamOffset = 7 * 60 * 60 * 1000; 
+        const vietnamOffset = 7 * 60 * 60 * 1000;
         const formData = {
             userId: userInfo?._id || null,
             name, // Replace with actual user ID if available
             phone,
             email,
-            reservationTime : new Date(new Date(`${date}T${time}:00`).getTime() + vietnamOffset).toISOString(),
+            reservationTime: new Date(new Date(`${date}T${time}:00`).getTime() + vietnamOffset).toISOString(),
             numberOfPeople: guests,
             notes: note,
             preOrderedItems: Object.values(selectedFoods).map(food => ({
@@ -70,7 +70,7 @@ const BookingTable = () => {
         };
 
         try {
-            const response = await axios.post(`${url}/api/booking/create`, formData);
+            const response = await axios.post(`${url}/api/booking/`, formData);
             console.log('Response:', response.data);
             if (response.data.success) {
                 alert(`Đặt bàn thành công cho ${guests} khách vào lúc ${time} ngày ${date}.`);

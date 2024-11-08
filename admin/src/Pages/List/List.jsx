@@ -23,7 +23,7 @@ const List = ({ url }) => {
 
   const fetchList = async () => {
     try {
-      const response = await axios.get(`${url}/api/food/list`);
+      const response = await axios.get(`${url}/api/food/`);
       if (response.data.success) {
         setList(response.data.data);
         setFilteredList(response.data.data); // Set the filtered list initially as the full list
@@ -65,7 +65,7 @@ const List = ({ url }) => {
       return;
     }
     try {
-      const response = await axios.post(`${url}/api/food/remove/`, { id: foodId });
+      const response = await axios.post(`${url}/api/food/${foodId}`);
       if (response.data.success) {
         toast.success(response.data.message);
         fetchList();
@@ -87,7 +87,7 @@ const List = ({ url }) => {
 
       {/* Search Bar for Category */}
       <div className="search-bar">
-        <input 
+        <input
           type="text"
           placeholder="Search by Category..."
           value={categoryFilter}
@@ -96,21 +96,21 @@ const List = ({ url }) => {
       </div>
 
       <div className="card-container">
-        <div className="card card-add" onClick={() => openModal(null)}>             
+        <div className="card card-add" onClick={() => openModal(null)}>
           <p className="card-title">Add New Food</p>
-          <IoMdAdd style={{fontSize: '80px', color: '#09abe1'}}/>
+          <IoMdAdd style={{ fontSize: '80px', color: '#09abe1' }} />
         </div>
         {filteredList.map((item, index) => (
-            <div className="card" key={index} onClick={() => openModal(item)}>
-              <img src={`${url}/images/` + item.image} alt="food" className="card-image" />
-              <div className="card-content">
-                <p className="card-title">{item.name}</p>
-                <p className="card-category">{item.category}</p>
-                <p className="card-description">{item.description}</p>
-                <p className="card-price">${item.price}</p>
-                <p className="card-action cursor" onClick={(e) => { e.stopPropagation(); handleDelete(item._id); }}>Delete</p>
-              </div>
+          <div className="card" key={index} onClick={() => openModal(item)}>
+            <img src={`${url}/images/` + item.image} alt="food" className="card-image" />
+            <div className="card-content">
+              <p className="card-title">{item.name}</p>
+              <p className="card-category">{item.category}</p>
+              <p className="card-description">{item.description}</p>
+              <p className="card-price">${item.price}</p>
+              <p className="card-action cursor" onClick={(e) => { e.stopPropagation(); handleDelete(item._id); }}>Delete</p>
             </div>
+          </div>
         ))}
       </div>
 

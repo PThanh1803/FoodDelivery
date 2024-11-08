@@ -1,10 +1,9 @@
-my-orders {
+.my-orders {
     margin: 50px 0px;
     padding: 20px;
 }
 
 .my-orders .container {
-    height: 50vh;
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -45,7 +44,7 @@ my-orders {
     transition: 0.2s;
 }
 
-.my-orders-order button:hover{
+.my-orders-order button:hover {
     background-color: tomato;
     color: aliceblue;
 }
@@ -67,4 +66,38 @@ my-orders {
     .my-orders-order button {
         font-size: 10px;
     }
+}
+
+.my-orders .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.my-orders .pagination button {
+    padding: 8px 16px;
+    margin: 0 5px;
+    font-size: 16px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.my-orders .pagination button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.my-orders .pagination button:hover:not(:disabled) {
+    background-color: #0056b3;
+}
+
+.my-orders .pagination span {
+    margin: 0 10px;
+    font-size: 16px;
 }
