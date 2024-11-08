@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { StoreContext } from '../../Context/StoreContext';
+import { StoreContext } from '../../context/StoreContext';
 import './CommentHome.css';
 
 const CommentHome = () => {
@@ -10,7 +10,7 @@ const CommentHome = () => {
     useEffect(() => {
         const fetchComments = async () => {
             try {
-                const response = await fetch(`${url}/api/review/good`);
+                const response = await fetch(`${url}/api/review?page=1&limit=6&starReview=5`);
                 const data = await response.json();
                 if (data.success) {
                     setComments(data.reviews);
@@ -93,16 +93,16 @@ const GoodCommentCard = ({ comment }) => {
                     </span>
                 ))}
             </div>
-            <p className="good-comment-card-username">
-                <p><strong>{comment.userName}</strong></p>
+            <div className="good-comment-card-username">
+                <strong>{comment.userName}</strong>
                 <span className="good-comment-card-date">
-                    <span className='day'>{fullDate}</span> {/* Ngày tháng với font size 18 */}
-                    <span className='time'> {time}</span> {/* Giờ phút với font size 15 */}
+                    <span className='day'>{fullDate}</span> {/* Date with font size 18 */}
+                    <span className='time'> {time}</span> {/* Time with font size 15 */}
                 </span>
-            </p>
+            </div>
             <p className="good-comment-card-comment">{comment.comment}</p>
         </div>
     );
-};
+}    
 
 export default CommentHome;

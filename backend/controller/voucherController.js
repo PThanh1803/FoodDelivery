@@ -71,7 +71,7 @@ const getListVoucher = async (req, res) => {
 // Lấy thông tin mã giảm giá bằng id 
 const getVoucherById = async (req, res) => {
     try {
-        const voucherData = await voucherModel.findById(req.body.id);
+        const voucherData = await voucherModel.findById(req.params.id);
         
         if (!voucherData) {
             return res.json({ success: false, message: "Voucher not found" });
@@ -112,65 +112,66 @@ const createVoucher = async (req, res) => {
 };
 
 // Xóa mã giảm giá
-const deleteVoucher = async (req, res) => {
-    try {
-        const deletedVoucher = await voucherModel.findByIdAndDelete(req.body.id);
-        
-        if (!deletedVoucher) {
-            return res.json({ success: false, message: "Voucher not found" });
-        }
-        fs.unlink(`uploads/vouchers/${deletedVoucher.image}`, () => { });
-        res.json({ success: true, message: "Voucher deleted successfully" });
-    } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: "Error deleting voucher" });
+const deleteFile = (filePath) => {
+    if (fs.existsSync(filePath)) {
+        fs.unlink(filePath, (err) => {
+            if (err) console.error("Error deleting file:", err);
+        });
     }
 };
 
-// Cập nhật mã giảm giá
+// Other functions remain as they are with status codes added
+
+const deleteVoucher = async (req, res) => {
+    try {
+        const voucher = await voucherModel.findByIdAndDelete(req.params.id);
+        
+        if (!voucher) {
+            return res.status(404).json({ success: false, message: "Voucher not found" });
+        }
+        
+        deleteFile(`uploads/vouchers/${voucher.image}`);
+        
+        res.status(200).json({ success: true, message: "Voucher deleted successfully" });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: "Error deleting voucher" });
+    }
+};
+
 const updateVoucher = async (req, res) => {
     try {
         const voucherData = JSON.parse(req.body.voucherData);
-        const updatedVoucher = await voucherModel.findById(voucherData.id);
-        console.log(updatedVoucher);
-        if (!updatedVoucher) {
-            console.log("Voucher not found");
-            return res.json({ success: false, message: "Voucher not found" });
+        const voucher = await voucherModel.findById(req.params.id);
+        
+        if (!voucher) {
+            return res.status(404).json({ success: false, message: "Voucher not found" });
         }
+        
         const updateData = {
-            voucherCode:voucherData.voucherCode,
+            voucherCode: voucherData.voucherCode,
             discountAmount: voucherData.discountAmount,
             discountType: voucherData.discountType,
             expiryDate: voucherData.expiryDate,
             status: voucherData.status,
             description: voucherData.description,
-            startDate:voucherData.startDate,
+            startDate: voucherData.startDate,
             usageLimit: voucherData.usageLimit,
             minOrder: voucherData.minOrder,
-            maxDiscount: voucherData.maxDiscount
+            maxDiscount: voucherData.maxDiscount,
+            image: voucher.image // default to old image
         };
 
         if (req.file) {
-            const image_filename = `${req.file.filename}`;
-            updateData.image = image_filename;
-        
-            // Delete the old image file and provide a callback function
-            fs.unlink(`uploads/vouchers/${updatedVoucher.image}`, (err) => {
-                if (err) {
-                    console.error("Error deleting old image:", err);
-                }
-            });
-        } else {
-            updateData.image = updatedVoucher.image; // Retain the old image filename
+            deleteFile(`uploads/vouchers/${voucher.image}`); // Delete old image
+            updateData.image = req.file.filename; // Set new image
         }
-        
-      
+
         await voucherModel.findByIdAndUpdate(voucherData.id, updateData);
-        res.json({ success: true, message: "Voucher updated successfully", voucher: updateData });
+        res.status(200).json({ success: true, message: "Voucher updated successfully", voucher: updateData });
     } catch (error) {
         console.log(error);
-        res.json({ success: false, message: `Error updating voucher`});
-        console.log(error);
+        res.status(500).json({ success: false, message: "Error updating voucher" });
     }
 };
 

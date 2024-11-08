@@ -252,3 +252,32 @@
         font-size: 0.9em;
     }
 }
+
+.review-response {
+    display: flex;
+    align-items: flex-start;
+    margin-top: 1rem;
+    background-color: #f9f9f9; /* Light background to differentiate */
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+}
+
+.response-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%; /* Make avatar round */
+    margin-right: 1rem;
+}
+
+.review-response-label {
+    font-weight: bold;
+    color: #333; /* Darker color for the label */
+    margin-bottom: 0.5rem;
+}
+
+.review-response-text {
+    color: #555; /* Slightly lighter color for response text */
+    line-height: 1.4;
+    font-size: 0.95rem;
+}

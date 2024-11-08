@@ -72,8 +72,8 @@ const updateFood = async (req, res) => {
             updateData.image = foodItem.image; // Retain the old image filename
         }
 
-        // Perform the update
         await foodModel.findByIdAndUpdate(req.params.id, updateData);
+        console.log("Food updated successfully");
         res.json({ success: true, message: "Food updated successfully" });
     } catch (error) {
         console.log(error);

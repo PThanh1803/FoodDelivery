@@ -91,7 +91,7 @@ const updateBookingStatus = async (req, res) => {
 
 // Get bookings by user ID with populated food details, pagination, and sorting
 const getBookingByUser = async (req, res) => {
-    const { userId } = req.body;
+    const userId = req.params.userId;
     const { page = 1, limit = 5 } = req.query;
     console.log("page:", page, "limit:", limit);
     try {

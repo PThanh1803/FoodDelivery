@@ -83,21 +83,26 @@ const verifyOrder = async (req, res) => {
 }
 
 
-//user order for frontend 
 const userOrders = async (req, res) => {
     try {
-        const { userId, page = 1, limit = 5 } = req.body;  // mặc định là trang 1 và 5 đơn hàng mỗi trang
+        const userId = req.params.id;
+        console.log(userId);
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 5;
+        
         const orders = await orderModel
-            .find({ userId, payment: true })
-            .sort({ date: -1 })
-            .skip((page - 1) * limit)  // bỏ qua số lượng đơn hàng của các trang trước
-            .limit(limit);  // lấy số lượng đơn hàng theo limit
+            .find({ userId : userId})
+            // .sort({ date: -1 })
+            // .skip((page - 1) * limit)  // Skip orders of previous pages
+            // .limit(limit);  // Limit the number of orders
 
+        // Count total matching orders for pagination
         const totalOrders = await orderModel.countDocuments({ userId, payment: true });
+        console.log(orders)
         res.json({ success: true, data: orders, totalOrders });
     } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: "error" });
+        console.error(error);
+        res.json({ success: false, message: "An error occurred while fetching orders." });
     }
 };
 
@@ -116,7 +121,7 @@ const listOrders = async (req, res) => {
 //api for updating order status
 const updateStatus = async (req, res) => {
     try {
-        const order = await orderModel.findByIdAndUpdate(req.body.orderId, { status: req.body.status });
+        const order = await orderModel.findByIdAndUpdate(req.params.orderId, { status: req.body.status });
         // res.json({ success: true, message: "Status updated" });
         console.log(req.body.userID);
         const user = await userModel.findById(order.userId);

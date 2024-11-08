@@ -1,8 +1,7 @@
 // routes/notificationRoutes.js
 import express from 'express';
 import {
-  getNotificationUser,
-  getNotificationAdmin,
+  getNotifications,
   createNotification,
   updateNotificationStatus
 } from '../controller/notificationController.js';
@@ -10,10 +9,9 @@ import {
 const notificationRouter = (io) => {
   const router = express.Router();
 
-  router.get('/user/:userId', getNotificationUser);
-  router.get('/admin', getNotificationAdmin);
-  router.post('/', createNotification(io)); // Pass io here
-  router.patch('/:id/status', updateNotificationStatus);
+  router.get('/:userId?', getNotifications); // Optional userId parameter
+  router.post('/', createNotification(io));   // Pass io here
+  router.put('/:id/status', updateNotificationStatus);
 
   return router;
 };

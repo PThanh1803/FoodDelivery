@@ -50,7 +50,7 @@ const FormRating = ({ setShowPopup }) => {
         formData.append('userName', userInfo.name || 'John Doe');
         formData.append('userID', userInfo._id || '123456789');
         
-        // Append images to the form data
+      
         imageFiles.forEach(file => {
             formData.append('images', file); // Append the actual file object
         });
@@ -58,7 +58,7 @@ const FormRating = ({ setShowPopup }) => {
         setIsLoading(true); // Set loading state to true
 
         try {
-            const response = await fetch(url + '/api/review/create', {
+            const response = await fetch(url + '/api/review/', {
                 method: 'POST',
                 body: formData,
             });

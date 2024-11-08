@@ -4,46 +4,61 @@ import fs from "fs";
 // Lọc khuyến mái
 const getListPromotion = async (req, res) => {
     try {
-        const { page = 1, limit = 10 } = req.query;
-        const skip = (page - 1) * limit;
-        const promotions = await promotionModel.find().skip(skip).limit(parseInt(limit));
-        const totalPromotions = await promotionModel.countDocuments();
+        const { page = 1, limit = 5, status = "", startDate = "", expiryDate = "" } = req.query;
+        const skip = (parseInt(page) - 1) * parseInt(limit);
+        const filter = {};
+
+        // Date range filter
+        if (startDate && expiryDate) {
+            filter.startDate = { $gte: new Date(startDate), $lte: new Date(endDate) };
+        }
+
+        // Status filter
+        if (status) {
+            filter.status = status;
+        }
+
+        // Fetch promotions with pagination and filter
+        const promotions = await promotionModel.find(filter).skip(skip).sort({ dateCreated: -1 }).limit(parseInt(limit));
+        
+        // Count total filtered promotions for accurate pagination
+        const totalPromotions = await promotionModel.countDocuments(filter);
+        
         res.json({
             success: true,
             promotions,
             totalPromotions,
-            totalPages: Math.ceil(totalPromotions / limit),
+            totalPages: Math.ceil(totalPromotions / parseInt(limit)),
             currentPage: parseInt(page),
         });
     } catch (error) {
         console.error(error);
-        res.json({ success: false, message: "Error fetching promotions" });
+        res.status(500).json({ success: false, message: "Error fetching promotions" });
     }
 };
 
 
-const getActivePromotions = async (req, res) => {
-    try {
-        const currentDate = new Date(); // Thời gian hiện tại
-        const promotions = await promotionModel.find({
-            expiryDate: { $gt: currentDate },  // Chỉ lấy những promotion có expiryDate lớn hơn thời gian hiện tại
-            status: "active"  // Chỉ lấy những promotion có trạng thái là "active"
-        });
 
-        res.json({ success: true, promotions });
-    } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: "Error fetching active promotions" });
-    }
-};
+// const getActivePromotions = async (req, res) => {
+//     try {
+//         const currentDate = new Date(); // Thời gian hiện tại
+//         const promotions = await promotionModel.find({
+//             expiryDate: { $gt: currentDate },  // Chỉ lấy những promotion có expiryDate lớn hơn thời gian hiện tại
+//             status: "active"  // Chỉ lấy những promotion có trạng thái là "active"
+//         });
+
+//         res.json({ success: true, promotions });
+//     } catch (error) {
+//         console.log(error);
+//         res.json({ success: false, message: "Error fetching active promotions" });
+//     }
+// };
 
 // Lấy thông tin chi tiết khuyến mãi by id
 const getPromotionById = async (req, res) => {
     try {
-        console.log("id: ", req.body.id);
-        const promotion = await promotionModel.findById(req.body.id);
-
-
+        console.log("id: ", req.params.id);
+        const promotion = await promotionModel.findById(req.params.id);
 
         if (!promotion) {
             return res.json({ success: false, message: "Promotion not found" });
@@ -98,7 +113,7 @@ const deletePromotion = async (req, res) => {
 // Cập nhật khuyến mãi
 const updatePromotion = async (req, res) => {
     try {
-        const updatedPromotion = await promotionModel.findById(req.body.id);
+        const updatedPromotion = await promotionModel.findById(req.params.id);
         if (!updatedPromotion) {
             return res.json({ success: false, message: "Promotion not found" });
         }
@@ -127,4 +142,4 @@ const updatePromotion = async (req, res) => {
 };
 
 
-export { getListPromotion, getPromotionById, createPromotion, deletePromotion, updatePromotion, getActivePromotions };
+export { getListPromotion, getPromotionById, createPromotion, deletePromotion, updatePromotion };

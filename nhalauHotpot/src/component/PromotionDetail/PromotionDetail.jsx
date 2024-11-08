@@ -25,7 +25,7 @@ const PromotionDetail = () => {
 
                 // Fetch promotion details by ID
 
-                const response = await axios.post(`${url}/api/promotion/promo/getbyid`, {id: decryptedID}); 
+                const response = await axios.get(`${url}/api/promotion/${decryptedID}`, {id: decryptedID}); 
 
                 console.log(response.data);
                 if (response.data.success) {

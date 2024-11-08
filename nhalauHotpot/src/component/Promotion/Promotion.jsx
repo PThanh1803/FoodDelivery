@@ -15,7 +15,7 @@ const Promotions = () => {
     // Fetch Promotions with Pagination
     const fetchPromotions = async (page = 1) => {
         try {
-            const response = await axios.get(`${url}/api/promotion/list?page=${page}&limit=5`);
+            const response = await axios.get(`${url}/api/promotion?page=${page}&limit=5&status=active`);
             if (response.data.success) {
                 setPromotions(response.data.promotions);
                 setTotalPages(response.data.totalPages);

@@ -45,9 +45,7 @@ const ReviewCard = ({ review, url }) => (
                         <img key={index} src={`${url}/images/reviews/${img}`} alt={`Review image ${index + 1}`} />
 
                     ))
-                ) : (
-                    <img src={review.userImage} alt="Default avatar" className="default-avatar" />
-                )}
+                ) : null}
             </div>
             {review.response && (
                 <div className="review-response">
@@ -73,7 +71,7 @@ const PlaceReview = () => {
     useEffect(() => {
         const fetchReviews = async () => {
             try {
-                const response = await axios.get(`${url}/api/review?page=${currentPage}&limit=${reviewsPerPage}`);
+                const response = await axios.get(`${url}/api/review?page=${currentPage}&limit=${reviewsPerPage}&&starRating=${filterRating}`);
                 setReviews(response.data.reviews);
                 setTotalPages(response.data.totalPages);
             } catch (error) {
@@ -82,7 +80,7 @@ const PlaceReview = () => {
         };
 
         fetchReviews();
-    }, [currentPage]);
+    }, [currentPage, filterRating, url]);
 
     const handleRatingFilter = (rating) => {
         setFilterRating(rating);
@@ -104,7 +102,7 @@ const PlaceReview = () => {
     return (
         <div className="reviews-container">
             <div className="filter-container">
-                <button onClick={() => handleRatingFilter(0)} className={filterRating === 0 ? 'active' : ''}>All</button>
+                <button onClick={() => handleRatingFilter('all')} className={filterRating === 'all' ? 'active' : ''}>All</button>
                 <button onClick={() => handleRatingFilter(5)} className={filterRating === 5 ? 'active' : ''}>5 Stars</button>
                 <button onClick={() => handleRatingFilter(4)} className={filterRating === 4 ? 'active' : ''}>4 Stars</button>
                 <button onClick={() => handleRatingFilter(3)} className={filterRating === 3 ? 'active' : ''}>3 Stars</button>

@@ -44,7 +44,7 @@ const VoucherListPage = ({ url }) => {
 
   const fetchVouchers = async () => {
     try {
-      const response = await axios.get(`${url}/api/voucher/list`, {
+      const response = await axios.get(`${url}/api/voucher/`, {
         params: {
           page: currentPage,
           limit: vouchersPerPage,
@@ -127,7 +127,7 @@ const VoucherListPage = ({ url }) => {
             return (
               <div
                 className={`voucher-card ${overlayText ? 'overlay' : ''}`}
-                key={voucher.id}
+                key={voucher._id}
               >
                 <div className="voucher-details">
                 <h3>

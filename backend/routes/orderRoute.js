@@ -5,11 +5,11 @@ import authMiddleware from '../middleware/auth.js';
 
 
 const orderRouter = express.Router();
-orderRouter.post('/place', authMiddleware, placeOrder);
+orderRouter.post('/', authMiddleware, placeOrder);
 orderRouter.post('/verify', verifyOrder);
-orderRouter.post('/userorders', authMiddleware, userOrders);
-orderRouter.get('/list', listOrders);
-orderRouter.post('/status', updateStatus);
-orderRouter.get('/topseller', getTopSellingItems);
+orderRouter.get('/:id', authMiddleware, userOrders);
+orderRouter.get('/', listOrders);
+orderRouter.put('/:orderId', updateStatus);
+orderRouter.get('/top/topseller', getTopSellingItems);
 
 export default orderRouter

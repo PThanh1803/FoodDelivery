@@ -15,7 +15,7 @@ const Promotions = ({ url }) => {
 
   const fetchPromotions = async (currentPage) => {
     try {
-      const response = await axios.get(`${url}/api/promotion/list?page=${currentPage}&limit=5`);
+      const response = await axios.get(`${url}/api/promotion?page=${currentPage}&limit=5`);
       if (response.data.success) {
         setPromotions(response.data.promotions);
         setTotalPages(response.data.totalPages);
@@ -52,7 +52,7 @@ const Promotions = ({ url }) => {
 
   const handleDelete = async (promo) => {
     try {
-      const response = await axios.delete(`${url}/api/promotion/delete/${promo._id}`);
+      const response = await axios.delete(`${url}/api/promotion/${promo._id}`);
       if (response.data.success) {
         toast.success('Promotion deleted successfully');
         fetchPromotions(page); // Refresh promotions list after deletion
@@ -78,7 +78,7 @@ const Promotions = ({ url }) => {
 
     if (modalType === 'add') {
       try {
-        const response = await axios.post(`${url}/api/promotion/create`, formData);
+        const response = await axios.post(`${url}/api/promotion/`, formData);
         if (response.data.success) {
           toast.success('Promotion added successfully');
           fetchPromotions(page); // Refresh after adding
@@ -92,7 +92,7 @@ const Promotions = ({ url }) => {
     } else if (modalType === 'edit') {
       try {
         formData.append('id', currentPromotion._id);
-        const response = await axios.put(`${url}/api/promotion/update`, formData);
+        const response = await axios.put(`${url}/api/promotion/${currentPromotion._id}`, formData);
         if (response.data.success) {
           toast.success('Promotion updated successfully');
           fetchPromotions(page); // Refresh after update
@@ -116,7 +116,7 @@ const Promotions = ({ url }) => {
       {promotions.length === 0 && <p>Không có khuyến mãi nào</p>}
       {promotions.length > 0 && <ul>
         {promotions.map((promo) => (
-          <li key={promo.id} className="promotion-item">
+          <li key={promo._id} className="promotion-item">
             <img src={url + '/images/promotions/' + promo.image} alt={promo.title} />
             <div className="promotion-details">
               <div> <h3>{promo.title}</h3> <p>Ngày đăng: {promo.dateCreated}</p></div>

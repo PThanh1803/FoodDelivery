@@ -1,24 +1,28 @@
 import express from 'express';
-import { getListVoucher, getVoucherById, createVoucher, deleteVoucher, updateVoucher } from '../controller/voucherController.js';
+import {
+    getListVoucher,
+    getVoucherById,
+    createVoucher,
+    deleteVoucher,
+    updateVoucher
+} from '../controller/voucherController.js';
 import multer from 'multer';
+
 
 const voucherRouter = express.Router();
 
-// Image storage engine for vouchers
 const storage = multer.diskStorage({
     destination: "uploads/vouchers",
-    filename: (req, file, cb) => {
-        return cb(null, `${Date.now()}-${file.originalname}`);
-    }
+    filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`)
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({ storage });
 
 // Voucher routes
-voucherRouter.post("/create", upload.single("image"), createVoucher);
-voucherRouter.get("/getbyid", getVoucherById);
-voucherRouter.get("/list", getListVoucher);
-voucherRouter.delete("/delete", deleteVoucher);
-voucherRouter.put("/update", upload.single("image"), updateVoucher);
+voucherRouter.post("/", upload.single("image"), createVoucher);
+voucherRouter.get("/:id", getVoucherById);
+voucherRouter.get("/", getListVoucher);
+voucherRouter.delete("/:id", deleteVoucher);
+voucherRouter.put("/:id", upload.single("image"), updateVoucher);
 
 export default voucherRouter;

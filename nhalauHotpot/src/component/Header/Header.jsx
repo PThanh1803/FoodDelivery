@@ -10,7 +10,7 @@ const Header = () => {
 
   const fetchListPromotion = async () => {
     try {
-      const response = await axios.get(`${url}/api/promotion/listview`);
+      const response = await axios.get(`${url}/api/promotion?page=1&limit=5&status=active`);
       if (response.data.success) {
         setPromotions(response.data.promotions); // Lấy mảng promotions từ response
       } else {

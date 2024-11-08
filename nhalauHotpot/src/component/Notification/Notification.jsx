@@ -17,7 +17,7 @@ const Notification = () => {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const response = await axios.get(`http://localhost:4000/api/notification/user/${userInfo._id}`);
+        const response = await axios.get(`${url}/api/notification/${userInfo._id}?&type=admin`);
         setNotifications(response.data.notifications);
       } catch (error) {
         console.error('Error fetching notifications:', error);
@@ -51,7 +51,7 @@ const Notification = () => {
   // Mark notification as read
   const markAsRead = async (notificationId) => {
     try {
-      await axios.patch(`http://localhost:4000/api/notification/${notificationId}/status`, { status: 'read' });
+      await axios.put(`${url}/api/notification/${notificationId}/status`, { status: 'read' });
       setNotifications((prevNotifications) =>
         prevNotifications.map((notification) =>
           notification._id === notificationId ? { ...notification, status: 'read' } : notification

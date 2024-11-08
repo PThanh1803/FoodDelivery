@@ -5,7 +5,7 @@ import { StoreContext } from '../../Context/StoreContext';
 import React, { useEffect } from 'react';
 import axios from 'axios';
 import FoodItem from '../FoodItem/FoodItem';
-const ExploreMenu = ({ category, setCategory }) => {
+const ExploreMenu = () => {
   const [bestSellers, setBestSellers] = React.useState([]);
   const { url } = React.useContext(StoreContext);
 
@@ -13,7 +13,7 @@ const ExploreMenu = ({ category, setCategory }) => {
   const fetchBestSellers = async () => {
     try {
       // Step 1: Fetch bestseller IDs
-      const response = await axios.get(`${url}/api/order/topseller`);
+      const response = await axios.get(`${url}/api/order/top/topseller`);
       if (response.data.success) {
         const totalSoldMap = new Map()
         const bestSellerIds = response.data.topItems.map(item => item._id);
@@ -71,8 +71,5 @@ const ExploreMenu = ({ category, setCategory }) => {
   )
 }
 
-ExploreMenu.propTypes = {
-  category: PropTypes.string.isRequired, setCategory: PropTypes.string.isRequired // or PropTypes.string if not required
-};
 
 export default ExploreMenu

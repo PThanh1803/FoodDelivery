@@ -1,5 +1,5 @@
 import express from 'express';
-import { getPromotionById, getListPromotion, createPromotion, deletePromotion, updatePromotion, getActivePromotions } from '../controller/promotionController.js';
+import { getPromotionById, getListPromotion, createPromotion, deletePromotion, updatePromotion } from '../controller/promotionController.js';
 import multer from 'multer';
 
 const promotionRouter = express.Router();
@@ -15,10 +15,9 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // Promotion routes
-promotionRouter.post("/create", upload.single("image"), createPromotion);
-promotionRouter.post("/promo/getbyid", getPromotionById);
-promotionRouter.delete("/delete/:id", deletePromotion);
-promotionRouter.put("/update", upload.single("image"), updatePromotion);
-promotionRouter.get("/list", getListPromotion);
-promotionRouter.get("/listview", getActivePromotions);
+promotionRouter.post("/", upload.single("image"), createPromotion);
+promotionRouter.get("/:id", getPromotionById);
+promotionRouter.delete("/:id", deletePromotion);
+promotionRouter.put("/:id", upload.single("image"), updatePromotion);
+promotionRouter.get("/", getListPromotion);
 export default promotionRouter;

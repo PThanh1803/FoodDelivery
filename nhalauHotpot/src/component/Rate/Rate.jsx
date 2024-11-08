@@ -7,6 +7,7 @@ import FormRating from '../FormRating/FormRating';
 import left from '../../assets/chevron-left-regular-24.png';
 import right from '../../assets/chevron-right-regular-24.png';
 
+
 const RateComponent = () => {
     const [showPopup, setShowPopup] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -17,13 +18,16 @@ const RateComponent = () => {
     const { url } = useContext(StoreContext);
 
     useEffect(() => {
+        console.log('Fetching images...');
         const fetchImages = async () => {
+            
             try {
-                const response = await fetch(url + '/api/review/'); // Replace with your API endpoint
+                const response = await fetch(url + '/api/review' , { method: 'GET' } ); // Replace with your API endpoint
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
                 const data = await response.json();
+                console.log(data);
                 setImages(data.images); // Assuming your API returns an array of images in an 'images' field
             } catch (error) {
                 setError(error);

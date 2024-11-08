@@ -13,7 +13,7 @@ import "./MyBooking.css";
 import { StoreContext } from "../../context/StoreContext";
 
 const MyBooking = () => {
-  const { url, token } = useContext(StoreContext);
+  const { url, token ,userInfo} = useContext(StoreContext);
   const [bookings, setBookings] = useState([]);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [statusFilter, setStatusFilter] = useState("all");
@@ -38,7 +38,7 @@ const MyBooking = () => {
   const fetchBookings = async (page) => {
     try {
       const response = await axios.get(
-        `${url}/api/booking/byUserId?page=${page}&limit=${limit}`,
+        `${url}/api/booking/${userInfo._id}?page=${page}&limit=${limit}`,
         {
           headers: {
             token: localStorage.getItem("token"),

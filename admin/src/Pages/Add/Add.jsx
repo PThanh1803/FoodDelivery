@@ -54,21 +54,35 @@ const Add = ({ url, foodData, isEditMode, closeModal }) => {
         if (isEditMode) {
             formData.append('id', foodData._id);
         }
-
-        const endpoint = isEditMode ? `${url}/api/food/${foodData._id}` : `${url}/api/food/`;
-
-        try {
-            const response = isEditMode ? axios.put(endpoint, formData) : axios.post(endpoint, formData);
-            console.log(response.data)
-            if (response.data.success) {
-                toast.success(response.data.message);
-                closeModal(); // Close modal on success
-            } else {
-                toast.error(response.data.message);
+        if(isEditMode){
+            try {
+                const response = await axios.put(`${url}/api/food/${foodData._id}`, formData) ;
+                console.log(response.data) 
+                if (response.data.success) {
+                    toast.success(response.data.message);
+                    closeModal(); // Close modal on success
+                } else {
+                    toast.error(response.data.message);
+                }
+            } catch (error) {
+                toast.error("Error uploading the product");
+                console.log(error)
             }
-        } catch (error) {
-            toast.error("Error uploading the product");
-            console.log(error)
+        }
+        else{
+            try {
+                const response =  await axios.post( `${url}/api/food/`, formData);
+                console.log(response.data) 
+                if (response.data.success) {
+                    toast.success(response.data.message);
+                    closeModal(); // Close modal on success
+                } else {
+                    toast.error(response.data.message);
+                }
+            } catch (error) {
+                toast.error("Error uploading the product");
+                console.log(error)
+            }
         }
     };
 

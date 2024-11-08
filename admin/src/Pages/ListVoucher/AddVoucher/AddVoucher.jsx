@@ -96,9 +96,10 @@ const AddVoucherForm = ({ isOpen, closeModal, voucher, url }) => {
       console.log(voucherData);
       const formData = new FormData();
       formData.append("image", image);
+      formData.append("id", voucher._id);
       formData.append("voucherData", JSON.stringify(voucherData));
 
-        const response = await axios.put(`${url}/api/voucher/update`,formData);
+        const response = await axios.put(`${url}/api/voucher/${voucher._id}`,formData);
         
         if (response && response.data && response.data.success) {
           // Handle success response
@@ -122,7 +123,7 @@ const AddVoucherForm = ({ isOpen, closeModal, voucher, url }) => {
       const formData = new FormData();
       formData.append("image", image);
       formData.append("voucherData", JSON.stringify(voucherData));
-      const response = await axios.post(`${url}/api/voucher/create`, formData);
+      const response = await axios.post(`${url}/api/voucher/`, formData);
       if (response.data.success) {
         toast.success(response.data.message);
       } else {
