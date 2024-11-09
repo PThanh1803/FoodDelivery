@@ -4,7 +4,7 @@ import './UserProfile.css';
 import edit_icon from '../../assets/edit-alt-regular-24.png';
 import default_avatar from '../../assets/profile_icon.png'; // Placeholder avatar
 import FoodDisplay from '../FoodDisplay/FoodDisplay';
-import { StoreContext } from '../../context/StoreContext';
+import { StoreContext } from '../../Context/StoreContext';
 
 const UserProfile = () => {
     const { userInfo, setUserInfo } = useContext(StoreContext);
@@ -15,41 +15,66 @@ const UserProfile = () => {
     const handleTabClick = (tab) => {
         setActiveTab(tab);
     };
-
+    const onChangeHandeler = (event) => {
+        const name = event.target.name;
+        const value = event.target.value;
+        setData(data => ({ ...data, [name]: value }))
+    }
     return (
+
         <div className="user-profile-container">
-            <div className="sidebar">
-                <button
-                    className={activeTab === 'profile' ? 'active' : ''}
-                    onClick={() => handleTabClick('profile')}
-                >
-                    My Profile
-                </button>
-                <button
-                    className={activeTab === 'update-password' ? 'active' : ''}
-                    onClick={() => handleTabClick('update-password')}
-                >
-                    Update Password
-                </button>
-                <button
-                    className={activeTab === 'wishlist' ? 'active' : ''}
-                    onClick={() => handleTabClick('wishlist')}
-                >
-                    Wishlist
-                </button>
+            <div className="user-profile-left">
+                <div className="sidebar">
+                    <button
+                        className={activeTab === 'profile' ? 'active' : ''}
+                        onClick={() => handleTabClick('profile')}
+                    >
+                        My Profile
+                    </button>
+                    <button
+                        className={activeTab === 'update-password' ? 'active' : ''}
+                        onClick={() => handleTabClick('update-password')}
+                    >
+                        Update Password
+                    </button>
+                    <button
+                        className={activeTab === 'wishlist' ? 'active' : ''}
+                        onClick={() => handleTabClick('wishlist')}
+                    >
+                        Wishlist
+                    </button>
+                </div>
+
+                <div className="content">
+                    {activeTab === 'profile' && (
+                        <MyProfile
+                            userInfo={userInfo}
+                            setUserInfo={setUserInfo}
+                        />
+                    )}
+                    {activeTab === 'update-password' && <UpdatePassword />}
+
+                    {activeTab === 'wishlist' && <Wishlist wishlist={userInfo.wishlist} />} {/* Use wishlist from userInfo */}
+
+                </div>
             </div>
-
-            <div className="content">
-                {activeTab === 'profile' && (
-                    <MyProfile
-                        userInfo={userInfo}
-                        setUserInfo={setUserInfo}
-                    />
-                )}
-                {activeTab === 'update-password' && <UpdatePassword />}
-
-                {activeTab === 'wishlist' && <Wishlist wishlist={userInfo.wishlist} />} {/* Use wishlist from userInfo */}
-
+            <div className="place-order-left">
+                <p className="title">Delivery Information</p>
+                <div className="multi-fields">
+                    <input required name="firstName" onChange={onChangeHandeler} value={data.firstName} type="text" placeholder="First Name" />
+                    <input required name="lastName" onChange={onChangeHandeler} value={data.lastName} type="text" placeholder="Last Name" />
+                </div>
+                <input required name="email" onChange={onChangeHandeler} value={data.email} className="" type="email" placeholder="Email" />
+                <input required name="street" onChange={onChangeHandeler} value={data.street} type="text" placeholder="Street" />
+                <div className="multi-fields">
+                    <input required name="city" onChange={onChangeHandeler} value={data.city} type="text" placeholder="City" />
+                    <input required name="state" onChange={onChangeHandeler} value={data.state} type="text" placeholder="State" />
+                </div>
+                <div className="multi-fields">
+                    <input required name="zipcode" onChange={onChangeHandeler} value={data.zipcode} type="text" placeholder="Zip Code" />
+                    <input required name="country" onChange={onChangeHandeler} value={data.country} type="text" placeholder="Country" />
+                </div>
+                <input required name="phone" onChange={onChangeHandeler} value={data.phone} type="text" placeholder="Phone Number" />
             </div>
         </div>
     );

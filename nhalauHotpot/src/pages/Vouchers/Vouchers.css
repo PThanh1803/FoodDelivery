@@ -1,0 +1,213 @@
+.vouchers-container {
+    margin-top: 120px;
+    gap: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.vouchers-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 20px;
+    width: 100%;
+    align-items: center;
+}
+
+.voucher-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    height: fit-content;
+    padding: 20px;
+    width: 49%;
+    background-image: url("../../assets/voucher-container.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 250px;
+}
+
+
+.voucher-details .percentage {
+    position: relative;
+    top: 70px;
+    left: 410px;
+    color: #fff;
+    font-weight: bold;
+    font-size: 50px;
+}
+
+.voucher-details .fixed {
+    position: relative;
+    top: 65px;
+    left: 335px;
+    color: #fff;
+    font-weight: bold;
+    font-size: 35px;
+    padding: 15px;
+}
+
+.voucher-code {
+    position: relative;
+    top: 190px;
+    left: 90px;
+    color: black;
+    font-weight: bold;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.voucher-code:hover {
+    text-decoration: underline;
+    color: #007bff;
+}
+
+.voucher-info {
+    margin-left: 90px;
+    position: relative;
+    top: -20px;
+}
+
+.voucher-description {
+    position: relative;
+    font-weight: bold;
+    width: 300px;
+    flex-wrap: wrap;
+    top: -15px;
+}
+
+.voucher-only {
+    position: relative;
+    transform: rotate(90deg);
+    font-size: 20px;
+    font-weight: bold;
+    left: -170px;
+    font-size: 30px;
+    top: -10px;
+}
+
+.voucher-icon {
+    width: 20px;
+    height: 20px;
+    position: relative;
+    top: 155px;
+    left: 310px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+    .voucher-item {
+        width: 100%;
+        /* Để các phần tử voucher chiếm toàn bộ chiều rộng */
+    }
+
+    .voucher-details .percentage,
+    .voucher-details .fixed {
+        top: 50px;
+        left: 70%;
+        font-size: 40px;
+    }
+
+    .voucher-code {
+        top: 160px;
+        left: 50px;
+        font-size: 18px;
+    }
+
+    .voucher-info {
+        margin-left: 50px;
+        top: -10px;
+    }
+
+    .voucher-description {
+        width: 100%;
+        top: -10px;
+    }
+
+    .voucher-only {
+        left: -130px;
+        top: -5px;
+        font-size: 25px;
+    }
+}
+
+@media (max-width: 768px) {
+    .vouchers-container {
+        margin-top: 80px;
+    }
+
+    .vouchers-list {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .voucher-item {
+        width: 100%;
+        height: auto;
+        padding: 15px;
+    }
+
+    .voucher-details .percentage,
+    .voucher-details .fixed {
+        top: 40px;
+        left: 50%;
+        font-size: 30px;
+    }
+
+    .voucher-code {
+        top: 140px;
+        left: 20px;
+        font-size: 16px;
+    }
+
+    .voucher-info {
+        margin-left: 20px;
+        top: 0;
+    }
+
+    .voucher-description {
+        width: 100%;
+        top: 0;
+        font-size: 14px;
+    }
+
+    .voucher-only {
+        left: -100px;
+        top: 0;
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .voucher-details .percentage,
+    .voucher-details .fixed {
+        top: 30px;
+        left: 40%;
+        font-size: 25px;
+    }
+
+    .voucher-code {
+        top: 120px;
+        left: 15px;
+        font-size: 14px;
+    }
+
+    .voucher-info {
+        margin-left: 10px;
+        top: 5px;
+    }
+
+    .voucher-description {
+        width: 100%;
+        font-size: 12px;
+    }
+
+    .voucher-only {
+        left: -80px;
+        font-size: 18px;
+    }
+}

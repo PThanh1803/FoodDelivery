@@ -16,6 +16,7 @@ import BookingTable from './pages/BookingTable/BookingTable'
 import MyBooking from './pages/MyBooking/MyBooking'
 import Promotions from './component/Promotion/Promotion'
 import PromotionDetail from './component/PromotionDetail/PromotionDetail'
+import Vouchers from './pages/Vouchers/Vouchers'
 
 const App = () => {
   const [showLogin, setShowLogin] = React.useState(false)
@@ -38,6 +39,7 @@ const App = () => {
           <Route path='/rate' element={<Rate />} />
           <Route path='/bookingtable' element={<BookingTable />} />
           <Route path='/mybookings' element={<MyBooking />} />
+          <Route path='/vouchers' element={<Vouchers />} />
         </Routes>
       </div>
       <Footer />

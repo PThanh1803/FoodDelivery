@@ -31,10 +31,12 @@
     z-index: 3;
     font-size: 18px;
     color: white;
+    margin-top: 0px !important;
 }
 
 .food-item-image {
     width: 100%;
+    height: 200px;
     border-radius: 15px 15px 0 0;
     z-index: 1;
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import './FoodItem.css';
 import { assets } from '../../assets/assets';
-import { StoreContext } from '../../Context/StoreContext';
+import { StoreContext } from '../../context/StoreContext';
 import { useNavigate } from 'react-router-dom';
 import CryptoJS from 'crypto-js';
 import BestSeller from '../../assets/bestseller.png';

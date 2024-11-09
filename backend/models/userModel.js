@@ -26,6 +26,22 @@ const userSchema = new mongoose.Schema({
         type: Object,
         default: {}
     },
+    address: {
+        type: [
+            {
+                firstName: { type: String, },
+                lastName: { type: String, },
+                email: { type: String, },
+                street: { type: String, },
+                city: { type: String, },
+                state: { type: String },
+                zipCode: { type: String },
+                country: { type: String },
+                phone: { type: String },
+            }
+        ],
+        default: []
+    }
 }, { minimize: false });
 
 const userModel = mongoose.models.user || mongoose.model("user", userSchema);

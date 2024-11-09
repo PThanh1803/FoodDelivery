@@ -27,7 +27,12 @@ const StoreContextProvider = (props) => {
         }
 
         if (token) {
-            await axios.post(`${url}/api/cart/`, { itemId }, { headers: { token } });
+            const response = await axios.post(`${url}/api/cart/`, { itemId }, { headers: { token } });
+
+            if (response.data.success) {
+                console.log(response.data.message);
+            }
+
         }
     };
 
@@ -66,16 +71,7 @@ const StoreContextProvider = (props) => {
         }
     };
 
-    const loadCartData = async () => {
-        if (token) {
-            try {
-                const response = await axios.get(`${url}/api/cart/`, {}, { headers: { token } });
-                setCardItems(response.data.cartData);
-            } catch (error) {
-                console.error("Error loading cart data:", error);
-            }
-        }
-    };
+
     const loginUser = async (email, password) => {
         try {
             const response = await axios.post(`${url}/api/user/login`, { email, password });
@@ -102,11 +98,31 @@ const StoreContextProvider = (props) => {
             if (storedToken) {
                 setToken(storedToken);
                 setUserInfo(JSON.parse(localStorage.getItem("user")));
-                await loadCartData(); // Tải dữ liệu giỏ hàng
+                console.log(userInfo);
+                await loadCartData(storedToken); // truyền token vào loadCartData
             }
         };
         fetchData();
     }, []);
+
+    const loadCartData = async (token) => { // thêm token vào tham số
+        if (token) {
+            console.log("Token found:", token);
+            try {
+                const response = await axios.get(`${url}/api/cart/`, { headers: { token } });
+                if (response.data.success) {
+                    setCardItems(response.data.cartData);
+                } else {
+                    console.error(response.data.message);
+                }
+            } catch (error) {
+                console.error("Error loading cart data:", error);
+            }
+        } else {
+            console.log("No token");
+        }
+    };
+
 
     const contextValue = {
         food_list,

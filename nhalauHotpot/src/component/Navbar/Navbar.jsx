@@ -87,6 +87,7 @@ const Navbar = ({ setShowLogin }) => {
         <Link to="/promotions" className={getActiveClass("/promotions")}>Promotions</Link>
         <Link to="/rate" className={getActiveClass("/rate")}>Rate</Link>
         <Link to="/bookingtable" className={getActiveClass("/bookingtable")}>Booking Table</Link>
+        <Link to="/vouchers" className={getActiveClass("/vouchers")}>Voucher Hot</Link>
         {/* <a href='#explore-menu' onClick={()=>setMenu("Menu")} className={menu==="Menu" ? "Active" : ""} >Menu</a> */}
         {/* <a href='#app-download' onClick={() => setMenu("Order")} className={menu === "Order" ? "Active" : ""} >Mobile app</a>
                 <a href='#footer' onClick={() => setMenu("Gift")} className={menu === "Gift" ? "Active" : ""} >Contact</a> */}
