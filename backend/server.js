@@ -12,9 +12,7 @@ import voucherRouter from "./routes/voucherRoute.js";
 import promotionRouter from "./routes/promotionRoute.js";
 import bookingRouter from "./routes/bookingRoute.js";
 import reviewRouter from "./routes/reviewRoute.js";
-
 import emailRouter from "./routes/emailRoute.js";
-
 import notificationRouter from "./routes/notificationRoute.js";
 
 
@@ -31,7 +29,7 @@ app.use(cors({
 }));
 
 // Create a new instance of Socket.IO with CORS options
-const io = new Server(server, {
+global.io = new Server(server, {
     cors: {
         origin: ["http://localhost:5173", "http://localhost:5174"], // Update with your frontend URL
         methods: ["GET", "POST"],
@@ -39,20 +37,7 @@ const io = new Server(server, {
     }
 });
 
-// Socket.IO connection handling
-io.on('connection', (socket) => {
-    console.log('A user connected');
 
-    // Handle notification sending
-    socket.on('sendNotification', (notification) => {
-        // Emit the notification to all connected clients
-        io.emit('newNotification', notification);
-    });
-
-    socket.on('disconnect', () => {
-        console.log('User disconnected');
-    });
-});
 
 //middlewares
 app.use(cors({ origin: ["http://localhost:5173", "http://localhost:5174"] }));
@@ -76,7 +61,7 @@ app.use("/api/promotion", promotionRouter)
 app.use("/api/booking", bookingRouter)
 app.use("/api/review", reviewRouter)
 app.use('/api/email', emailRouter);
-app.use("/api/notification", notificationRouter(io));
+app.use("/api/notification", notificationRouter);
 
 
 app.get("/", (req, res) => {

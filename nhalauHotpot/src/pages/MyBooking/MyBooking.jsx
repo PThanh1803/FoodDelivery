@@ -11,10 +11,12 @@ import "react-datepicker/dist/react-datepicker.css";
 import axios from "axios";
 import "./MyBooking.css";
 import { StoreContext } from "../../context/StoreContext";
+import { useLocation } from "react-router-dom";
 
 const MyBooking = () => {
   const { url, token ,userInfo} = useContext(StoreContext);
-  const [bookings, setBookings] = useState([]);
+  const { state } = useLocation();
+  const [bookings, setBookings] = useState();
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedDate, setSelectedDate] = useState(null);
@@ -24,11 +26,12 @@ const MyBooking = () => {
   const [showCancelPopup, setShowCancelPopup] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
   const [bookingToCancel, setBookingToCancel] = useState(null);
+  const [highlightedOrder, setHighlightedOrder] = useState(null);
 
   // Fetch bookings from API
   useEffect(() => {
     fetchBookings(currentPage);
-  }, [currentPage]); // Added currentPage as a dependency
+  }, [currentPage, url]); // Added currentPage as a dependency
 
   const handleCancelBooking = (booking) => {
     setBookingToCancel(booking);
@@ -48,6 +51,11 @@ const MyBooking = () => {
       if (response.data.success) {
         setBookings(response.data.bookings);
         setTotalPages(response.data.totalPages);
+        if (state && state.bookingId) {
+          const { bookingId } = state;
+          setHighlightedOrder(bookingId);
+          setTimeout(() => setHighlightedOrder(null), 4000);
+        }
       } else {
         console.error(response.data.message);
       }
@@ -69,7 +77,7 @@ const MyBooking = () => {
     setSelectedBooking(null);
   };
 
-  const filteredBookings = bookings.filter((booking) => {
+  const filteredBookings = bookings?.filter((booking) => {
     const isStatusMatch =
       statusFilter === "all" || booking.status === statusFilter;
     const isDateMatch =
@@ -128,6 +136,21 @@ const MyBooking = () => {
     return localDate.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }); // Returns date in local format
   };
 
+  if(!bookings)
+  {
+    return (
+      <div className="my-booking-container">
+        <div className="booking-list-header">
+          <h1>My Bookings</h1>
+        </div>
+        <div className="booking-list-container">
+          <div className="booking-list">
+            <p>Loading...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="my-booking-container">
       <div className="booking-list-header">
@@ -158,11 +181,11 @@ const MyBooking = () => {
         <div className="booking-list">
           {filteredBookings.map((booking) => (
             <div
-              key={booking.reservationId}
+              key={booking._id}
               className={`booking-card ${booking.status} ${selectedBooking && selectedBooking._id === booking._id
                 ? "selected"
                 : ""
-                }`}
+                } ${booking._id === highlightedOrder ? "highlight-same" : ""} ` }
               onClick={() => handleBookingClick(booking)}
             >
               <h3 className="booking-title">
@@ -272,19 +295,22 @@ const MyBooking = () => {
       </div>
 
       {showCancelPopup && (
-        <div className="cancel-popup">
+      <div className="cancel-popup">
+        <div className="cancel-popup-content show"> 
           <h3>Cancel Booking</h3>
-          <p>Reason for cancellation:</p>
+          <label>Reason for cancellation:</label>
           <textarea
             value={cancelReason}
             onChange={(e) => setCancelReason(e.target.value)}
           />
-          <div className="cancel-popup-actions">
+          <div className="popup-buttons">
             <button onClick={handleCancelConfirm}>Confirm Cancellation</button>
             <button onClick={() => setShowCancelPopup(false)}>Cancel</button>
           </div>
         </div>
-      )}
+      </div>
+    )}
+
     </div>
   );
 };

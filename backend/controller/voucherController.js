@@ -8,9 +8,7 @@ const getListVoucher = async (req, res) => {
 
         const statusFilter = req.query.status || null;
         const dateFilter = req.query.date || null;
-        const code = req.query.code || null;
-        console.log("statusFilter:", statusFilter, "dateFilter:", dateFilter ,"code:", code);
-        // Tạo một đối tượng filter để lưu các điều kiện lọc
+        const code = req.query.code || null;            
         const filter = {};
 
         if (statusFilter && statusFilter !== "All") {
@@ -22,8 +20,28 @@ const getListVoucher = async (req, res) => {
         }
 
         if (code) {
+            // Sử dụng regex để tìm các mã voucher chúa dãy code
+            filter.voucherCode = { $regex: code, $options: 'i' };      
+        }
+
+        if (code && req.query.type === "getByCode") {
             // Sử dụng regex để tìm các mã voucher chứa dãy code
-            filter.voucherCode = { $regex: code, $options: 'i' }; // 'i' là tùy chọn không phân biệt chữ hoa chữ thường
+            filter.voucherCode = { $regex: code, $options: 'i' };      
+            const voucherData = await voucherModel.findOne({voucherCode: code});
+            
+            if (!voucherData) {
+                return res.json({ success: false, message: "Voucher not found" });
+            }
+            if(voucherData.expiryDate < new Date()){
+                return res.json({ success: false, message: "Voucher has expired" });
+            }
+            if(voucherData.used >= voucherData.usageLimit){
+                return res.json({ success: false, message: "Voucher has been used up" });
+            }
+                
+            res.json({ success: true, voucher: voucherData, message: "Voucher added successfully" });
+            return
+            
         }
         // Tổng số voucher
         const totalVouchers = await voucherModel.countDocuments(filter);
@@ -70,18 +88,19 @@ const getListVoucher = async (req, res) => {
 
 // Lấy thông tin mã giảm giá bằng id 
 const getVoucherById = async (req, res) => {
-    try {
-        const voucherData = await voucherModel.findById(req.params.id);
-        
-        if (!voucherData) {
-            return res.json({ success: false, message: "Voucher not found" });
+   
+        try {
+            const voucherData = await voucherModel.findById(req.params.id);
+            
+            if (!voucherData) {
+                return res.json({ success: false, message: "Voucher not found" });
+            }
+            
+            res.json({ success: true, voucher: voucherData });
+        } catch (error) {
+            console.log(error);
+            res.json({ success: false, message: "Error fetching voucher" });
         }
-        
-        res.json({ success: true, voucher: voucherData });
-    } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: "Error fetching voucher" });
-    }
 };
 
 // Tạo mã giảm giá mới
@@ -89,6 +108,10 @@ const createVoucher = async (req, res) => {
     let image_filename = `${req.file.filename}`;
     let voucherData = JSON.parse(req.body.voucherData);
     try {
+        const voucher = await voucherModel.findOne({voucherCode: voucherData.voucherCode});
+        if (voucher) {
+            return res.json({ success: false, message: "Voucher code already exists" });
+        }
         const newVoucher = new voucherModel({
             voucherCode: voucherData.voucherCode,
             discountAmount: voucherData.discountAmount,
@@ -100,9 +123,10 @@ const createVoucher = async (req, res) => {
             startDate: voucherData.startDate,
             usageLimit: voucherData.usageLimit,
             minOrder: voucherData.minOrder,
-            maxDiscount: voucherData.maxDiscount
+            maxDiscount: voucherData.maxDiscount,
+            used: 0
         });
-        
+        console.log(newVoucher.used);
         await newVoucher.save();
         res.json({ success: true, message: "Voucher created successfully", voucher: newVoucher });
     } catch (error) {
@@ -147,7 +171,7 @@ const updateVoucher = async (req, res) => {
         if (!voucher) {
             return res.status(404).json({ success: false, message: "Voucher not found" });
         }
-        
+        console.log(voucher);
         const updateData = {
             voucherCode: voucherData.voucherCode,
             discountAmount: voucherData.discountAmount,
@@ -159,7 +183,8 @@ const updateVoucher = async (req, res) => {
             usageLimit: voucherData.usageLimit,
             minOrder: voucherData.minOrder,
             maxDiscount: voucherData.maxDiscount,
-            image: voucher.image // default to old image
+            image: voucher.image,
+            used: voucherData.used // default to old image
         };
 
         if (req.file) {

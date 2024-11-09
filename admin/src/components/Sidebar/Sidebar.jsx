@@ -38,6 +38,10 @@ export const Sidebar = () => {
         <NavLink to='/reservation' className="sidebar-option" >
           <FaSignOutAlt className="sidebar-icon" />
         </NavLink>
+
+        <NavLink to='/review' className="sidebar-option" >
+          <FaSignOutAlt className="sidebar-icon" />
+        </NavLink>
       </div>
     </div>
   );

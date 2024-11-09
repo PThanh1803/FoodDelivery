@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
-import "./DashBoard.css"; // You will add styles to mimic the dark UI look
+import "./DashBoard.css";
 import axios from "axios";
 
 const DashBoard = ({ url }) => {
@@ -9,18 +9,21 @@ const DashBoard = ({ url }) => {
   const [totalDishes, setTotalDishes] = useState(0);
   const [totalCustomers, setTotalCustomers] = useState(0);
   const [mostOrderedItems, setMostOrderedItems] = useState([]);
-  const [startDate, setStartDate] = useState(new Date().toISOString().split("T")[0]); // Default to today's date
-  const [endDate, setEndDate] = useState(new Date().toISOString().split("T")[0]); // Default to today's date
+  const [startDate, setStartDate] = useState(new Date().toISOString().split("T")[0]);
+  const [endDate, setEndDate] = useState(new Date().toISOString().split("T")[0]);
 
-  const fetchData = async () => {  
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
+  const totalPages = Math.ceil(orders.length / itemsPerPage);
+
+  const fetchData = async () => {
     try {
-      const response = await axios.get(`${url}/api/order/list`);
+      const response = await axios.get(`${url}/api/order/`);
       if (response.data.success) {
         const ordersData = response.data.data;
-
-        // Filter orders based on selected date range
         const filteredOrders = ordersData.filter(order => {
-          const orderDate = new Date(order.date).toISOString().split("T")[0]; // Adjust based on your date field
+          const orderDate = new Date(order.date).toISOString().split("T")[0];
           return orderDate >= startDate && orderDate <= endDate;
         });
 
@@ -60,32 +63,43 @@ const DashBoard = ({ url }) => {
 
   useEffect(() => {
     fetchData();
-  }, [startDate, endDate]); // Fetch data whenever startDate or endDate changes
+  }, [startDate, endDate]);
+
+  // Handle page change
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
+
+  // Calculate orders to display for the current page
+  const displayedOrders = orders.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <div className="dashboard-container">
       <div className="dashboard-right">
         <h1>Dashboard</h1>
 
-        {/* Date Range Picker */}
         <div className="input-container">
-            <input 
-                type="date" 
-                value={startDate} 
-                onChange={(e) => setStartDate(e.target.value)} 
-                className="input-field" 
-            />
-            <input 
-                type="date" 
-                value={endDate} 
-                onChange={(e) => setEndDate(e.target.value)} 
-                className="input-field" 
-            />
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            className="input-field"
+          />
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            className="input-field"
+          />
         </div>
 
         <h3>{`From: ${new Date(startDate).toLocaleDateString()} - To: ${new Date(endDate).toLocaleDateString()}`}</h3>
 
-        {/* Top Row Statistics */}
         <div className="dashboard-cards">
           <div className="dashboard-card">
             <p>Total Revenue</p>
@@ -101,7 +115,6 @@ const DashBoard = ({ url }) => {
           </div>
         </div>
 
-        {/* Order Report */}
         <div className="order-report">
           <div className="order-header">
             <h3>Order Report</h3>
@@ -116,7 +129,7 @@ const DashBoard = ({ url }) => {
             </div>
 
             <div className="order-list">
-              {orders.slice(0, 6).map((order, index) => (
+              {displayedOrders.map((order, index) => (
                 <div className="order-item" key={index}>
                   <p className="customer-name">
                     {order.address.firstName} {order.address.lastName}
@@ -134,10 +147,20 @@ const DashBoard = ({ url }) => {
               ))}
             </div>
           </div>
+
+          {/* Pagination Controls */}
+          <div className="pagination-controls">
+            <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+              Previous
+            </button>
+            <span>Page {currentPage} of {totalPages}</span>
+            <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
+              Next
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Most Ordered */}
       <div className="most-ordered">
         <h3>Most Ordered Items</h3>
         {mostOrderedItems.map(([name, data], index) => (

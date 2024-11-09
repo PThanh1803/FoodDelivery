@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+/* eslint-disable react/display-name */
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import './Notification.css';
 import { FaExclamationTriangle } from 'react-icons/fa';
 import io from 'socket.io-client'; // Import Socket.IO client
 import axios from 'axios';
-
+import {useNavigate} from 'react-router-dom';
 const socket = io('http://localhost:4000'); // Connect to the Socket.IO server
 
 const Notification = () => {
@@ -11,6 +12,10 @@ const Notification = () => {
   const [filteredNotifications, setFilteredNotifications] = useState([]);
   const [statusFilter, setStatusFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
+  const [visibleNotifications, setVisibleNotifications] = useState([]); // Initially visible notifications
+  const [page, setPage] = useState(1); // Page to track the number of notifications loaded per scroll
+  const observer = useRef();
+  const navigate = useNavigate();
 
   // Fetch notifications on component mount
   useEffect(() => {
@@ -18,6 +23,7 @@ const Notification = () => {
       try {
         const response = await axios.get('http://localhost:4000/api/notification?type=admin');
         setNotifications(response.data.notifications);
+        console.log("Notifications:", response.data.notifications);
       } catch (error) {
         console.error('Error fetching notifications:', error);
       }
@@ -25,21 +31,20 @@ const Notification = () => {
     fetchNotifications();
 
     // Listen for new notifications via Socket.IO
-    socket.on('newNotification', (notification) => {
+    socket.on('admin', (notification) => {
       setNotifications((prevNotifications) => [notification, ...prevNotifications]);
     });
 
     // Clean up on component unmount
     return () => {
-      socket.off('newNotification');
+      socket.off('admin');
     };
   }, []);
 
-  // Filter notifications based on status and category
+  // Update filtered notifications based on filters
   useEffect(() => {
-    // Filter notifications based on selected filters
     const filtered = notifications.filter(
-      (notification) => 
+      (notification) =>
         notification.type === 'admin' &&
         (statusFilter === 'all' || notification.status === statusFilter) &&
         (categoryFilter === 'all' || notification.category === categoryFilter)
@@ -47,17 +52,51 @@ const Notification = () => {
     setFilteredNotifications(filtered);
   }, [statusFilter, categoryFilter, notifications]);
 
+  // Load more notifications on scroll
+  useEffect(() => {
+    const loadMoreNotifications = () => {
+      const newVisibleNotifications = filteredNotifications.slice(0, page * 6);
+      setVisibleNotifications(newVisibleNotifications);
+    };
+    loadMoreNotifications();
+  }, [page, filteredNotifications]);
+
+  // Observer callback for loading more notifications
+  const lastNotificationRef = useCallback((node) => {
+    if (observer.current) observer.current.disconnect();
+    observer.current = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && visibleNotifications.length < filteredNotifications.length) {
+        setPage((prevPage) => prevPage + 1);
+      }
+    });
+    if (node) observer.current.observe(node);
+  }, [filteredNotifications, visibleNotifications]);
+
   // Mark notification as read
-  const markAsRead = async (notificationId) => {
-    try {
-      await axios.patch(`http://localhost:4000/api/notification/${notificationId}/status`, { status: 'read' });
-      setNotifications((prevNotifications) =>
-        prevNotifications.map((notification) =>
-          notification._id === notificationId ? { ...notification, status: 'read' } : notification
-        )
-      );
-    } catch (error) {
-      console.error('Error marking notification as read:', error);
+  const markAsRead = async (notificationId, notification, type) => {
+    if (type === 'unread') {
+      try {
+        await axios.put(`http://localhost:4000/api/notification/${notificationId}/status`, { status: 'read' });
+        setNotifications((prevNotifications) =>
+          prevNotifications.map((notification) =>
+            notification._id === notificationId ? { ...notification, status: 'read' } : notification
+          )
+        );
+      } catch (error) {
+        console.error('Error marking notification as read:', error);
+      }
+    }
+    
+    if (notification.category === 'order') {
+      navigate('/orders', { state: { orderId: notification.details.orderId } });
+      window.scrollTo(0, 0);
+    } else if (notification.category === 'booking') {
+      navigate('/reservation', { state: { bookingId: notification.details.bookingId } });
+      window.scrollTo(0, 0);
+    }
+    else if (notification.category === 'review') {
+      navigate('/review', { state: { reviewId: notification.details.reviewId } });
+      window.scrollTo(0, 300);
     }
   };
 
@@ -72,54 +111,62 @@ const Notification = () => {
           <option value="all">All Categories</option>
           <option value="review">Review</option>
           <option value="order">Order</option>
-          <option value="comment">Comment</option>
+          <option value="booking">Booking</option>
         </select>
       </div>
-      {filteredNotifications.length === 0 ? (
+      {visibleNotifications.length === 0 ? (
         <p>No notifications</p>
       ) : (
-        <NotificationList notifications={filteredNotifications} markAsRead={markAsRead} />
+        <NotificationList 
+          notifications={visibleNotifications} 
+          markAsRead={markAsRead} 
+          lastNotificationRef={lastNotificationRef}
+        />
       )}
     </div>
   );
 };
 
-const NotificationList = ({ notifications, markAsRead }) => {
+const NotificationList = ({ notifications, markAsRead, lastNotificationRef }) => {
   return (
     <ul className="notification-list">
-      {notifications.map((notification) => (
+      {notifications.map((notification, index) => (
         <NotificationItem
           key={notification._id}
           notification={notification}
           markAsRead={markAsRead}
+          ref={notifications.length === index + 1 ? lastNotificationRef : null} // Attach observer to the last notification
         />
       ))}
     </ul>
   );
 };
 
-const NotificationItem = ({ notification, markAsRead }) => {
-  const handleRead = () => {
-    if (notification.status === 'unread') {
-      markAsRead(notification._id);
-    }
-  };
+const NotificationItem = React.forwardRef(({ notification, markAsRead }, ref) => {
+  const handleRead = () => {   
+    const type = notification.status === 'unread' ? 'unread' : 'read';
+    markAsRead(notification._id, notification, type); 
+   };
 
   return (
-    console.log(notification.status),
-    <li className={`notification-item ${notification.status === 'unread' ? 'unread' : ''}`} onClick={handleRead}>
+    <li
+      ref={ref}
+      className={`notification-item ${notification.status === 'unread' ? 'unread' : ''}`}
+      onClick={handleRead}
+    >
       <div className="notification-content">
-        <FaExclamationTriangle className="notification-icon" />
+        <div className="notification-user">
+          <img src={notification.userImage} alt="user"></img>
+          <h4>{notification.userName}</h4>
+          
+        </div>
+       
         <p className="notification-message">{notification.message}</p>
-        <p className="notification-details">
-          Category: {notification.category}
-        </p>
-        <p className="notification-date">
-          {new Date(notification.createdAt).toLocaleString()}
-        </p>
+        <p className="notification-details">Category: {notification.category}</p>
+        <p className="notification-date">{new Date(notification.createdAt).toLocaleString()}</p>
       </div>
     </li>
   );
-};
+});
 
 export default Notification;
