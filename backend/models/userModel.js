@@ -3,7 +3,15 @@ import mongoose from "mongoose";
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true
+
+    },
+    firstName: {
+        type: String,
+
+    },
+    lastName: {
+        type: String,
+
     },
     email: {
         type: String,
@@ -29,8 +37,6 @@ const userSchema = new mongoose.Schema({
     address: {
         type: [
             {
-                firstName: { type: String, },
-                lastName: { type: String, },
                 email: { type: String, },
                 street: { type: String, },
                 city: { type: String, },

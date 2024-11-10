@@ -12,7 +12,7 @@ import voucherRouter from "./routes/voucherRoute.js";
 import promotionRouter from "./routes/promotionRoute.js";
 import bookingRouter from "./routes/bookingRoute.js";
 import reviewRouter from "./routes/reviewRoute.js";
-
+import wishlistRouter from "./routes/wishListRoute.js";
 import emailRouter from "./routes/emailRoute.js";
 
 import notificationRouter from "./routes/notificationRoute.js";
@@ -77,6 +77,7 @@ app.use("/api/booking", bookingRouter)
 app.use("/api/review", reviewRouter)
 app.use('/api/email', emailRouter);
 app.use("/api/notification", notificationRouter(io));
+app.use("/api/wishlist", wishlistRouter)
 
 
 app.get("/", (req, res) => {

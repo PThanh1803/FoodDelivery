@@ -68,7 +68,10 @@ const LoginPopup = ({ setShowLogin }) => {
 
                 <div className="login-popup-inputs">
                     {curentState !== "Login" && curentState !== "ForgotPassword" && (
-                        <input name="name" onChange={onChangeHandeler} value={data.name} type="text" placeholder="Name" required />
+                        <>
+                            <input name="firstName" onChange={onChangeHandeler} value={data.firstName} type="text" placeholder="First Name" required />
+                            <input name="lastName" onChange={onChangeHandeler} value={data.lastName} type="text" placeholder="Last Name" required />
+                        </>
                     )}
                     <input name="email" onChange={onChangeHandeler} value={data.email} type="email" placeholder="Email" required />
                     {curentState !== "ForgotPassword" && (

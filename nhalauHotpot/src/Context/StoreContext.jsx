@@ -11,14 +11,7 @@ const StoreContextProvider = (props) => {
     const [token, setToken] = useState("");
     const [cardItems, setCardItems] = useState({});
     const [food_list, setFoodList] = useState([]);
-    const [userInfo, setUserInfo] = useState({
-        name: '',
-        email: '',
-        address: '',
-        password: '',
-        avatar: '',
-        wishlist: []
-    });
+    const [userInfo, setUserInfo] = useState({});
     const addToCard = async (itemId) => {
         if (!cardItems[itemId]) {
             setCardItems(prev => ({ ...prev, [itemId]: 1 }));
@@ -80,7 +73,6 @@ const StoreContextProvider = (props) => {
                 localStorage.setItem("token", response.data.token);
                 localStorage.setItem("user", JSON.stringify(response.data.user));
                 setUserInfo(response.data.user);
-                console.log(response.data.user);
                 // Lưu thông tin người dùng
             }
             return response.data;
@@ -98,7 +90,6 @@ const StoreContextProvider = (props) => {
             if (storedToken) {
                 setToken(storedToken);
                 setUserInfo(JSON.parse(localStorage.getItem("user")));
-                console.log(userInfo);
                 await loadCartData(storedToken); // truyền token vào loadCartData
             }
         };
