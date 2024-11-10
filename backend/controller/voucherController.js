@@ -1,5 +1,5 @@
 import voucherModel from "../models/voucherModel.js";
-import  fs from "fs";
+import fs from "fs";
 
 const getListVoucher = async (req, res) => {
     try {
@@ -9,7 +9,7 @@ const getListVoucher = async (req, res) => {
         const statusFilter = req.query.status || null;
         const dateFilter = req.query.date || null;
         const code = req.query.code || null;
-        console.log("statusFilter:", statusFilter, "dateFilter:", dateFilter ,"code:", code);
+        console.log("statusFilter:", statusFilter, "dateFilter:", dateFilter, "code:", code);
         // Tạo một đối tượng filter để lưu các điều kiện lọc
         const filter = {};
 
@@ -72,11 +72,11 @@ const getListVoucher = async (req, res) => {
 const getVoucherById = async (req, res) => {
     try {
         const voucherData = await voucherModel.findById(req.params.id);
-        
+
         if (!voucherData) {
             return res.json({ success: false, message: "Voucher not found" });
         }
-        
+
         res.json({ success: true, voucher: voucherData });
     } catch (error) {
         console.log(error);
@@ -102,7 +102,7 @@ const createVoucher = async (req, res) => {
             minOrder: voucherData.minOrder,
             maxDiscount: voucherData.maxDiscount
         });
-        
+
         await newVoucher.save();
         res.json({ success: true, message: "Voucher created successfully", voucher: newVoucher });
     } catch (error) {
@@ -125,13 +125,13 @@ const deleteFile = (filePath) => {
 const deleteVoucher = async (req, res) => {
     try {
         const voucher = await voucherModel.findByIdAndDelete(req.params.id);
-        
+
         if (!voucher) {
             return res.status(404).json({ success: false, message: "Voucher not found" });
         }
-        
+
         deleteFile(`uploads/vouchers/${voucher.image}`);
-        
+
         res.status(200).json({ success: true, message: "Voucher deleted successfully" });
     } catch (error) {
         console.log(error);
@@ -143,11 +143,11 @@ const updateVoucher = async (req, res) => {
     try {
         const voucherData = JSON.parse(req.body.voucherData);
         const voucher = await voucherModel.findById(req.params.id);
-        
+
         if (!voucher) {
             return res.status(404).json({ success: false, message: "Voucher not found" });
         }
-        
+
         const updateData = {
             voucherCode: voucherData.voucherCode,
             discountAmount: voucherData.discountAmount,

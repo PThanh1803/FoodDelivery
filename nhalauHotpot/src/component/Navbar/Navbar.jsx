@@ -31,8 +31,9 @@ const Navbar = ({ setShowLogin }) => {
   const [newNotification, setNewNotification] = useState(null); // Thông báo mới cho pop-up
   const [menu, setMenu] = useState("Home");
 
-  const { getTotalCartAmount, token, setToken } =
+  const { getTotalCartAmount, token, setToken, userInfo } =
     React.useContext(StoreContext);
+  console.log(userInfo);
   const location = useLocation();
   const navigate = useNavigate();
   const logout = () => {
@@ -63,6 +64,7 @@ const Navbar = ({ setShowLogin }) => {
       setTimeout(() => {
         setNewNotification(null); // Ẩn pop-up sau 5 giây
       }, 5000);
+
     });
 
     return () => {
@@ -104,7 +106,7 @@ const Navbar = ({ setShowLogin }) => {
         </div>
         {!token ? <button onClick={() => setShowLogin(true)}>Sign in</button> :
           <div className='navbar-profile'>
-            <img src={assets.profile_icon} alt="" />
+            <img src={`http://localhost:4000/images/avatars/${userInfo.avatar}`} alt={userInfo.name} className='navbar-profile-image' />
             <ul className="nav-profile-dropdown">
               <li onClick={() => navigate("/myorders")}>
                 <img src={assets.bag_icon} alt="" />

@@ -8,15 +8,13 @@ import FoodDisplay from '../FoodDisplay/FoodDisplay';
 
 
 const UserProfile = () => {
-    const { userInfo, setUserInfo, url } = useContext(StoreContext);
+    const { userInfo, url } = useContext(StoreContext);
     const [activeTab, setActiveTab] = useState('profile');
-    const [userEdit, setUserEdit] = useState(userInfo); // Khởi tạo trạng thái userEdit
     const [wishlist, setWishlist] = useState([]);
     // Khi userInfo thay đổi, cập nhật userEdit
     useEffect(() => {
         // Check if userInfo and userInfo._id are defined and haven't been fetched yet
         if (userInfo && userInfo._id) {
-            setUserEdit(userInfo);  // Update userEdit state
             fetchWishlist();         // Fetch wishlist data
         }
     }, [userInfo]);
@@ -74,12 +72,7 @@ const UserProfile = () => {
 
             <div className="content">
                 {activeTab === 'profile' && (
-                    <MyProfile
-                        userInfo={userInfo}
-                        setUserInfo={setUserInfo}
-                        userEdit={userEdit}
-                        setUserEdit={setUserEdit} // Truyền vào userEdit và setUserEdit
-                    />
+                    <MyProfile />
                 )}
                 {activeTab === 'update-password' && <UpdatePassword />}
                 {activeTab === 'wishlist' && <Wishlist wishlist={wishlist} />}
@@ -88,48 +81,54 @@ const UserProfile = () => {
     );
 };
 
-// Chỉnh sửa MyProfile để nhận và cập nhật userEdit
-const MyProfile = ({ userInfo, setUserInfo, userEdit, setUserEdit }) => {
+
+
+const MyProfile = () => {
     const [isEditing, setIsEditing] = useState(false);
-    const [selectedAvatar, setSelectedAvatar] = useState(userEdit.avatar || default_avatar);
-    const { url } = useContext(StoreContext);
+    const { url, userInfo, setUserInfo } = useContext(StoreContext);
+    console.log("userInfo", userInfo);
+    const [previewImage, setPreviewImage] = useState(null);
+    const [image, setImage] = useState(null);
+    const [userEdit, setUserEdit] = useState(userInfo || null);
+
+    useEffect(() => {
+        if (userInfo) {
+            setUserEdit(
+                userInfo
+            );
+        }
+    }, [userInfo]);
 
     const handleEditClick = () => {
         setIsEditing(true);
     };
 
     const handleSaveClick = async () => {
-        // Kiểm tra xem dữ liệu có thay đổi không, nếu không thì không gửi request
         const address = {
-            street: userEdit.street || userInfo.address[0]?.street,
-            city: userEdit.city || userInfo.address[0]?.city,
-            state: userEdit.state || userInfo.address[0]?.state,
-            zipCode: userEdit.zipcode || userInfo.address[0]?.zipCode,
-            country: userEdit.country || userInfo.address[0]?.country,
-            phone: userEdit.phone || userInfo.address[0]?.phone,
+            street: userEdit.address[0]?.street || '',
+            city: userEdit.address[0]?.city || '',
+            state: userEdit.address[0]?.state || '',
+            zipCode: userEdit.address[0]?.zipCode || '',
+            country: userEdit.address[0]?.country || '',
+            phone: userEdit.address[0]?.phone || '',
         };
 
-        const userData = {
-            firstName: userEdit.firstName || userInfo.firstName,
-            lastName: userEdit.lastName || userInfo.lastName,
-            email: userEdit.email || userInfo.email,
-            address: [address],
-            _id: userInfo._id,
-        };
+        const userData = new FormData();
+        userData.append('firstName', userEdit.firstName);
+        userData.append('lastName', userEdit.lastName);
+        userData.append('name', `${userEdit.firstName} ${userEdit.lastName}`);
+        userData.append('email', userEdit.email);
+        userData.append('address', JSON.stringify(address));
 
-        // So sánh dữ liệu cũ với dữ liệu mới
-        const isDataChanged = JSON.stringify(userData) !== JSON.stringify(userInfo);
-        if (!isDataChanged) {
-            alert('No changes made');
-            setIsEditing(false);
-            return;
+        if (image) {
+            userData.append('image', image);
         }
 
-        const response = await saveProfile(userData, selectedAvatar);
+        const response = await saveProfile(userData);
 
         if (response.success) {
-            setUserInfo({ ...userData, avatar: selectedAvatar });
-            localStorage.setItem("user", JSON.stringify({ ...userData, avatar: selectedAvatar }));
+            setUserInfo({ ...userInfo, ...userEdit, avatar: response.user.avatar });
+            localStorage.setItem("user", JSON.stringify({ ...userInfo, ...userEdit, avatar: response.user.avatar }));
             alert('Profile updated successfully!');
         } else {
             alert('Error updating profile!');
@@ -140,28 +139,39 @@ const MyProfile = ({ userInfo, setUserInfo, userEdit, setUserEdit }) => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setUserEdit({
-            ...userEdit,
+        setUserEdit((prevUserEdit) => ({
+            ...prevUserEdit,
             [name]: value,
-        });
+        }));
     };
 
-    const handleAvatarChange = (e) => {
+    const handleAddressChange = (e) => {
+        const { name, value } = e.target;
+        setUserEdit((prevUserEdit) => ({
+            ...prevUserEdit,
+            address: [
+                {
+                    ...prevUserEdit.address[0],
+                    [name]: value,
+                },
+            ],
+        }));
+    };
+
+    const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onload = () => {
-                setSelectedAvatar(reader.result);
-            };
-            reader.readAsDataURL(file);
+            setImage(file);
+            setPreviewImage(URL.createObjectURL(file));
         }
     };
 
-    const saveProfile = async (userData, avatar) => {
-        console.log(userData);
+    const saveProfile = async (userData) => {
         try {
-            const response = await axios.put(`${url}/api/user/${userData._id}`, { userData, avatar });
-            return response.data; // Trả về kết quả từ server
+            const response = await axios.put(`${url}/api/user/${userInfo._id}`, userData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+            return response.data;
         } catch (error) {
             console.error('Error saving profile:', error);
             return { success: false, message: 'Error updating profile' };
@@ -181,7 +191,7 @@ const MyProfile = ({ userInfo, setUserInfo, userEdit, setUserEdit }) => {
             </div>
             <div className="avatar-section">
                 <img
-                    src={selectedAvatar}
+                    src={previewImage ? previewImage : `${url}/images/avatars/${userInfo.avatar}`}
                     alt="Avatar"
                     className="avatar-image"
                 />
@@ -189,7 +199,7 @@ const MyProfile = ({ userInfo, setUserInfo, userEdit, setUserEdit }) => {
                     <input
                         type="file"
                         accept="image/*"
-                        onChange={handleAvatarChange}
+                        onChange={handleImageChange}
                         className="avatar-input"
                     />
                 )}
@@ -227,8 +237,8 @@ const MyProfile = ({ userInfo, setUserInfo, userEdit, setUserEdit }) => {
                     <input
                         required
                         name="street"
-                        onChange={handleChange}
-                        value={userEdit.street || (userEdit.address && userEdit.address[0] ? userEdit.address[0].street : '')}
+                        onChange={handleAddressChange}
+                        value={userEdit.address[0]?.street || ''}
                         type="text"
                         placeholder="Street"
                         disabled={!isEditing}
@@ -237,8 +247,8 @@ const MyProfile = ({ userInfo, setUserInfo, userEdit, setUserEdit }) => {
                         <input
                             required
                             name="city"
-                            onChange={handleChange}
-                            value={userEdit.city || (userEdit.address && userEdit.address[0] ? userEdit.address[0].city : '')}
+                            onChange={handleAddressChange}
+                            value={userEdit.address[0]?.city || ''}
                             type="text"
                             placeholder="City"
                             disabled={!isEditing}
@@ -246,8 +256,8 @@ const MyProfile = ({ userInfo, setUserInfo, userEdit, setUserEdit }) => {
                         <input
                             required
                             name="state"
-                            onChange={handleChange}
-                            value={userEdit.state || (userEdit.address && userEdit.address[0] ? userEdit.address[0].state : '')}
+                            onChange={handleAddressChange}
+                            value={userEdit.address[0]?.state || ''}
                             type="text"
                             placeholder="State"
                             disabled={!isEditing}
@@ -257,8 +267,8 @@ const MyProfile = ({ userInfo, setUserInfo, userEdit, setUserEdit }) => {
                         <input
                             required
                             name="zipcode"
-                            onChange={handleChange}
-                            value={userEdit.zipcode || (userEdit.address && userEdit.address[0] ? userEdit.address[0].zipCode : '')}
+                            onChange={handleAddressChange}
+                            value={userEdit.address[0]?.zipCode || ''}
                             type="text"
                             placeholder="Zip Code"
                             disabled={!isEditing}
@@ -266,8 +276,8 @@ const MyProfile = ({ userInfo, setUserInfo, userEdit, setUserEdit }) => {
                         <input
                             required
                             name="country"
-                            onChange={handleChange}
-                            value={userEdit.country || (userEdit.address && userEdit.address[0] ? userEdit.address[0].country : '')}
+                            onChange={handleAddressChange}
+                            value={userEdit.address[0]?.country || ''}
                             type="text"
                             placeholder="Country"
                             disabled={!isEditing}
@@ -276,8 +286,8 @@ const MyProfile = ({ userInfo, setUserInfo, userEdit, setUserEdit }) => {
                     <input
                         required
                         name="phone"
-                        onChange={handleChange}
-                        value={userEdit.phone || (userEdit.address && userEdit.address[0] ? userEdit.address[0].phone : '')}
+                        onChange={handleAddressChange}
+                        value={userEdit.address[0]?.phone || ''}
                         type="text"
                         placeholder="Phone Number"
                         disabled={!isEditing}
@@ -292,6 +302,8 @@ const MyProfile = ({ userInfo, setUserInfo, userEdit, setUserEdit }) => {
         </div>
     );
 };
+
+
 const UpdatePassword = () => {
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');

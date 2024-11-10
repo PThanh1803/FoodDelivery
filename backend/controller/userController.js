@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import validator from "validator";
 import userModel from "../models/userModel.js";
-
+import fs from "fs";
 //login user
 const loginUser = async (req, res) => {
     const { email, password } = req.body;
@@ -65,7 +65,7 @@ const registerUser = async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hashPassword = await bcrypt.hash(password, salt);
 
-        const newUser = new userModel({ firstName: firstName, lastName: lastName, email: email, password: hashPassword });
+        const newUser = new userModel({ firstName: firstName, lastName: lastName, name: firstName + " " + lastName, email: email, password: hashPassword });
         const user = await newUser.save();
         const token = createToken(user._id);
         res.json({ success: true, data: token });
@@ -93,16 +93,28 @@ const getUserById = async (req, res) => {
         res.json({ success: false, message: "Error retrieving user" });
     }
 };
+const deleteFile = (filePath) => {
+    if (fs.existsSync(filePath)) {
+        fs.unlink(filePath, (err) => {
+            if (err) console.error("Error deleting file:", err);
+        });
+    }
+};
 const updateUserById = async (req, res) => {
     const { id } = req.params;
     try {
         const user = await userModel.findById(id);
-        const { firstName, lastName, currentPassword, newPassword, avatar, address } = req.body.userData;
+        console.log(req.body);
+        const { currentPassword, newPassword } = req.body;
+        const { firstName, lastName, name } = req.body;
+        const { address } = JSON.parse(req.body.address);
+        // Parse the address data from the request bodyreq.body;
         if (!user) {
             return res.status(404).json({ success: false, message: "User not found" });
         }
         if (firstName) user.firstName = firstName;
         if (lastName) user.lastName = lastName;
+        if (name) user.name = name;
         // Kiểm tra mật khẩu hiện tại
         if (currentPassword && newPassword) {
             // So sánh mật khẩu hiện tại với mật khẩu trong cơ sở dữ liệu
@@ -114,8 +126,14 @@ const updateUserById = async (req, res) => {
             const hashPassword = await bcrypt.hash(newPassword, salt);
             user.password = hashPassword;
         }
-        if (avatar) user.avatar = avatar;
-        if (address) user.address = address;
+        if (req.file) {
+            const avatar = req.file.filename;
+            if (user.avatar) {
+                deleteFile(`uploads/avatars/${user.avatar}`);
+            }
+            user.avatar = avatar;
+        }
+        if (address) user.address[0] = address;
         // Lưu các thay đổi vào cơ sở dữ liệu
         const updatedUser = await user.save();
 
