@@ -22,12 +22,14 @@ const NotificationItem = ({ notification }) => (
 );
 
 const Navbar = ({ setShowLogin }) => {
+
   const [unreadCount, setUnreadCount] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [newNotification, setNewNotification] = useState(null);
 
   const { getTotalCartAmount, token, setToken, userInfo } = useContext(StoreContext);
+
   const location = useLocation();
   const navigate = useNavigate();
   const dropdownRef = useRef(null); // Reference for the dropdown
@@ -54,7 +56,6 @@ const Navbar = ({ setShowLogin }) => {
       setNotifications((prev) => [notification, ...prev]);
       setUnreadCount((prev) => prev + 1);
       setNewNotification(notification);
-
       setTimeout(() => setNewNotification(null), 5000);
     });
 
@@ -100,11 +101,10 @@ const Navbar = ({ setShowLogin }) => {
           </Link>
           <div className={getTotalCartAmount() === 0 ? "" : "dot"}></div>
         </div>
-        {!token ? (
-          <button onClick={() => setShowLogin(true)}>Sign in</button>
-        ) : (
-          <div className="navbar-profile">
-            <img src={assets.profile_icon} alt="" />
+        {!token ? <button onClick={() => setShowLogin(true)}>Sign in</button> :
+          <div className='navbar-profile'>
+            <img src={`http://localhost:4000/images/avatars/${userInfo.avatar}`} alt={userInfo.name} className='navbar-profile-image' />
+
             <ul className="nav-profile-dropdown">
               <li onClick={() => navigate("/myorders")}>
                 <img src={assets.bag_icon} alt="" />

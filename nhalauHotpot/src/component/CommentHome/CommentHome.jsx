@@ -3,7 +3,7 @@ import { StoreContext } from '../../context/StoreContext';
 import './CommentHome.css';
 
 const CommentHome = () => {
-    const { url } = useContext(StoreContext);
+    const { url, userInfo } = useContext(StoreContext);
     const [comments, setComments] = useState([]);
     const [visibleIndex, setVisibleIndex] = useState(0);
 
@@ -23,7 +23,7 @@ const CommentHome = () => {
         };
         fetchComments();
     }, [url]);
-
+    console.log(comments);
     // Set up an interval to cycle through comments every 2 seconds
     useEffect(() => {
         const interval = setInterval(() => {
@@ -103,6 +103,6 @@ const GoodCommentCard = ({ comment }) => {
             <p className="good-comment-card-comment">{comment.comment}</p>
         </div>
     );
-}    
+}
 
 export default CommentHome;

@@ -1,5 +1,5 @@
 import voucherModel from "../models/voucherModel.js";
-import  fs from "fs";
+import fs from "fs";
 
 const getListVoucher = async (req, res) => {
     try {
@@ -8,6 +8,8 @@ const getListVoucher = async (req, res) => {
 
         const statusFilter = req.query.status || null;
         const dateFilter = req.query.date || null;
+
+      
         const code = req.query.code || null;            
         const filter = {};
 
@@ -88,6 +90,7 @@ const getListVoucher = async (req, res) => {
 
 // Lấy thông tin mã giảm giá bằng id 
 const getVoucherById = async (req, res) => {
+
    
         try {
             const voucherData = await voucherModel.findById(req.params.id);
@@ -101,6 +104,7 @@ const getVoucherById = async (req, res) => {
             console.log(error);
             res.json({ success: false, message: "Error fetching voucher" });
         }
+
 };
 
 // Tạo mã giảm giá mới
@@ -126,7 +130,6 @@ const createVoucher = async (req, res) => {
             maxDiscount: voucherData.maxDiscount,
             used: 0
         });
-        console.log(newVoucher.used);
         await newVoucher.save();
         res.json({ success: true, message: "Voucher created successfully", voucher: newVoucher });
     } catch (error) {
@@ -149,13 +152,13 @@ const deleteFile = (filePath) => {
 const deleteVoucher = async (req, res) => {
     try {
         const voucher = await voucherModel.findByIdAndDelete(req.params.id);
-        
+
         if (!voucher) {
             return res.status(404).json({ success: false, message: "Voucher not found" });
         }
-        
+
         deleteFile(`uploads/vouchers/${voucher.image}`);
-        
+
         res.status(200).json({ success: true, message: "Voucher deleted successfully" });
     } catch (error) {
         console.log(error);
@@ -167,11 +170,10 @@ const updateVoucher = async (req, res) => {
     try {
         const voucherData = JSON.parse(req.body.voucherData);
         const voucher = await voucherModel.findById(req.params.id);
-        
+
         if (!voucher) {
             return res.status(404).json({ success: false, message: "Voucher not found" });
         }
-        console.log(voucher);
         const updateData = {
             voucherCode: voucherData.voucherCode,
             discountAmount: voucherData.discountAmount,

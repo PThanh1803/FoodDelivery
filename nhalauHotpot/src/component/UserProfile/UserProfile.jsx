@@ -1,133 +1,197 @@
-
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import './UserProfile.css';
 import edit_icon from '../../assets/edit-alt-regular-24.png';
 import default_avatar from '../../assets/profile_icon.png'; // Placeholder avatar
-import FoodDisplay from '../FoodDisplay/FoodDisplay';
 import { StoreContext } from '../../Context/StoreContext';
+import axios from "axios";
+import FoodDisplay from '../FoodDisplay/FoodDisplay';
+
 
 const UserProfile = () => {
-    const { userInfo, setUserInfo } = useContext(StoreContext);
-    console.log(userInfo); // Use StoreContext to get userInfo
+    const { userInfo, url } = useContext(StoreContext);
     const [activeTab, setActiveTab] = useState('profile');
+    const [wishlist, setWishlist] = useState([]);
+    // Khi userInfo thay đổi, cập nhật userEdit
+    useEffect(() => {
+        // Check if userInfo and userInfo._id are defined and haven't been fetched yet
+        if (userInfo && userInfo._id) {
+            fetchWishlist();         // Fetch wishlist data
+        }
+    }, [userInfo]);
+    console.log(userInfo)
+    const fetchWishlist = async () => {
+        try {
+            if (!userInfo || !userInfo._id) {
+                console.error('Invalid userInfo or userInfo._id');
+                return;
+            }
 
+            const response = await fetch(`${url}/api/wishlist/${userInfo._id}`);
 
+            if (!response.ok) {
+                throw new Error('Failed to fetch wishlist');
+            }
+
+            const data = await response.json();
+
+            if (data.success) {
+                setWishlist(data.wishlist);
+            } else {
+                console.error('Failed to fetch wishlist:', data.message || 'Unknown error');
+            }
+        } catch (error) {
+            // Log any errors
+            console.error('Error fetching wishlist:', error);
+        }
+    };
     const handleTabClick = (tab) => {
         setActiveTab(tab);
     };
-    const onChangeHandeler = (event) => {
-        const name = event.target.name;
-        const value = event.target.value;
-        setData(data => ({ ...data, [name]: value }))
-    }
     return (
-
         <div className="user-profile-container">
-            <div className="user-profile-left">
-                <div className="sidebar">
-                    <button
-                        className={activeTab === 'profile' ? 'active' : ''}
-                        onClick={() => handleTabClick('profile')}
-                    >
-                        My Profile
-                    </button>
-                    <button
-                        className={activeTab === 'update-password' ? 'active' : ''}
-                        onClick={() => handleTabClick('update-password')}
-                    >
-                        Update Password
-                    </button>
-                    <button
-                        className={activeTab === 'wishlist' ? 'active' : ''}
-                        onClick={() => handleTabClick('wishlist')}
-                    >
-                        Wishlist
-                    </button>
-                </div>
-
-                <div className="content">
-                    {activeTab === 'profile' && (
-                        <MyProfile
-                            userInfo={userInfo}
-                            setUserInfo={setUserInfo}
-                        />
-                    )}
-                    {activeTab === 'update-password' && <UpdatePassword />}
-
-                    {activeTab === 'wishlist' && <Wishlist wishlist={userInfo.wishlist} />} {/* Use wishlist from userInfo */}
-
-                </div>
+            <div className="sidebar">
+                <button
+                    className={activeTab === 'profile' ? 'active' : ''}
+                    onClick={() => handleTabClick('profile')}
+                >
+                    My Profile
+                </button>
+                <button
+                    className={activeTab === 'update-password' ? 'active' : ''}
+                    onClick={() => handleTabClick('update-password')}
+                >
+                    Update Password
+                </button>
+                <button
+                    className={activeTab === 'wishlist' ? 'active' : ''}
+                    onClick={() => handleTabClick('wishlist')}
+                >
+                    Wishlist
+                </button>
             </div>
-            <div className="place-order-left">
-                <p className="title">Delivery Information</p>
-                <div className="multi-fields">
-                    <input required name="firstName" onChange={onChangeHandeler} value={data.firstName} type="text" placeholder="First Name" />
-                    <input required name="lastName" onChange={onChangeHandeler} value={data.lastName} type="text" placeholder="Last Name" />
-                </div>
-                <input required name="email" onChange={onChangeHandeler} value={data.email} className="" type="email" placeholder="Email" />
-                <input required name="street" onChange={onChangeHandeler} value={data.street} type="text" placeholder="Street" />
-                <div className="multi-fields">
-                    <input required name="city" onChange={onChangeHandeler} value={data.city} type="text" placeholder="City" />
-                    <input required name="state" onChange={onChangeHandeler} value={data.state} type="text" placeholder="State" />
-                </div>
-                <div className="multi-fields">
-                    <input required name="zipcode" onChange={onChangeHandeler} value={data.zipcode} type="text" placeholder="Zip Code" />
-                    <input required name="country" onChange={onChangeHandeler} value={data.country} type="text" placeholder="Country" />
-                </div>
-                <input required name="phone" onChange={onChangeHandeler} value={data.phone} type="text" placeholder="Phone Number" />
+
+            <div className="content">
+                {activeTab === 'profile' && (
+                    <MyProfile />
+                )}
+                {activeTab === 'update-password' && <UpdatePassword />}
+                {activeTab === 'wishlist' && <Wishlist wishlist={wishlist} />}
             </div>
         </div>
     );
 };
 
-const MyProfile = ({ userInfo, setUserInfo }) => {
+
+
+const MyProfile = () => {
     const [isEditing, setIsEditing] = useState(false);
-    const [editedInfo, setEditedInfo] = useState({ ...userInfo });
+    const { url, userInfo, setUserInfo } = useContext(StoreContext);
+    console.log("userInfo", userInfo);
+    const [previewImage, setPreviewImage] = useState(null);
+    const [image, setImage] = useState(null);
+    const [userEdit, setUserEdit] = useState(userInfo || null);
 
-    const [selectedAvatar, setSelectedAvatar] = useState(userInfo.avatar || default_avatar);
-
+    useEffect(() => {
+        if (userInfo) {
+            setUserEdit(
+                userInfo
+            );
+        }
+    }, [userInfo]);
 
     const handleEditClick = () => {
         setIsEditing(true);
     };
 
-    const handleSaveClick = () => {
-        setUserInfo({ ...editedInfo, avatar: selectedAvatar });
+    const handleSaveClick = async () => {
+        const address = {
+            street: userEdit.address[0]?.street || '',
+            city: userEdit.address[0]?.city || '',
+            state: userEdit.address[0]?.state || '',
+            zipCode: userEdit.address[0]?.zipCode || '',
+            country: userEdit.address[0]?.country || '',
+            phone: userEdit.address[0]?.phone || '',
+        };
+
+        const userData = new FormData();
+        userData.append('firstName', userEdit.firstName);
+        userData.append('lastName', userEdit.lastName);
+        userData.append('name', `${userEdit.firstName} ${userEdit.lastName}`);
+        userData.append('email', userEdit.email);
+        userData.append('address', JSON.stringify(address));
+
+        if (image) {
+            userData.append('image', image);
+        }
+
+        const response = await saveProfile(userData);
+
+        if (response.success) {
+            setUserInfo({ ...userInfo, ...userEdit, avatar: response.user.avatar });
+            localStorage.setItem("user", JSON.stringify({ ...userInfo, ...userEdit, avatar: response.user.avatar }));
+            alert('Profile updated successfully!');
+        } else {
+            alert('Error updating profile!');
+        }
+
         setIsEditing(false);
     };
 
     const handleChange = (e) => {
-        setEditedInfo({
-            ...editedInfo,
-            [e.target.name]: e.target.value,
-        });
+        const { name, value } = e.target;
+        setUserEdit((prevUserEdit) => ({
+            ...prevUserEdit,
+            [name]: value,
+        }));
     };
 
-    const handleAvatarChange = (e) => {
+    const handleAddressChange = (e) => {
+        const { name, value } = e.target;
+        setUserEdit((prevUserEdit) => ({
+            ...prevUserEdit,
+            address: [
+                {
+                    ...prevUserEdit.address[0],
+                    [name]: value,
+                },
+            ],
+        }));
+    };
+
+    const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onload = () => {
-                setSelectedAvatar(reader.result);
-            };
-            reader.readAsDataURL(file);
+            setImage(file);
+            setPreviewImage(URL.createObjectURL(file));
+        }
+    };
+
+    const saveProfile = async (userData) => {
+        try {
+            const response = await axios.put(`${url}/api/user/${userInfo._id}`, userData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error saving profile:', error);
+            return { success: false, message: 'Error updating profile' };
         }
     };
 
     return (
         <div className="profile-section">
+            <img
+                src={edit_icon}
+                alt="Edit"
+                className="edit-icon"
+                onClick={handleEditClick}
+            />
             <div className="profile-header">
                 <h2>My Profile</h2>
-                <img
-                    src={edit_icon}
-                    alt="Edit"
-                    className="edit-icon"
-                    onClick={handleEditClick}
-                />
             </div>
             <div className="avatar-section">
                 <img
-                    src={selectedAvatar}
+                    src={previewImage ? previewImage : `${url}/images/avatars/${userInfo.avatar}`}
                     alt="Avatar"
                     className="avatar-image"
                 />
@@ -135,125 +199,185 @@ const MyProfile = ({ userInfo, setUserInfo }) => {
                     <input
                         type="file"
                         accept="image/*"
-                        onChange={handleAvatarChange}
+                        onChange={handleImageChange}
                         className="avatar-input"
                     />
                 )}
             </div>
-            <div className="profile-details">
-                <p>
-                    <strong>Name:</strong>{' '}
-                    {isEditing ? (
+            <div className="profile-details place-order-left">
+                <div>
+                    <div className="multi-fields">
                         <input
-                            type="text"
-                            name="name"
-                            value={editedInfo.name}
+                            required
+                            name="firstName"
                             onChange={handleChange}
+                            value={userEdit.firstName || ''}
+                            type="text"
+                            placeholder="First Name"
+                            disabled={!isEditing}
                         />
-                    ) : (
-                        userInfo.name
-                    )}
-                </p>
-                <p>
-                    <strong>Email:</strong>{' '}
+                        <input
+                            required
+                            name="lastName"
+                            onChange={handleChange}
+                            value={userEdit.lastName || ''}
+                            type="text"
+                            placeholder="Last Name"
+                            disabled={!isEditing}
+                        />
+                    </div>
                     <input
-                        type="email"
+                        required
                         name="email"
-                        value={userInfo.email}
-                        readOnly
+                        value={userEdit.email || ''}
+                        type="email"
+                        placeholder="Email"
+                        disabled={true}
                     />
-                </p>
-                <p>
-                    <strong>Address:</strong>{' '}
-                    {isEditing ? (
+                    <input
+                        required
+                        name="street"
+                        onChange={handleAddressChange}
+                        value={userEdit.address[0]?.street || ''}
+                        type="text"
+                        placeholder="Street"
+                        disabled={!isEditing}
+                    />
+                    <div className="multi-fields">
                         <input
+                            required
+                            name="city"
+                            onChange={handleAddressChange}
+                            value={userEdit.address[0]?.city || ''}
                             type="text"
-                            name="address"
-                            value={editedInfo.address}
-                            onChange={handleChange}
+                            placeholder="City"
+                            disabled={!isEditing}
                         />
-                    ) : (
-                        userInfo.address
+                        <input
+                            required
+                            name="state"
+                            onChange={handleAddressChange}
+                            value={userEdit.address[0]?.state || ''}
+                            type="text"
+                            placeholder="State"
+                            disabled={!isEditing}
+                        />
+                    </div>
+                    <div className="multi-fields">
+                        <input
+                            required
+                            name="zipcode"
+                            onChange={handleAddressChange}
+                            value={userEdit.address[0]?.zipCode || ''}
+                            type="text"
+                            placeholder="Zip Code"
+                            disabled={!isEditing}
+                        />
+                        <input
+                            required
+                            name="country"
+                            onChange={handleAddressChange}
+                            value={userEdit.address[0]?.country || ''}
+                            type="text"
+                            placeholder="Country"
+                            disabled={!isEditing}
+                        />
+                    </div>
+                    <input
+                        required
+                        name="phone"
+                        onChange={handleAddressChange}
+                        value={userEdit.address[0]?.phone || ''}
+                        type="text"
+                        placeholder="Phone Number"
+                        disabled={!isEditing}
+                    />
+                    {isEditing && (
+                        <button className="save-button" onClick={handleSaveClick}>
+                            Save
+                        </button>
                     )}
-                </p>
-                <p>
-                    <strong>Password:</strong> {userInfo.password}
-                </p>
+                </div>
             </div>
-            {isEditing && (
-                <button className="save-button" onClick={handleSaveClick}>
-                    Save
-                </button>
-            )}
         </div>
     );
 };
+
 
 const UpdatePassword = () => {
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const { userInfo, setUserInfo, url } = useContext(StoreContext);
+    const [errorMessage, setErrorMessage] = useState('');
 
-    const handlePasswordUpdate = (e) => {
-        e.preventDefault();
-        if (newPassword === confirmPassword) {
-            alert('Password updated successfully!');
-        } else {
-            alert('Passwords do not match.');
+    const handleChangePassword = async () => {
+        if (newPassword !== confirmPassword) {
+            setErrorMessage('New passwords do not match!');
+            return;
+        }
+        try {
+            // Gửi dữ liệu dưới dạng userData
+            const response = await axios.put(`${url}/api/user/${userInfo._id}`, {
+                userData: {
+                    currentPassword,
+                    newPassword
+                }
+            });
+            if (response.data.success) {
+                alert('Password updated successfully!');
+                setCurrentPassword('');
+                setNewPassword('');
+                setConfirmPassword('');
+            } else {
+                setErrorMessage(response.data.message || 'Error updating password');
+            }
+        } catch (error) {
+            console.error('Error updating password:', error);
+            setErrorMessage('Error updating password');
         }
     };
-
     return (
         <div className="update-password-section">
             <h2>Update Password</h2>
-            <form onSubmit={handlePasswordUpdate}>
-                <div>
-                    <label>Current Password</label>
-                    <input
-                        type="password"
-                        value={currentPassword}
-                        onChange={(e) => setCurrentPassword(e.target.value)}
-                        required
-                    />
-                </div>
-                <div>
-                    <label>New Password</label>
-                    <input
-                        type="password"
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
-                        required
-                    />
-                </div>
-                <div>
-                    <label>Confirm New Password</label>
-                    <input
-                        type="password"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        required
-                    />
-                </div>
-                <button type="submit">Update Password</button>
-            </form>
+            <input
+                type="password"
+                placeholder="Current Password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+            />
+            <input
+                type="password"
+                placeholder="New Password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+            />
+            <input
+                type="password"
+                placeholder="Confirm New Password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+            {errorMessage && <div className="error-message">{errorMessage}</div>}
+            <button onClick={handleChangePassword}>Update Password</button>
         </div>
     );
 };
-
-
 const Wishlist = ({ wishlist }) => {
+    if (!wishlist) {
+        return <p>Loading wishlist...</p>;  // Display loading state while wishlist is being fetched
+    }
+    if (wishlist.length === 0) {
+        return <p>Your wishlist is empty.</p>;
+    }
+
     return (
-        <div className="wishlist-section">
-            <h2>Wishlist</h2>
-            {wishlist && wishlist.length > 0 ? (
-                <FoodDisplay wishlist={wishlist.map(item => item.id)} />
-            ) : (
-                <p>Your wishlist is empty.</p>
-            )}
+        <div className="wishlist-user-container">
+            <h2>Your Wishlist</h2>
+            <FoodDisplay wishlist={wishlist} />
         </div>
     );
 };
-
 
 
 export default UserProfile;

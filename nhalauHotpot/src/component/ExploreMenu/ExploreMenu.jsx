@@ -9,7 +9,6 @@ const ExploreMenu = () => {
   const [bestSellers, setBestSellers] = React.useState([]);
   const { url } = React.useContext(StoreContext);
 
-  console.log(bestSellers);
   const fetchBestSellers = async () => {
     try {
       // Step 1: Fetch bestseller IDs

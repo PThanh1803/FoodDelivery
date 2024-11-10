@@ -1,67 +1,65 @@
 import { createContext, useEffect, useState } from "react";
 import axios from "axios";
 
-
-
-export const StoreContext = createContext(null)
-
+export const StoreContext = createContext(null);
 
 const StoreContextProvider = (props) => {
     const url = "http://localhost:4000";
-    const [token, setToken] = useState("");
+    const [token, setToken] = useState(localStorage.getItem("token") || ""); // Initialize from localStorage
     const [cardItems, setCardItems] = useState({});
     const [food_list, setFoodList] = useState([]);
-    const [userInfo, setUserInfo] = useState({
-        name: '',
-        email: '',
-        address: '',
-        password: '',
-        avatar: '',
-        wishlist: []
-    });
+    const [userInfo, setUserInfo] = useState(
+        JSON.parse(localStorage.getItem("user")) || {} // Initialize from localStorage
+    );
+
+    // Function to add item to cart
     const addToCard = async (itemId) => {
-        if (!cardItems[itemId]) {
-            setCardItems(prev => ({ ...prev, [itemId]: 1 }));
-        } else {
-            setCardItems(prev => ({ ...prev, [itemId]: prev[itemId] + 1 }));
-        }
+        setCardItems((prev) => ({
+            ...prev,
+            [itemId]: (prev[itemId] || 0) + 1,
+        }));
 
         if (token) {
-            const response = await axios.post(`${url}/api/cart/`, { itemId }, { headers: { token } });
+            const response = await axios.post(
+                `${url}/api/cart/`,
+                { itemId },
+                { headers: { token } }
+            );
 
             if (response.data.success) {
                 console.log(response.data.message);
             }
-
         }
     };
 
+    // Function to remove item from cart
     const removeFromCard = async (itemId) => {
-        setCardItems(prev => {
+        setCardItems((prev) => {
             const updatedCardItems = { ...prev };
             if (updatedCardItems[itemId] > 1) {
                 updatedCardItems[itemId] -= 1;
             } else {
-                delete updatedCardItems[itemId]; // Xóa item nếu số lượng bằng 0
+                delete updatedCardItems[itemId];
             }
             return updatedCardItems;
         });
 
         if (token) {
-            await axios.delete(`${url}/api/cart/${itemId}`, { headers: { token } });
+            await axios.delete(`${url}/api/cart/${itemId}`, {
+                headers: { token },
+            });
         }
     };
 
+    // Function to calculate total cart amount
     const getTotalCartAmount = () => {
-        return Object.keys(cardItems).reduce((totalAmount, item) => {
-            if (cardItems[item] > 0) {
-                const itemInfo = food_list.find(food => food._id === item);
-                return totalAmount + (itemInfo.price * cardItems[item]);
-            }
-            return totalAmount;
+        return Object.keys(cardItems).reduce((total, itemId) => {
+            const item = food_list.find((food) => food._id === itemId);
+            return total + (item ? item.price * cardItems[itemId] : 0);
         }, 0);
     };
 
+    // Fetch the list of foods
     const fetchFoodList = async () => {
         try {
             const response = await axios.get(`${url}/api/food/`);
@@ -71,58 +69,67 @@ const StoreContextProvider = (props) => {
         }
     };
 
-
+    // Log in the user and store token and user info
     const loginUser = async (email, password) => {
         try {
-            const response = await axios.post(`${url}/api/user/login`, { email, password });
+            const response = await axios.post(`${url}/api/user/login`, {
+                email,
+                password,
+            });
+
             if (response.data.success) {
                 setToken(response.data.token);
+                setUserInfo(response.data.user);
                 localStorage.setItem("token", response.data.token);
                 localStorage.setItem("user", JSON.stringify(response.data.user));
-                setUserInfo(response.data.user);
-                console.log(response.data.user);
-                // Lưu thông tin người dùng
             }
             return response.data;
-
         } catch (error) {
             console.error("Login error:", error);
             return { success: false, message: "Login failed" };
         }
     };
 
+    // Load food list, token, and cart data on first mount
     useEffect(() => {
-        const fetchData = async () => {
-            await fetchFoodList();
-            const storedToken = localStorage.getItem("token");
-            if (storedToken) {
-                setToken(storedToken);
-                setUserInfo(JSON.parse(localStorage.getItem("user")));
-                console.log(userInfo);
-                await loadCartData(storedToken); // truyền token vào loadCartData
-            }
-        };
-        fetchData();
-    }, []);
+        fetchFoodList();
 
-    const loadCartData = async (token) => { // thêm token vào tham số
         if (token) {
-            console.log("Token found:", token);
-            try {
-                const response = await axios.get(`${url}/api/cart/`, { headers: { token } });
-                if (response.data.success) {
-                    setCardItems(response.data.cartData);
-                } else {
-                    console.error(response.data.message);
-                }
-            } catch (error) {
-                console.error("Error loading cart data:", error);
+            loadCartData(token);
+        }
+    }, [token]);
+
+    // Load cart data if token is available
+    const loadCartData = async (token) => {
+        try {
+            const response = await axios.get(`${url}/api/cart/`, {
+                headers: { token },
+            });
+
+            if (response.data.success) {
+                setCardItems(response.data.cartData);
+            } else {
+                console.error(response.data.message);
             }
-        } else {
-            console.log("No token");
+        } catch (error) {
+            console.error("Error loading cart data:", error);
         }
     };
 
+    // Save userInfo to localStorage whenever it changes
+    useEffect(() => {
+        localStorage.setItem("user", JSON.stringify(userInfo));
+    }, [userInfo]);
+
+    // Save token to localStorage whenever it changes
+    useEffect(() => {
+        if (token) {
+            localStorage.setItem("token", token);
+        } else {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+        }
+    }, [token]);
 
     const contextValue = {
         food_list,
@@ -134,8 +141,8 @@ const StoreContextProvider = (props) => {
         url,
         token,
         setToken,
-        userInfo, // Thêm thông tin người dùng vào context
-        setUserInfo, // Hàm để cập nhật thông tin người dùng
+        userInfo,
+        setUserInfo,
         loginUser,
     };
 

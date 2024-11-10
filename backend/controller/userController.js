@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import validator from "validator";
 import userModel from "../models/userModel.js";
-
+import fs from "fs";
 //login user
 const loginUser = async (req, res) => {
     const { email, password } = req.body;
@@ -23,10 +23,12 @@ const loginUser = async (req, res) => {
         res.json({
             success: true, token, user: {
                 _id: user._id,
-                name: user.name,
+                firstName: user.firstName,
+                lastName: user.lastName,
                 email: user.email,
                 avatar: user.avatar,
-                wishlist: user.wishlist
+                address: user.address
+
             }
         });
     } catch (error) {
@@ -43,7 +45,7 @@ const createToken = (id) => {
 
 //register user
 const registerUser = async (req, res) => {
-    const { name, email, password } = req.body;
+    const { firstName, lastName, email, password } = req.body;
     try {
         const exist = await userModel.findOne({ email });
         //check if user already exist
@@ -63,7 +65,7 @@ const registerUser = async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hashPassword = await bcrypt.hash(password, salt);
 
-        const newUser = new userModel({ name: name, email: email, password: hashPassword });
+        const newUser = new userModel({ firstName: firstName, lastName: lastName, name: firstName + " " + lastName, email: email, password: hashPassword });
         const user = await newUser.save();
         const token = createToken(user._id);
         res.json({ success: true, data: token });
@@ -74,6 +76,77 @@ const registerUser = async (req, res) => {
         res.json({ success: false, message: "error" });
     }
 }
+// get user by ID
+const getUserById = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const user = await userModel.findById(id);
 
+        if (!user) {
+            return res.json({ success: false, message: "User not found" });
+        }
 
-export { loginUser, registerUser }
+        res.json({ success: true, data: user });
+
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: "Error retrieving user" });
+    }
+};
+const deleteFile = (filePath) => {
+    if (fs.existsSync(filePath)) {
+        fs.unlink(filePath, (err) => {
+            if (err) console.error("Error deleting file:", err);
+        });
+    }
+};
+const updateUserById = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const user = await userModel.findById(id);
+        console.log(req.body);
+        const { currentPassword, newPassword } = req.body;
+        const { firstName, lastName, name } = req.body;
+        const { address } = JSON.parse(req.body.address);
+        // Parse the address data from the request bodyreq.body;
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+        if (firstName) user.firstName = firstName;
+        if (lastName) user.lastName = lastName;
+        if (name) user.name = name;
+        // Kiểm tra mật khẩu hiện tại
+        if (currentPassword && newPassword) {
+            // So sánh mật khẩu hiện tại với mật khẩu trong cơ sở dữ liệu
+            const isPasswordCorrect = await bcrypt.compare(currentPassword, user.password);
+            if (!isPasswordCorrect) {
+                return res.status(400).json({ success: false, message: "Current password is incorrect" });
+            }
+            const salt = await bcrypt.genSalt(10);
+            const hashPassword = await bcrypt.hash(newPassword, salt);
+            user.password = hashPassword;
+        }
+        if (req.file) {
+            const avatar = req.file.filename;
+            if (user.avatar) {
+                deleteFile(`uploads/avatars/${user.avatar}`);
+            }
+            user.avatar = avatar;
+        }
+        if (address) user.address[0] = address;
+        // Lưu các thay đổi vào cơ sở dữ liệu
+        const updatedUser = await user.save();
+
+        // Trả về thông tin người dùng đã cập nhật
+        res.json({
+            success: true,
+            message: "User updated successfully",
+            user: updatedUser
+        });
+    } catch (error) {
+        console.error("Error updating user:", error);
+        res.status(500).json({ success: false, message: "Error updating user" });
+    }
+};
+
+export { loginUser, registerUser, getUserById, updateUserById };

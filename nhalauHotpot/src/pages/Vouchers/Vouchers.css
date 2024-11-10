@@ -18,6 +18,7 @@
     gap: 20px;
     width: 100%;
     align-items: center;
+    justify-content: center;
 }
 
 .voucher-item {
@@ -28,7 +29,7 @@
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     height: fit-content;
     padding: 20px;
-    width: 49%;
+    width: 600px;
     background-image: url("../../assets/voucher-container.png");
     background-size: cover;
     background-position: center;
@@ -106,19 +107,25 @@
 /* Responsive adjustments */
 @media (max-width: 1024px) {
     .voucher-item {
-        width: 100%;
+        width: 500px;
         /* Để các phần tử voucher chiếm toàn bộ chiều rộng */
     }
 
-    .voucher-details .percentage,
+
     .voucher-details .fixed {
-        top: 50px;
-        left: 70%;
+        top: 60px;
+        left: 310px;
+        font-size: 40px;
+    }
+
+    .voucher-details .percentage {
+        top: 70px;
+        left: 360px;
         font-size: 40px;
     }
 
     .voucher-code {
-        top: 160px;
+        top: 200px;
         left: 50px;
         font-size: 18px;
     }
@@ -134,8 +141,8 @@
     }
 
     .voucher-only {
-        left: -130px;
-        top: -5px;
+        left: -110px;
+        top: -50px;
         font-size: 25px;
     }
 }
@@ -148,29 +155,29 @@
     .vouchers-list {
         flex-direction: column;
         gap: 15px;
+        width: 450px;
     }
 
     .voucher-item {
-        width: 100%;
-        height: auto;
+        width: 450px;
         padding: 15px;
     }
 
     .voucher-details .percentage,
     .voucher-details .fixed {
-        top: 40px;
-        left: 50%;
+        top: 60px;
+        left: 250px;
         font-size: 30px;
     }
 
     .voucher-code {
-        top: 140px;
-        left: 20px;
+        top: 160px;
+        left: 40px;
         font-size: 16px;
     }
 
     .voucher-info {
-        margin-left: 20px;
+        margin-left: 40px;
         top: 0;
     }
 
@@ -181,8 +188,8 @@
     }
 
     .voucher-only {
-        left: -100px;
-        top: 0;
+        left: -110px;
+        top: -20px;
         font-size: 20px;
     }
 }
