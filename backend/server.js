@@ -62,7 +62,6 @@ app.use("/api/promotion", promotionRouter)
 app.use("/api/booking", bookingRouter)
 app.use("/api/review", reviewRouter)
 app.use('/api/email', emailRouter);
-app.use("/api/notification", notificationRouter(io));
 app.use("/api/wishlist", wishlistRouter)
 app.use("/api/notification", notificationRouter);
 

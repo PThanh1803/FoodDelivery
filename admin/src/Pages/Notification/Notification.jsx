@@ -4,10 +4,10 @@ import './Notification.css';
 import { FaExclamationTriangle } from 'react-icons/fa';
 import io from 'socket.io-client'; // Import Socket.IO client
 import axios from 'axios';
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 const socket = io('http://localhost:4000'); // Connect to the Socket.IO server
 
-const Notification = () => {
+const Notification = ({ url }) => {
   const [notifications, setNotifications] = useState([]);
   const [filteredNotifications, setFilteredNotifications] = useState([]);
   const [statusFilter, setStatusFilter] = useState('all');
@@ -21,7 +21,7 @@ const Notification = () => {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const response = await axios.get('http://localhost:4000/api/notification?type=admin');
+        const response = await axios.get(url + '/api/notification?type=admin');
         setNotifications(response.data.notifications);
         console.log("Notifications:", response.data.notifications);
       } catch (error) {
@@ -76,7 +76,7 @@ const Notification = () => {
   const markAsRead = async (notificationId, notification, type) => {
     if (type === 'unread') {
       try {
-        await axios.put(`http://localhost:4000/api/notification/${notificationId}/status`, { status: 'read' });
+        await axios.put(`${url}/api/notification/${notificationId}/status`, { status: 'read' });
         setNotifications((prevNotifications) =>
           prevNotifications.map((notification) =>
             notification._id === notificationId ? { ...notification, status: 'read' } : notification
@@ -86,17 +86,20 @@ const Notification = () => {
         console.error('Error marking notification as read:', error);
       }
     }
-    
+
     if (notification.category === 'order') {
       navigate('/orders', { state: { orderId: notification.details.orderId } });
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } else if (notification.category === 'booking') {
       navigate('/reservation', { state: { bookingId: notification.details.bookingId } });
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     else if (notification.category === 'review') {
       navigate('/review', { state: { reviewId: notification.details.reviewId } });
-      window.scrollTo(0, 300);
+      window.scrollTo({
+        top: 700,
+        behavior: 'smooth'
+      });
     }
   };
 
@@ -117,17 +120,18 @@ const Notification = () => {
       {visibleNotifications.length === 0 ? (
         <p>No notifications</p>
       ) : (
-        <NotificationList 
-          notifications={visibleNotifications} 
-          markAsRead={markAsRead} 
+        <NotificationList
+          notifications={visibleNotifications}
+          markAsRead={markAsRead}
           lastNotificationRef={lastNotificationRef}
+          url={url}
         />
       )}
     </div>
   );
 };
 
-const NotificationList = ({ notifications, markAsRead, lastNotificationRef }) => {
+const NotificationList = ({ notifications, markAsRead, lastNotificationRef, url }) => {
   return (
     <ul className="notification-list">
       {notifications.map((notification, index) => (
@@ -135,18 +139,19 @@ const NotificationList = ({ notifications, markAsRead, lastNotificationRef }) =>
           key={notification._id}
           notification={notification}
           markAsRead={markAsRead}
-          ref={notifications.length === index + 1 ? lastNotificationRef : null} // Attach observer to the last notification
+          ref={notifications.length === index + 1 ? lastNotificationRef : null}
+          url={url}// Attach observer to the last notification
         />
       ))}
     </ul>
   );
 };
 
-const NotificationItem = React.forwardRef(({ notification, markAsRead }, ref) => {
-  const handleRead = () => {   
+const NotificationItem = React.forwardRef(({ notification, markAsRead, url }, ref) => {
+  const handleRead = () => {
     const type = notification.status === 'unread' ? 'unread' : 'read';
-    markAsRead(notification._id, notification, type); 
-   };
+    markAsRead(notification._id, notification, type);
+  };
 
   return (
     <li
@@ -156,11 +161,11 @@ const NotificationItem = React.forwardRef(({ notification, markAsRead }, ref) =>
     >
       <div className="notification-content">
         <div className="notification-user">
-          <img src={notification.userImage} alt="user"></img>
+          <img src={`${url}/images/avatars/${notification.userImage}`} alt="user"></img>
           <h4>{notification.userName}</h4>
-          
+
         </div>
-       
+
         <p className="notification-message">{notification.message}</p>
         <p className="notification-details">Category: {notification.category}</p>
         <p className="notification-date">{new Date(notification.createdAt).toLocaleString()}</p>

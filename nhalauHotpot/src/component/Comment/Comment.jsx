@@ -50,36 +50,36 @@ const ReviewCard = ({ review, url, userID, onUpdateClick, onDeleteClick }) => {
     return (
         <div className="review-card">
             <div className="review-avatar">
-                <img src={review.userImage} alt="User avatar" />
+                <img src={`${url}/images/avatars/${review.userImage}`} alt="User avatar" />
             </div>
             <div className="review-content">
                 <div className="review-header">
-                    <div className="user-info"> 
+                    <div className="user-info">
                         <h4>{userID === review.userID ? 'You' : review.userName}</h4>
                         <p>{formatDate(review.date)}</p>
 
                     </div>
-                    
-                    {userID === review.userID && (
-                    <div className="review-actions">
-                        {/* Three-dot icon to toggle the menu */}
-                        <div className="menu-icon" onClick={toggleMenu}>
-                            <FaEllipsisV />
-                        </div>
 
-                        {/* Dropdown menu */}
-                        {menuOpen && (
-                            <div className="menu-dropdown" ref={toggleRef}>
-                                <button onClick={() => onUpdateClick(review)} className="menu-item">
-                                    <FaEdit /> Update
-                                </button>
-                                <button onClick={() => onDeleteClick(review._id)} className="menu-item">
-                                    <FaTrash /> Delete
-                                </button>
+                    {userID === review.userID && (
+                        <div className="review-actions">
+                            {/* Three-dot icon to toggle the menu */}
+                            <div className="menu-icon" onClick={toggleMenu}>
+                                <FaEllipsisV />
                             </div>
-                        )}
-                    </div>
-                )}
+
+                            {/* Dropdown menu */}
+                            {menuOpen && (
+                                <div className="menu-dropdown" ref={toggleRef}>
+                                    <button onClick={() => onUpdateClick(review)} className="menu-item">
+                                        <FaEdit /> Update
+                                    </button>
+                                    <button onClick={() => onDeleteClick(review._id)} className="menu-item">
+                                        <FaTrash /> Delete
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
                 <div className="review-quality">
                     <p>FoodRate: {review.foodRate}/5</p>
@@ -99,13 +99,13 @@ const ReviewCard = ({ review, url, userID, onUpdateClick, onDeleteClick }) => {
                     <div className="review-response">
                         <img src="https://via.placeholder.com/150" alt="Response avatar" className="response-avatar" />
                         <div>
-                        <p className="review-response-label">Admin Response</p>
-                        <p className="review-response-text">{review.response}</p>
+                            <p className="review-response-label">Admin Response</p>
+                            <p className="review-response-text">{review.response}</p>
                         </div>
                     </div>
                 )}
 
-                
+
             </div>
         </div>
     );
@@ -123,6 +123,7 @@ const PlaceReview = () => {
     const [currentImages, setCurrentImages] = useState([]);
     const [newImages, setNewImages] = useState([]);
     const { url, userInfo } = useContext(StoreContext);
+    const [reload, setReload] = useState(false);
 
     useEffect(() => {
         const fetchReviews = async () => {
@@ -134,9 +135,10 @@ const PlaceReview = () => {
                 console.error("Error fetching reviews:", error);
             }
         };
+        setReload(false);
 
         fetchReviews();
-    }, [currentPage, filterRating, url]);
+    }, [currentPage, filterRating, url, reload]);
 
     const handleRatingFilter = (rating) => {
         setFilterRating(rating);
@@ -213,7 +215,7 @@ const PlaceReview = () => {
 
             <div className="reviews-list">
                 {reviews.map(review => (
-                    <ReviewCard key={review._id} review={review} url={url} userID={userInfo._id} onDeleteClick={handleDeleteClick} onUpdateClick={handleUpdateClick}/>
+                    <ReviewCard key={review._id} review={review} url={url} userID={userInfo._id} onDeleteClick={handleDeleteClick} onUpdateClick={handleUpdateClick} />
                 ))}
             </div>
 
@@ -228,7 +230,7 @@ const PlaceReview = () => {
             </div>
 
             {/* Popup for Updating Images */}
-            {showImagePopup &&  <FormRating setShowPopup={setShowImagePopup} mode="edit" reviewData={selectedReview} /> }
+            {showImagePopup && <FormRating setShowPopup={setShowImagePopup} mode="edit" reviewData={selectedReview} setReload={setReload} />}
         </div>
     );
 };

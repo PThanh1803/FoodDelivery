@@ -24,6 +24,7 @@ const loginUser = async (req, res) => {
             success: true, token, user: {
                 _id: user._id,
                 firstName: user.firstName,
+                name: user.name,
                 lastName: user.lastName,
                 email: user.email,
                 avatar: user.avatar,
@@ -141,7 +142,16 @@ const updateUserById = async (req, res) => {
         res.json({
             success: true,
             message: "User updated successfully",
-            user: updatedUser
+            user: {
+                _id: uupdatedUserser._id,
+                firstName: updatedUser.firstName,
+                name: updatedUser.name,
+                lastName: updatedUser.lastName,
+                email: updatedUser.email,
+                avatar: updatedUser.avatar,
+                address: updatedUser.address
+
+            }
         });
     } catch (error) {
         console.error("Error updating user:", error);

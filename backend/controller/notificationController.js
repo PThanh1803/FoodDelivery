@@ -4,19 +4,19 @@ import notificationModel from '../models/notificationModel.js';
 // Controller to create a new notification
 const createNotification = async (io, notificationData) => {
   try {
-      const notification = new notificationModel(notificationData);
+    const notification = new notificationModel(notificationData);
 
-      await notification.save();
-      console.log("Notification created:", notification);
-      if(notification.type === 'admin') {
-        io.emit('admin', notification);
-      }
-      else if(notification.type === 'user') {
-        io.emit(`${notification.userId}`, notification);
-      }
-      
+    await notification.save();
+    console.log("Notification created:", notification);
+    if (notification.type === 'admin') {
+      io.emit('admin', notification);
+    }
+    else if (notification.type === 'user') {
+      io.emit(`${notification.userId}`, notification);
+    }
+
   } catch (err) {
-      console.error("Error creating notification:", err.message);
+    console.error("Error creating notification:", err.message);
   }
 };
 
@@ -25,7 +25,7 @@ const createNotification = async (io, notificationData) => {
 const getNotifications = async (req, res) => {
   try {
     const { userId } = req.params;
-    const { type, page = 1,limit = 6 } = req.query;
+    const { type, page = 1, limit = 6 } = req.query;
     const skip = (page - 1) * limit;
     const filter = { type };
     if (userId) {
@@ -59,6 +59,7 @@ const updateNotificationStatus = async (req, res) => {
     if (!notification) {
       return res.status(404).json({ success: false, message: 'Notification not found' });
     }
+    global.io.emit('read', notification);
     res.json({ success: true, message: 'Notification status updated', notification });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });

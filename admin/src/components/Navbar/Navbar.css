@@ -1,90 +1,116 @@
-.navbar{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 20px;
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
 }
 
 .navbar .logo {
-    width: max(10%,80px);
-    cursor: pointer;
+  width: max(10%, 80px);
+  cursor: pointer;
 }
 
 .navbar .profile-image {
-    width: 40px;
-    cursor: pointer;
+  width: 40px;
+  cursor: pointer;
 }
 
 
 .profile-image-container {
-    display: flex;
-    align-items: center;
-    position: relative; /* For positioning notification count */
-  }
-  
-  .notification-icon-container {
-    position: relative; /* For positioning the count */
-    margin-right: 30px; /* Space between the icon and profile image */
-  }
-  
-  .notification-icon-container:hover {
-    cursor: pointer;
-  }
-  .notification-icon-container .notification-icon {
-    font-size: 30px; /* Adjust icon size as needed */
-    color: #0e0e0e !important; /* Icon color */
-  }
-  
-  .notification-count {
-    position: absolute;
-    top: -5px; /* Adjust position to be above the icon */
-    right: -5px; /* Adjust position to be to the right of the icon */
-    background-color: red; /* Background color for count */
-    color: white; /* Text color */
-    border-radius: 50%;
-    padding: 2px 5px; /* Padding around the count */
-    font-size: 12px; /* Adjust font size */
-  }
-  
-  .profile-image {
-    height: 40px; /* Adjust profile image size as needed */
-    border-radius: 50%; /* Make it circular */
-  }
+  display: flex;
+  align-items: center;
+  position: relative;
+  /* For positioning notification count */
+}
 
-  /* Notification.css */
+.notification-icon-container {
+  position: relative;
+  /* For positioning the count */
+  margin-right: 30px;
+  /* Space between the icon and profile image */
+}
+
+.notification-icon-container:hover {
+  cursor: pointer;
+}
+
+.notification-icon-container .notification-icon {
+  font-size: 30px;
+  /* Adjust icon size as needed */
+  color: #0e0e0e !important;
+  /* Icon color */
+}
+
+.notification-count {
+  position: absolute;
+  top: -5px;
+  /* Adjust position to be above the icon */
+  right: -5px;
+  /* Adjust position to be to the right of the icon */
+  background-color: red;
+  /* Background color for count */
+  color: white;
+  /* Text color */
+  border-radius: 50%;
+  padding: 2px 5px;
+  /* Padding around the count */
+  font-size: 12px;
+  /* Adjust font size */
+}
+
+.profile-image {
+  height: 40px;
+  /* Adjust profile image size as needed */
+  border-radius: 50%;
+  /* Make it circular */
+}
+
+/* Notification.css */
 .notification-dropdown {
-    position: absolute;
-    top: 50px; /* Adjust based on your design */
-    right: 0; /* Align to the right */
-    width: 350px; /* Adjust width as needed */
-    z-index: 1000; /* Ensure it appears above other elements */
-  }
-  
-  
-  /* Navbar.css */
+  position: absolute;
+  top: 50px;
+  /* Adjust based on your design */
+  right: 0;
+  /* Align to the right */
+  width: 350px;
+  /* Adjust width as needed */
+  z-index: 1000;
+  /* Ensure it appears above other elements */
+}
+
+
+/* Navbar.css */
 .notification-popup {
   position: fixed;
-  top: 10px;
-  right: 10px;
-  background-color: #444;
-  color: white;
+  top: 20px;
+  right: 20px;
+  color: rgb(255, 255, 255);
+  background-color: #fff;
   padding: 10px;
   border-radius: 5px;
+  width: 400px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  opacity: 0;
   z-index: 9999;
-  animation: showPopup 10s forwards;
+  opacity: 1;
+  animation: showPopup 8s forwards;
 }
 
 @keyframes showPopup {
   0% {
-    opacity: 0;
+    opacity: 0.5;
     transform: translateY(-20px);
   }
+
   50% {
     opacity: 1;
     transform: translateY(0);
   }
+
+  75% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
   100% {
     opacity: 0;
     transform: translateY(20px);
@@ -111,5 +137,3 @@
   align-items: center;
   font-size: 12px;
 }
-
-  

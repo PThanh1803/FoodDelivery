@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import './FormRating.css';
 import { StoreContext } from '../../context/StoreContext';
 
-const FormRating = ({ setShowPopup, mode = 'add', reviewData }) => {
+const FormRating = ({ setShowPopup, mode = 'add', reviewData, setReload }) => {
     const [selectedOption, setSelectedOption] = useState(reviewData?.type || null);
     const [overallRating, setOverallRating] = useState(reviewData?.star || 0);
     const [foodRating, setFoodRating] = useState(reviewData?.foodRate || 0);
@@ -50,7 +50,7 @@ const FormRating = ({ setShowPopup, mode = 'add', reviewData }) => {
 
         imageFiles.forEach((file) => formData.append('images', file));
         console.log(existingImages);
-        formData.append('existingImages',JSON.stringify(existingImages)); // Maintain existing images
+        formData.append('existingImages', JSON.stringify(existingImages)); // Maintain existing images
 
 
         setIsLoading(true);
@@ -65,6 +65,7 @@ const FormRating = ({ setShowPopup, mode = 'add', reviewData }) => {
             if (data.success) {
                 alert('Review submitted successfully!');
                 setShowPopup(false);
+                setReload(true);
             } else {
                 alert('Error submitting review: ' + data.message);
             }
@@ -81,7 +82,7 @@ const FormRating = ({ setShowPopup, mode = 'add', reviewData }) => {
             <div className="form-rating-container">
                 <h2>{mode === 'edit' ? 'Edit Your Review' : 'Rate Your Experience'}</h2>
                 <div className="form-rating-user">
-                    <img src={userInfo.avatar || 'https://via.placeholder.com/50x50'} alt='user' />
+                    <img src={userInfo.avatar ? `${url}/images/avatars/${userInfo.avatar}` : 'https://via.placeholder.com/50x50'} alt='user' />
                     <div className='form-rating-user-info'>
                         <p>{userInfo.name || 'John Doe'}</p>
                         <p>Đăng công khai trên Fanpage</p>
@@ -162,7 +163,7 @@ const FormRating = ({ setShowPopup, mode = 'add', reviewData }) => {
                     multiple
                     accept="image/*"
                     onChange={handleImageChange}
-                    style={{ display: 'none' }} 
+                    style={{ display: 'none' }}
                     id="image-upload"
                 />
                 <label htmlFor="image-upload" className="add-image-btn">
@@ -171,9 +172,9 @@ const FormRating = ({ setShowPopup, mode = 'add', reviewData }) => {
 
                 {/* Existing Images (only in edit mode) */}
                 {mode === 'edit' && existingImages.length > 0 && (
-                    <div> 
+                    <div>
                         <h4>Existing Images:</h4>
-                        <div className="selected-images">                           
+                        <div className="selected-images">
                             {existingImages.map((image, index) => (
                                 <div key={index} className="image-preview">
                                     <img src={`${url}/images/reviews/${image}`} alt={`Existing ${index + 1}`} />
@@ -187,7 +188,7 @@ const FormRating = ({ setShowPopup, mode = 'add', reviewData }) => {
                 {imageFiles.length > 0 && <div>
                     <h4>New Images:</h4>
                     <div className="selected-images">
-                        
+
                         {imageFiles.map((file, index) => (
                             <div key={index} className="image-preview">
                                 <img src={URL.createObjectURL(file)} alt={`Preview ${index + 1}`} />
@@ -196,7 +197,7 @@ const FormRating = ({ setShowPopup, mode = 'add', reviewData }) => {
                         ))}
                     </div>
                 </div>}
-                
+
 
                 <div className="form-rating-actions">
                     <button className="cancel-btn" onClick={() => setShowPopup(false)}>Cancel</button>

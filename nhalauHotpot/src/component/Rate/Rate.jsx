@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { StoreContext } from '../../Context/StoreContext';
+import { StoreContext } from '../../context/StoreContext';
 import './Rate.css';
 import write_icon from '../../assets/edit-alt-regular-24.png';
 import Comment from '../Comment/Comment';
 import FormRating from '../FormRating/FormRating';
 import left from '../../assets/chevron-left-regular-24.png';
 import right from '../../assets/chevron-right-regular-24.png';
-
+import axios from 'axios';
 
 const RateComponent = () => {
     const [showPopup, setShowPopup] = useState(false);
@@ -16,32 +16,45 @@ const RateComponent = () => {
     const [loading, setLoading] = useState(true); // Loading state
     const [error, setError] = useState(null); // Error state
     const { url } = useContext(StoreContext);
+    const [reload, setReload] = useState(false);
+    const [stats, setStats] = useState(null);
 
     useEffect(() => {
         console.log('Fetching images...');
-        const fetchImages = async () => {
-            
-            try {
-                const response = await fetch(url + '/api/review' , { method: 'GET' } ); 
-                console.log(response);
-                // Replace with your API endpoint
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                console.log(response);
-                const data = await response.json();
-                console.log(data);
-                setImages(data.images);
-                console.log("images",data.images); // Assuming your API returns an array of images in an 'images' field
-            } catch (error) {
-                setError(error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
+        fetchStats();
         fetchImages();
     }, []);
+
+    // Fetch data for images
+    const fetchImages = async () => {
+        try {
+            const response = await fetch(url + '/api/review', { method: 'GET' });
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            setImages(data.images);
+        } catch (error) {
+            setError(error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Fetch statistics data
+    const fetchStats = async () => {
+        try {
+            const response = await axios.get('http://localhost:4000/api/review/stats');
+            if (response.data.success) {
+                setStats(response.data);
+            }
+        } catch (error) {
+            console.error("Error fetching stats:", error);
+        }
+    };
+
+    // Calculate percentage for the rating bars
+    const calculatePercentage = (count, totalReviews) => (count / totalReviews) * 100;
 
     // Show only the first 5 images
     const visibleImages = images.slice(0, 5);
@@ -57,10 +70,17 @@ const RateComponent = () => {
     };
 
     const handlePrevImage = () => {
-        setCurrentIndex((prevIndex) =>
-            prevIndex === 0 ? images.length - 1 : prevIndex - 1
-        );
+        setCurrentIndex((prevIndex) => (prevIndex === 0 ? images.length - 1 : prevIndex - 1));
     };
+
+    // UseEffect to trigger when reload is true
+    useEffect(() => {
+        if (reload) {
+            setReload(false); // Reset reload state
+        }
+    }, [reload]);
+
+    if (!stats) return <div>Loading...</div>;  // Loading state while fetching stats
 
     return (
         <div className='rate-container'>
@@ -68,9 +88,9 @@ const RateComponent = () => {
                 <div className='header-title'>
                     <h1>2T Food.</h1>
                     <div className='rate-score-header'>
-                        <span className='rate-number'>3,7</span>
-                        <span className='stars'>★★★★☆</span>
-                        <span className='rate-count'>(49 đánh giá)</span>
+                        <span className='rate-number'>{stats.avgStarRating.toFixed(1)}</span>
+                        <span className='stars'>{'★'.repeat(Math.round(stats.avgStarRating))}{'☆'.repeat(5 - Math.round(stats.avgStarRating))}</span>
+                        <span className='rate-count'>({stats.totalReviews} đánh giá)</span>
                     </div>
                 </div>
                 <div className='rate-button' onClick={() => setShowPopup(true)}>
@@ -101,50 +121,35 @@ const RateComponent = () => {
                 <div className="summary">
                     <div className='total-rating'>
                         <div className='total-rating-title'>
-                            <span className='total-rating-number'>3,7</span>
-                            <span className='total-rating-count'>49 đánh giá</span>
+                            <span className='total-rating-number'>{stats.avgStarRating.toFixed(1)}</span>
+                            <span className='total-rating-count'>{stats.totalReviews} đánh giá</span>
                         </div>
-                        <span className='total-rating-stars'>★★★★☆</span>
+                        <span className='total-rating-stars'>
+                            {'★'.repeat(Math.round(stats.avgStarRating))}{'☆'.repeat(5 - Math.round(stats.avgStarRating))}
+                        </span>
                     </div>
 
                     {/* Rating Bars */}
                     <div className='rating-bar'>
-                        <div className='rating-row'>
-                            <span className='star-label'>5</span>
-                            <div className='bar'>
-                                <div className='bar-fill' style={{ width: '100%' }}></div>
+                        {stats.starBreakdown.map((star, index) => (
+                            <div className='rating-row' key={index}>
+                                <span className='star-label'>{star._id}</span>
+                                <div className='bar'>
+                                    <div
+                                        className='bar-fill'
+                                        style={{ width: `${calculatePercentage(star.count, stats.totalReviews)}%` }}
+                                    ></div>
+                                </div>
                             </div>
-                        </div>
-                        <div className='rating-row'>
-                            <span className='star-label'>4</span>
-                            <div className='bar'>
-                                <div className='bar-fill' style={{ width: '10%' }}></div>
-                            </div>
-                        </div>
-                        <div className='rating-row'>
-                            <span className='star-label'>3</span>
-                            <div className='bar'>
-                                <div className='bar-fill' style={{ width: '5%' }}></div>
-                            </div>
-                        </div>
-                        <div className='rating-row'>
-                            <span className='star-label'>2</span>
-                            <div className='bar'>
-                                <div className='bar-fill' style={{ width: '2%' }}></div>
-                            </div>
-                        </div>
-                        <div className='rating-row'>
-                            <span className='star-label'>1</span>
-                            <div className='bar'>
-                                <div className='bar-fill' style={{ width: '50%' }}></div>
-                            </div>
-                        </div>
+                        ))}
                     </div>
                 </div>
-                <Comment />
+
+                {/* Render Comment only when reload is true */}
+                {!reload && <Comment />}
             </div>
 
-            {showPopup && <FormRating setShowPopup={setShowPopup} />}
+            {showPopup && <FormRating setShowPopup={setShowPopup} setReload={setReload} />}
 
             {showImagePopup && (
                 <div className="popup-background" onClick={() => setShowImagePopup(false)}>
@@ -156,9 +161,7 @@ const RateComponent = () => {
                                     src={`${url}/images/reviews/${src}`}
                                     alt={`Thumbnail ${index + 1}`}
                                     className={`thumbnail ${currentIndex === index ? 'active' : ''}`}
-                                    onClick={() => {
-                                        setCurrentIndex(index);
-                                    }}
+                                    onClick={() => setCurrentIndex(index)}
                                 />
                             ))}
                         </div>
@@ -168,7 +171,7 @@ const RateComponent = () => {
                                 <img src={left} alt="left" />
                             </button>
 
-                            <img src={`${url}/images/reviews/${images[currentIndex]}` }alt={`Full view ${currentIndex + 1}`} className="full-image" />
+                            <img src={`${url}/images/reviews/${images[currentIndex]}`} alt={`Full view ${currentIndex + 1}`} className="full-image" />
                             <button onClick={handleNextImage}>
                                 <img src={right} alt="right" />
                             </button>

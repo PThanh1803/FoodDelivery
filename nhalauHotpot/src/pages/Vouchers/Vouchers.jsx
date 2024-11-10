@@ -11,12 +11,29 @@ const Vouchers = () => {
     const fetchVouchers = async () => {
         setLoading(true);
         setError(null);
+
         try {
-            const response = await fetch(`${url}/api/voucher/`);
+            // Tạo URL và thêm tham số `status` và `date`
+            const apiUrl = new URL(`${url}/api/voucher/`);
+            apiUrl.searchParams.append(status, "Active");
+
+            // Lấy ngày hiện tại và chuyển sang định dạng MM/DD/YYYY
+            const today = new Date();
+            const month = String(today.getMonth() + 1).padStart(2, '0'); // Tháng bắt đầu từ 0 nên cần +1
+            const day = String(today.getDate()).padStart(2, '0');
+            const year = today.getFullYear();
+            const currentDate = `${month}/${day}/${year}`;
+
+            apiUrl.searchParams.append("date", currentDate);
+
+            // Gửi yêu cầu fetch với URL chứa tham số query
+            const response = await fetch(apiUrl);
             const data = await response.json();
+
             if (!data.success) {
                 throw new Error('Failed to fetch vouchers');
             }
+
             setVouchers(data.vouchers);
         } catch (error) {
             console.error('Error fetching vouchers:', error);
@@ -25,6 +42,7 @@ const Vouchers = () => {
             setLoading(false);
         }
     };
+
 
     useEffect(() => {
         fetchVouchers();

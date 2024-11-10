@@ -11,6 +11,6 @@ const bookingRouter = express.Router();
 bookingRouter.post('/', createBooking);
 bookingRouter.get('/:userId', authMiddleware, getBookingByUser);
 bookingRouter.get('/', getBooking);
-bookingRouter.put('/:id', authMiddleware, updateBookingStatus);
+bookingRouter.put('/:id', updateBookingStatus);
 
 export default bookingRouter

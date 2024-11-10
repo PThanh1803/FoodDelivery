@@ -2,23 +2,24 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import React, { useEffect } from "react";
 import "./PlaceOrder.css";
-import { StoreContext } from "../../Context/StoreContext";
+import { StoreContext } from "../../context/StoreContext";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const PlaceOrder = () => {
-  const { getTotalCartAmount, token, food_list, cardItems, url } = React.useContext(StoreContext);
+  const { getTotalCartAmount, token, food_list, cardItems, url, userInfo } = React.useContext(StoreContext);
+  console.log(userInfo);
   const location = useLocation();
   const [data, setData] = React.useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    street: "",
-    city: "",
-    state: "",
-    zipcode: "",
-    country: "",
-    phone: ""
+    firstName: userInfo ? userInfo.firstName : "",
+    lastName: userInfo ? userInfo.lastName : "",
+    email: userInfo ? userInfo.email : "",
+    street: userInfo ? userInfo.address[0].street : "",
+    city: userInfo ? userInfo.address[0].city : "",
+    state: userInfo ? userInfo.address[0].state : "",
+    zipcode: userInfo ? userInfo.address[0].zipCode : "",
+    country: userInfo ? userInfo.address[0].country : "",
+    phone: userInfo ? userInfo.address[0].phone : ""
   })
   const state = location.state;
   const [processing, setProcessing] = React.useState(false);

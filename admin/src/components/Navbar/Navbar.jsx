@@ -4,21 +4,26 @@ import { assets } from "../../assets/assets";
 import { FaBell, FaExclamationTriangle } from "react-icons/fa";
 import Notification from "../../Pages/Notification/Notification";
 import { io } from "socket.io-client";
-
-const NotificationItem = ({ notification }) => (
-  <li className="notification-item">
+import axios from "axios";
+const NotificationItem = ({ notification, url }) => (
+  <li
+    className={`notification-item `}
+  >
     <div className="notification-content">
-      <FaExclamationTriangle className="notification-icon" />
+      <div className="notification-user">
+        <img src={`${url}/images/avatars/${notification.userImage}`} alt="user"></img>
+        <h4>{notification.userName}</h4>
+
+      </div>
+
       <p className="notification-message">{notification.message}</p>
       <p className="notification-details">Category: {notification.category}</p>
-      <p className="notification-date">
-        {new Date(notification.createdAt).toLocaleString()}
-      </p>
+      <p className="notification-date">{new Date(notification.createdAt).toLocaleString()}</p>
     </div>
   </li>
 );
 
-const Navbar = () => {
+const Navbar = ({ url }) => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
@@ -26,7 +31,28 @@ const Navbar = () => {
   const dropdownRef = useRef(null);
 
   useEffect(() => {
-    const socket = io("http://localhost:4000");
+
+    const fetchNotifications = async () => {
+      try {
+        const response = await axios.get(url + '/api/notification?type=admin');
+        if (response.data.success) {
+          setNotifications(response.data.notifications);
+          setUnreadCount(response.data.notifications.filter(notification => notification.status === "unread").length);
+        }
+        else {
+          console.log(response.data.message);
+        }
+
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      }
+    };
+
+    fetchNotifications();
+  }, []);
+
+  useEffect(() => {
+    const socket = io(url);
 
     socket.on('admin', (notification) => {
       setNotifications((prevNotifications) => [notification, ...prevNotifications]);
@@ -36,6 +62,9 @@ const Navbar = () => {
       setTimeout(() => setNewNotification(null), 5000);
     });
 
+    socket.on('read', () => {
+      setUnreadCount((prevCount) => prevCount - 1);
+    });
     return () => {
       socket.disconnect();
     };
@@ -71,7 +100,7 @@ const Navbar = () => {
         </div>
         {showNotifications && (
           <div ref={dropdownRef} className="notification-dropdown">
-            <Notification notifications={notifications} />
+            <Notification url={url} />
           </div>
         )}
         <img src={assets.profile_image} className="profile-image" alt="Profile" />
@@ -80,7 +109,7 @@ const Navbar = () => {
       {newNotification && (
         <div className="notification-popup">
           <div className="popup-content">
-            <NotificationItem notification={newNotification} />
+            <NotificationItem notification={newNotification} url={url} />
           </div>
         </div>
       )}

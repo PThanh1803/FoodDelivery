@@ -7,6 +7,7 @@ import { assets } from "../../assets/assets";
 import Notification from "../Notification/Notification";
 import "./Navbar.css";
 import calendar from "../../assets/calendar-solid-24.png";
+import axios from "axios";
 
 const NotificationItem = ({ notification }) => (
   <li className="notification-item">
@@ -28,7 +29,7 @@ const Navbar = ({ setShowLogin }) => {
   const [notifications, setNotifications] = useState([]);
   const [newNotification, setNewNotification] = useState(null);
 
-  const { getTotalCartAmount, token, setToken, userInfo } = useContext(StoreContext);
+  const { getTotalCartAmount, token, setToken, userInfo, url } = useContext(StoreContext);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -46,23 +47,48 @@ const Navbar = ({ setShowLogin }) => {
     }
     return location.pathname.startsWith(path) ? "Active" : "";
   };
+  useEffect(() => {
+    console.log("aaaaaaaaa");
+    const fetchNotifications = async () => {
+      try {
+        const response = await axios.get(`${url}/api/notification/${userInfo._id}?type=user`);
+        setNotifications(response.data.notifications);
+        setUnreadCount(response.data.notifications.filter(notification => notification.status === "unread").length);
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      }
+    };
+
+    fetchNotifications();
+  }, [userInfo._id, url]);
 
   useEffect(() => {
+    console.log("bbbbbbb", userInfo?._id);
+    // Check if userInfo._id is available before making API request
     if (!userInfo?._id) return;
-
+    // Set up the WebSocket connection
     const socket = io("http://localhost:4000");
 
+    // Listen for new notifications on the socket
     socket.on(`${userInfo._id}`, (notification) => {
       setNotifications((prev) => [notification, ...prev]);
       setUnreadCount((prev) => prev + 1);
       setNewNotification(notification);
+
+      // Remove the new notification alert after 5 seconds
       setTimeout(() => setNewNotification(null), 5000);
     });
 
+    socket.on("read", (notification) => {
+      setUnreadCount((prev) => prev - 1);
+    });
+    // Clean up the socket connection on component unmount
     return () => {
       socket.disconnect();
     };
-  }, [userInfo?._id]);
+  }, [userInfo?._id, url]);
+
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -127,7 +153,7 @@ const Navbar = ({ setShowLogin }) => {
               </li>
             </ul>
           </div>
-        )}
+        }
         <div className="profile-image-container">
           <div className="notification-icon-container">
             <FaBell

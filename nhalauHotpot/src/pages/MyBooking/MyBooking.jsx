@@ -14,7 +14,7 @@ import { StoreContext } from "../../context/StoreContext";
 import { useLocation } from "react-router-dom";
 
 const MyBooking = () => {
-  const { url, token ,userInfo} = useContext(StoreContext);
+  const { url, token, userInfo } = useContext(StoreContext);
   const { state } = useLocation();
   const [bookings, setBookings] = useState();
   const [selectedBooking, setSelectedBooking] = useState(null);
@@ -29,16 +29,12 @@ const MyBooking = () => {
   const [highlightedOrder, setHighlightedOrder] = useState(null);
 
   useEffect(() => {
-    const savedBookings = localStorage.getItem("bookings");
-    if (savedBookings) {
-      setBookings(JSON.parse(savedBookings));
-    } else {
-      fetchBookings(currentPage);
-    }
+    fetchBookings(currentPage);
   }, [currentPage, url]);
-  
+
   const fetchBookings = async (page) => {
     try {
+      console.log(userInfo._id);
       const response = await axios.get(
         `${url}/api/booking/${userInfo._id}?page=${page}&limit=${limit}`,
         {
@@ -47,6 +43,7 @@ const MyBooking = () => {
           },
         }
       );
+      console.log(response.data);
       if (response.data.success) {
         setBookings(response.data.bookings);
         setTotalPages(response.data.totalPages);
@@ -63,14 +60,14 @@ const MyBooking = () => {
       console.error("Error fetching bookings:", error);
     }
   };
-  
+
 
   const handleCancelBooking = (booking) => {
     setBookingToCancel(booking);
     setShowCancelPopup(true);
   };
 
-  
+
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -144,8 +141,7 @@ const MyBooking = () => {
     return localDate.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }); // Returns date in local format
   };
 
-  if(!bookings)
-  {
+  if (!bookings) {
     return (
       <div className="my-booking-container">
         <div className="booking-list-header">
@@ -193,7 +189,7 @@ const MyBooking = () => {
               className={`booking-card ${booking.status} ${selectedBooking && selectedBooking._id === booking._id
                 ? "selected"
                 : ""
-                } ${booking._id === highlightedOrder ? "highlight-same" : ""} ` }
+                } ${booking._id === highlightedOrder ? "highlight-same" : ""} `}
               onClick={() => handleBookingClick(booking)}
             >
               <h3 className="booking-title">
@@ -303,21 +299,21 @@ const MyBooking = () => {
       </div>
 
       {showCancelPopup && (
-      <div className="cancel-popup">
-        <div className="cancel-popup-content show"> 
-          <h3>Cancel Booking</h3>
-          <label>Reason for cancellation:</label>
-          <textarea
-            value={cancelReason}
-            onChange={(e) => setCancelReason(e.target.value)}
-          />
-          <div className="popup-buttons">
-            <button onClick={handleCancelConfirm}>Confirm Cancellation</button>
-            <button onClick={() => setShowCancelPopup(false)}>Cancel</button>
+        <div className="cancel-popup">
+          <div className="cancel-popup-content show">
+            <h3>Cancel Booking</h3>
+            <label>Reason for cancellation:</label>
+            <textarea
+              value={cancelReason}
+              onChange={(e) => setCancelReason(e.target.value)}
+            />
+            <div className="popup-buttons">
+              <button onClick={handleCancelConfirm}>Confirm Cancellation</button>
+              <button onClick={() => setShowCancelPopup(false)}>Cancel</button>
+            </div>
           </div>
         </div>
-      </div>
-    )}
+      )}
 
     </div>
   );

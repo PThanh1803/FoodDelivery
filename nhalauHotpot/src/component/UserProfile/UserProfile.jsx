@@ -119,7 +119,7 @@ const MyProfile = () => {
         userData.append('name', `${userEdit.firstName} ${userEdit.lastName}`);
         userData.append('email', userEdit.email);
         userData.append('address', JSON.stringify(address));
-
+        userEdit.name = userEdit.firstName + ' ' + userEdit.lastName;
         if (image) {
             userData.append('image', image);
         }
@@ -127,8 +127,8 @@ const MyProfile = () => {
         const response = await saveProfile(userData);
 
         if (response.success) {
-            setUserInfo({ ...userInfo, ...userEdit, avatar: response.user.avatar });
-            localStorage.setItem("user", JSON.stringify({ ...userInfo, ...userEdit, avatar: response.user.avatar }));
+            setUserInfo({ ...userInfo, ...response.user, avatar: response.user.avatar });
+            localStorage.setItem("user", JSON.stringify(response.user));
             alert('Profile updated successfully!');
         } else {
             alert('Error updating profile!');
@@ -266,7 +266,7 @@ const MyProfile = () => {
                     <div className="multi-fields">
                         <input
                             required
-                            name="zipcode"
+                            name="zipCode"
                             onChange={handleAddressChange}
                             value={userEdit.address[0]?.zipCode || ''}
                             type="text"
