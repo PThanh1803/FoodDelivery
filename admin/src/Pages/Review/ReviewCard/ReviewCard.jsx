@@ -17,7 +17,7 @@ const ReviewCard = ({ review, onRespondSuccess, url }) => {
 
     const handleResponseSubmit = async () => {
         try {
-            await axios.post(`${url}/api/review/${review._id}/response`, { response: responseText });
+            await axios.put(`${url}/api/review/${review._id}?type=response`, { response: responseText });
             onRespondSuccess(review._id, responseText);
             setShowResponseInput(false);
         } catch (error) {

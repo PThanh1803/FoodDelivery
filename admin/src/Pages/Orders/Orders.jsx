@@ -1,13 +1,12 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from 'react';
 import './Orders.css';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { assets } from '../../assets/assets';
-
+import {useLocation} from 'react-router-dom';
 const Orders = ({ url }) => {
+  const location = useLocation();
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [statusFilter, setStatusFilter] = useState('');
@@ -15,20 +14,22 @@ const Orders = ({ url }) => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [userID, setUserID] = useState([])
+  const [highlightedOrderId, setHighlightedOrderId] = useState(null);
+  const state = location.state;
   const ordersPerPage = 5; // Number of orders per page
 
+  // Fetch all orders from API
   const fetchAllOrders = async () => {
     const response = await axios.get(`${url}/api/order/`);
     if (response.data.success) {
       setOrders(response.data.data);
-      setFilteredOrders(response.data.data);
-      // initialize with all orders
+      setFilteredOrders(response.data.data); // initialize with all orders
     } else {
       toast.error('Something went wrong, ERROR');
     }
   };
 
+  // Update order status
   const statusHandler = async (event, orderId) => {
     const response = await axios.put(`${url}/api/order/${orderId}`, {
       orderId,
@@ -42,28 +43,22 @@ const Orders = ({ url }) => {
     }
   };
 
-  useEffect(() => {
-    fetchAllOrders();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Filter Orders
+  // Filter orders based on status, name, and date
   const filterOrders = () => {
     let filtered = [...orders];
 
-    // Filter by status
     if (statusFilter) {
       filtered = filtered.filter((order) => order.status === statusFilter);
     }
 
-    // Filter by name
     if (nameFilter) {
       filtered = filtered.filter((order) =>
-        `${order.address.firstName} ${order.address.lastName}`.toLowerCase().includes(nameFilter.toLowerCase())
+        `${order.address.firstName} ${order.address.lastName}`
+          .toLowerCase()
+          .includes(nameFilter.toLowerCase())
       );
     }
 
-    // Filter by date range
     if (startDate && endDate) {
       filtered = filtered.filter((order) => {
         const orderDate = new Date(order.date); // Assuming order.date exists
@@ -73,6 +68,11 @@ const Orders = ({ url }) => {
 
     setFilteredOrders(filtered);
   };
+
+  useEffect(() => {
+    fetchAllOrders();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     filterOrders();
@@ -95,12 +95,23 @@ const Orders = ({ url }) => {
     return 'black';
   };
 
+  useEffect(() => {
+    if (state && state.orderId) {
+      setHighlightedOrderId(state.orderId);
 
-  return (  
-    <div className="order ">
+      // Remove highlight after 5 seconds
+      const timer = setTimeout(() => {
+        setHighlightedOrderId(null);
+      }, 4000); // 5 seconds
+
+      // Cleanup the timer if the component unmounts or orderId changes
+      return () => clearTimeout(timer);
+    }
+  }, [ state ]);
+
+  return (
+    <div className="order">
       <h1>Order Page</h1>
-
-
       {/* Filter Inputs */}
       <div className="filters">
         <input
@@ -122,9 +133,16 @@ const Orders = ({ url }) => {
       {/* Order List */}
       <div className="order-list">
         {currentOrders.map((order, index) => {
+          // Conditionally apply 'highlight' class if order._id matches highlightedOrderId
+          const isHighlighted = order._id === highlightedOrderId;
+          console.log(highlightedOrderId);
+          console.log(isHighlighted);
 
           return (
-            <div className="order-item" key={index}>
+            <div
+              className={`order-item ${isHighlighted ? 'highlight' : ''}`}
+              key={index}
+            >
               <img src={assets.parcel_icon} alt="" />
               <div className="order-item-food">
                 <p className="order-item-food">

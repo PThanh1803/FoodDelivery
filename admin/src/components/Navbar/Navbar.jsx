@@ -1,59 +1,63 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import "./Navbar.css";
 import { assets } from "../../assets/assets";
-import { FaBell ,FaExclamationTriangle} from "react-icons/fa";
-import Notification from "../../Pages/Notification/Notification"; // Import Notification component
-import { io } from "socket.io-client"; // Import Socket.IO client
+import { FaBell, FaExclamationTriangle } from "react-icons/fa";
+import Notification from "../../Pages/Notification/Notification";
+import { io } from "socket.io-client";
 
-const NotificationItem = ({ notification }) => {
-
-  return (
-    console.log(notification.status),
-    <li className={`notification-item `} >
-      <div className="notification-content">
-        <FaExclamationTriangle className="notification-icon" />
-        <p className="notification-message">{notification.message}</p>
-        <p className="notification-details">
-          Category: {notification.category}
-        </p>
-        <p className="notification-date">
-          {new Date(notification.createdAt).toLocaleString()}
-        </p>
-      </div>
-    </li>
-  );
-};
+const NotificationItem = ({ notification }) => (
+  <li className="notification-item">
+    <div className="notification-content">
+      <FaExclamationTriangle className="notification-icon" />
+      <p className="notification-message">{notification.message}</p>
+      <p className="notification-details">Category: {notification.category}</p>
+      <p className="notification-date">
+        {new Date(notification.createdAt).toLocaleString()}
+      </p>
+    </div>
+  </li>
+);
 
 const Navbar = () => {
   const [unreadCount, setUnreadCount] = useState(0);
-  const [showNotifications, setShowNotifications] = useState(false); // State to manage showing notifications
-  const [notifications, setNotifications] = useState([]); // State to hold notifications
-  const [newNotification, setNewNotification] = useState(null); // State to hold a new notification for popup
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [newNotification, setNewNotification] = useState(null);
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
-    // Establish socket connection
-    const socket = io("http://localhost:4000"); // Replace with your server URL
-    
-    socket.on('newNotification', (notification) => {
-      // Add new notification to the list
+    const socket = io("http://localhost:4000");
+
+    socket.on('admin', (notification) => {
       setNotifications((prevNotifications) => [notification, ...prevNotifications]);
       setUnreadCount((prevCount) => prevCount + 1);
 
-      // Show the notification popup
       setNewNotification(notification);
-      setTimeout(() => {
-        setNewNotification(null); // Hide the popup after 5 seconds
-      }, 5000);
+      setTimeout(() => setNewNotification(null), 5000);
     });
 
     return () => {
-      socket.disconnect(); // Clean up the socket connection
+      socket.disconnect();
     };
   }, []);
 
   const handleNotificationClick = () => {
-    setShowNotifications(!showNotifications); // Toggle notification dropdown
+    setShowNotifications(!showNotifications);
   };
+
+  // Close dropdown if clicked outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowNotifications(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="navbar">
@@ -65,14 +69,14 @@ const Navbar = () => {
             <span className="notification-count">{unreadCount}</span>
           )}
         </div>
-        {showNotifications && 
-          <div className="notification-dropdown"> 
-            <Notification notifications={notifications}  />
-          </div>} 
+        {showNotifications && (
+          <div ref={dropdownRef} className="notification-dropdown">
+            <Notification notifications={notifications} />
+          </div>
+        )}
         <img src={assets.profile_image} className="profile-image" alt="Profile" />
       </div>
 
-      {/* Pop-up notification for new unread notifications */}
       {newNotification && (
         <div className="notification-popup">
           <div className="popup-content">

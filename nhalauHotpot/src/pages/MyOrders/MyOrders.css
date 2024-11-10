@@ -101,3 +101,13 @@
     margin: 0 10px;
     font-size: 16px;
 }
+
+.my-orders-order.highlight {
+    background-color: #f0f8ff; /* Light blue background */
+    border: 2px solid #007bff;  /* Blue border */
+    padding: 10px;
+    margin: 10px 0;
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+    transition: background-color 6s ease, border 6s ease, box-shadow 6s ease;
+}
+

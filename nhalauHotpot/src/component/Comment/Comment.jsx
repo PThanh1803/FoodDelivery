@@ -2,6 +2,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import { StoreContext } from '../../context/StoreContext';
 import axios from 'axios';
 import './Comment.css';
+import FormRating from '../FormRating/FormRating';
+import { FaEllipsisV, FaEdit, FaTrash } from 'react-icons/fa'; // Importing icons for menu, edit, and delete
 
 const reviewsPerPage = 5;
 
@@ -22,52 +24,106 @@ const formatDate = (dateString) => {
 };
 
 
-const ReviewCard = ({ review, url }) => (
-    <div className="review-card">
-        <div className="review-avatar">
-            <img src={review.userImage} alt={`${review.userID} avatar`} />
-        </div>
-        <div className="review-content">
-            <div className="review-header">
-                <h4>{review.userName}</h4>
-                <p>{formatDate(review.date)}</p>
-            </div>
-            <div className="review-quality">
-                <p>FoodRate: {review.foodRate}/5</p>
-                <p>ServiceRate: {review.serviceRate}/5</p>
-                <p>Type: {review.type}</p>
-            </div>
-            <StarRating rating={review.star} />
-            <p>{review.comment}</p>
-            <div className="review-images">
-                {review.pictures && review.pictures.length > 0 ? (
-                    review.pictures.map((img, index) => (
-                        <img key={index} src={`${url}/images/reviews/${img}`} alt={`Review image ${index + 1}`} />
 
-                    ))
-                ) : null}
+const ReviewCard = ({ review, url, userID, onUpdateClick, onDeleteClick }) => {
+    const [menuOpen, setMenuOpen] = useState(false); // State to track if menu is open
+    const toggleRef = React.useRef(null);
+    const toggleMenu = (event) => {
+        event.stopPropagation(); // Stop the event from propagating to document click listener
+        setMenuOpen(!menuOpen);
+    };
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (toggleRef.current && !toggleRef.current.contains(event.target)) {
+                setMenuOpen(false);
+            }
+        };
+
+        document.addEventListener('click', handleClickOutside);
+
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, []);
+
+    return (
+        <div className="review-card">
+            <div className="review-avatar">
+                <img src={review.userImage} alt="User avatar" />
             </div>
-            {review.response && (
-                <div className="review-response">
-                    <img src={review.userImage} alt="Response avatar" className="response-avatar" />
+            <div className="review-content">
+                <div className="review-header">
+                    <div className="user-info"> 
+                        <h4>{userID === review.userID ? 'You' : review.userName}</h4>
+                        <p>{formatDate(review.date)}</p>
 
-                    <p className="review-response-label">Admin Response:</p>
-                    <p className="review-response-text">
-                        {review.response}
-                    </p>
+                    </div>
+                    
+                    {userID === review.userID && (
+                    <div className="review-actions">
+                        {/* Three-dot icon to toggle the menu */}
+                        <div className="menu-icon" onClick={toggleMenu}>
+                            <FaEllipsisV />
+                        </div>
 
+                        {/* Dropdown menu */}
+                        {menuOpen && (
+                            <div className="menu-dropdown" ref={toggleRef}>
+                                <button onClick={() => onUpdateClick(review)} className="menu-item">
+                                    <FaEdit /> Update
+                                </button>
+                                <button onClick={() => onDeleteClick(review._id)} className="menu-item">
+                                    <FaTrash /> Delete
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                )}
                 </div>
-            )}
+                <div className="review-quality">
+                    <p>FoodRate: {review.foodRate}/5</p>
+                    <p>ServiceRate: {review.serviceRate}/5</p>
+                    <p>Type: {review.type}</p>
+                </div>
+                <StarRating rating={review.star} />
+                <p>{review.comment}</p>
+                <div className="review-images">
+                    {review.pictures && review.pictures.length > 0 && (
+                        review.pictures.map((img, index) => (
+                            <img key={index} src={`${url}/images/reviews/${img}`} alt={`Review image ${index + 1}`} />
+                        ))
+                    )}
+                </div>
+                {review.response && (
+                    <div className="review-response">
+                        <img src="https://via.placeholder.com/150" alt="Response avatar" className="response-avatar" />
+                        <div>
+                        <p className="review-response-label">Admin Response</p>
+                        <p className="review-response-text">{review.response}</p>
+                        </div>
+                    </div>
+                )}
+
+                
+            </div>
         </div>
-    </div>
-);
+    );
+};
+
+
 
 const PlaceReview = () => {
     const [reviews, setReviews] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
-    const [filterRating, setFilterRating] = useState(0);
-    const { url } = useContext(StoreContext);
+    const [filterRating, setFilterRating] = useState('');
+    const [showImagePopup, setShowImagePopup] = useState(false);
+    const [selectedReview, setSelectedReview] = useState(null);
+    const [currentImages, setCurrentImages] = useState([]);
+    const [newImages, setNewImages] = useState([]);
+    const { url, userInfo } = useContext(StoreContext);
+
     useEffect(() => {
         const fetchReviews = async () => {
             try {
@@ -99,6 +155,51 @@ const PlaceReview = () => {
         }
     };
 
+    const handleUpdateClick = (review) => {
+        setSelectedReview(review);
+        setCurrentImages(review.pictures);
+        setNewImages([]);
+        setShowImagePopup(true);
+    };
+
+    const handleDeleteClick = async (reviewId) => {
+        try {
+            await axios.delete(`${url}/api/review/${reviewId}`);
+            setReviews(reviews.filter(review => review._id !== reviewId));
+            alert("Review deleted successfully");
+        } catch (error) {
+            console.error("Error deleting review:", error);
+        }
+    };
+    const handleClosePopup = () => {
+        setShowImagePopup(false);
+        setSelectedReview(null);
+        setCurrentImages([]);
+        setNewImages([]);
+    };
+
+    // Remove an image from current images
+    const handleDeleteCurrentImage = (index) => {
+        setCurrentImages(currentImages.filter((_, i) => i !== index));
+    };
+
+    // Add new selected images
+    const handleNewImageUpload = (event) => {
+        const files = Array.from(event.target.files);
+        const fileURLs = files.map(file => URL.createObjectURL(file));
+        setNewImages((prevImages) => [...prevImages, ...fileURLs]);
+    };
+
+    // Remove an image from new images
+    const handleDeleteNewImage = (index) => {
+        setNewImages(newImages.filter((_, i) => i !== index));
+    };
+
+    const handleSaveChanges = async () => {
+        // Implement logic to update images on server side if needed
+        // e.g., make API request to save currentImages and newImages
+        handleClosePopup(); // Close popup after saving
+    };
     return (
         <div className="reviews-container">
             <div className="filter-container">
@@ -112,7 +213,7 @@ const PlaceReview = () => {
 
             <div className="reviews-list">
                 {reviews.map(review => (
-                    <ReviewCard key={review._id} review={review} url={url} />
+                    <ReviewCard key={review._id} review={review} url={url} userID={userInfo._id} onDeleteClick={handleDeleteClick} onUpdateClick={handleUpdateClick}/>
                 ))}
             </div>
 
@@ -125,6 +226,9 @@ const PlaceReview = () => {
                     Next
                 </button>
             </div>
+
+            {/* Popup for Updating Images */}
+            {showImagePopup &&  <FormRating setShowPopup={setShowImagePopup} mode="edit" reviewData={selectedReview} /> }
         </div>
     );
 };

@@ -1,6 +1,7 @@
 import bookingModel from "../models/bookingModel.js";
 import foodModel from "../models/foodModel.js";
-
+import userModel from "../models/userModel.js";
+import { createNotification } from "./notificationController.js";
 
 const populateFoodDetails = async (bookings) => {
     const foodIds = new Set();
@@ -71,6 +72,21 @@ const updateBookingStatus = async (req, res) => {
         }
 
         await booking.save();
+        const user = await userModel.findById(booking.userId);
+        const notificationData = {
+            userId: booking.userId,
+            userName: user ? user.name : "User",
+            userImage: user ? user.image : "",
+            type: status === 'cancelled' ? 'admin' : 'user',
+            category: "booking",
+            message: "Booking is " + status, 
+            details: {
+                bookingId: bookingId
+            },
+            status: "unread"
+        };
+      
+         await createNotification(global.io, notificationData);
 
         res.status(200).json({
             success: true,
@@ -159,6 +175,22 @@ const createBooking = async (req, res) => {
         const newBooking = new bookingModel(bookingData);
         console.log("New booking:", newBooking);
         await newBooking.save();
+
+        const user = await userModel.findById(bookingData.userId);
+        const notificationData = {
+            userId: bookingData.userId,
+            userName: user ? user.name : "User",
+            userImage: user ? user.image : "",
+            type: "admin",
+            category: "booking",
+            message: "You have a new booking",
+            details: {
+                bookingId: newBooking._id
+            },
+            status: "unread"
+        };
+
+        await createNotification(global.io, notificationData);
 
         res.status(201).json({ success: true, message: 'Booking created successfully', booking: newBooking });
     } catch (error) {

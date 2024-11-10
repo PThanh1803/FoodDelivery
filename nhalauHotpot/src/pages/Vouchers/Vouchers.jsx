@@ -41,7 +41,7 @@ const Vouchers = () => {
     return (
         <div className="vouchers-container">
             <h1>Available Vouchers</h1>
-            <div>
+            <div className="vouchers-list-container">
                 {loading ? (
                     <p>Loading vouchers...</p>
                 ) : error ? (

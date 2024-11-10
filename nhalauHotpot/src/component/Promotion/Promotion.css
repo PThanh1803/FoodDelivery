@@ -3,6 +3,8 @@
     max-width: 1000px;
     margin: 0 auto;
     padding: 20px;
+    min-height: 100vh;
+    animation: fadeIn 3s;
 }
 
 .promotions-container h1 {

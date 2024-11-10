@@ -4,10 +4,11 @@ import React, { useEffect } from "react";
 import "./PlaceOrder.css";
 import { StoreContext } from "../../Context/StoreContext";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+
 const PlaceOrder = () => {
   const { getTotalCartAmount, token, food_list, cardItems, url } = React.useContext(StoreContext);
-
+  const location = useLocation();
   const [data, setData] = React.useState({
     firstName: "",
     lastName: "",
@@ -19,7 +20,8 @@ const PlaceOrder = () => {
     country: "",
     phone: ""
   })
-
+  const state = location.state;
+  const [processing, setProcessing] = React.useState(false);
 
   const onChangeHandeler = (event) => {
     const name = event.target.name;
@@ -42,9 +44,13 @@ const PlaceOrder = () => {
       address: data,
       items: orderItems,
       amount: getTotalCartAmount() + 2,
+      discount: state ? state.discountAmount : 0,
+      voucherId: state ? state.voucher._id : null
     }
-
+    console.log("orderData", orderData);
+    setProcessing(true);
     let response = await axios.post(`${url}/api/order/`, orderData, { headers: { token } })
+    setProcessing(false);
     console.log(response);
     if (response.data.success) {
       const { session_url } = response.data;
@@ -104,12 +110,17 @@ const PlaceOrder = () => {
             </div>
             <hr />
             <div className="card-total-details">
+              <p>Discount</p>
+              <p>- $ {state ? state.discountAmount : 0}</p>
+            </div>
+            <hr />
+            <div className="card-total-details">
               <p>Total</p>
-              <b>$ {getTotalCartAmount() === 0 ? 0 : getTotalCartAmount() + 2}</b>
+              <b>$ {getTotalCartAmount() === 0 ? 0 : getTotalCartAmount() + 2 - state?.discountAmount}</b>
             </div>
 
           </div>
-          <button type="submit">Proceed to payment</button>
+          <button type="submit" disabled={processing} >{processing ? "Processing..." : "Proceed to payment"}</button>
         </div>
       </div>
 

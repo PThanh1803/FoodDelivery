@@ -230,4 +230,29 @@
 
 .notification-dropdown p {
     margin: 5px 0;
-}
+
+  }
+  
+  .notification-popup {
+    position: absolute; 
+    top: 80px;
+    right: 10px;
+    background-color: #eee9e9;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    animation: showPopup 5s forwards;
+    z-index: 9999;
+  }
+
+  .notification-popup .notification-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 400px;
+    height: 150px;
+  }
+  
+ 
+

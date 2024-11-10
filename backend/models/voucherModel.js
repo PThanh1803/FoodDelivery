@@ -38,11 +38,13 @@ const voucherSchema = new mongoose.Schema({
   },
   usageLimit: {
     type: Number,
-    default: 1
+    default: 1,
+    required: true
   },
   used: {
     type: Number,
-    default: 0
+    default: 0,
+    required: true
   },
   minOrder: {
     type: Number,

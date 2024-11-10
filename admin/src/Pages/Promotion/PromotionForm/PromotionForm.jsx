@@ -24,8 +24,8 @@ const PromotionForm = ({ isVisible, onClose, onSubmit, initialData = {}, modalTy
     setContent(initialData?.content || '');
     setImage(initialData?.image || '');
     setStatus(initialData?.status || 'active');
-    setStartDate(initialData?.startDate || '');
-    setExpiryDate(initialData?.expiryDate || '');
+    setStartDate(new Date().toISOString().split("T")[0] || '');
+    setExpiryDate(new Date().toISOString().split("T")[0] ||  '');
     setDateCreated( Date.now());
     
   }, [initialData]);
@@ -83,6 +83,7 @@ const PromotionForm = ({ isVisible, onClose, onSubmit, initialData = {}, modalTy
                 <label className="promotion-label">Ngày bắt đầu</label>
                 <input
                   type="date"
+                  
                   className="promotion-input"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}

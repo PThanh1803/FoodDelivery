@@ -23,6 +23,7 @@ const AddVoucherForm = ({ isOpen, closeModal, voucher, url }) => {
   const [image, setImage] = useState(null);
   const [isEditing, setIsEditing] = useState(true);
   const [previewImage, setPreviewImage] = useState(null);
+  const [used, setUsed] = useState(0);
 
   // Fetch voucher details if editing
   useEffect(() => {
@@ -46,7 +47,8 @@ const AddVoucherForm = ({ isOpen, closeModal, voucher, url }) => {
     setMinOrder(voucher.minOrder);
     setMaxDiscount(voucher.maxDiscount);
     setImage(voucher.image); // Set image as well
-    setIsEditing(true); // Đặt chế độ chỉnh sửa nếu có voucher
+    setIsEditing(true); 
+    setUsed(voucher.used); // Đặt chế độ chỉnh sửa nếu có voucher
   };
 
   console.log("Voucher:", voucher);
@@ -58,6 +60,7 @@ const AddVoucherForm = ({ isOpen, closeModal, voucher, url }) => {
     setStartDate("");
     setStatus("Active");
     setUsageLimit("");
+    setUsed(0);
     setMinOrder("");
     setMaxDiscount("");
     setImage(null);
@@ -66,6 +69,26 @@ const AddVoucherForm = ({ isOpen, closeModal, voucher, url }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (!voucherCode || !discountAmount || !expiryDate || !startDate) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+    if (expiryDate < startDate) {
+      alert("Expiry date must be after start date.");
+      return;
+    }
+
+    if(expiryDate < new Date().toISOString().split("T")[0] ){
+      alert("Expiry date must be after current date.");
+      return;
+    }
+
+    if(used > usageLimit){
+      alert("Usage limit exceeded.");
+      return;
+    }
+
     const voucherData = {
       voucherCode,
       discountAmount,
@@ -77,6 +100,7 @@ const AddVoucherForm = ({ isOpen, closeModal, voucher, url }) => {
       minOrder,
       maxDiscount,
       image,
+      used
     };
 
     if (voucher) {
@@ -214,6 +238,17 @@ const AddVoucherForm = ({ isOpen, closeModal, voucher, url }) => {
                   type="number"
                   value={usageLimit}
                   onChange={(e) => setUsageLimit(e.target.value)}
+                  required
+                  disabled={!isEditing} // Disable input if not in edit mode
+                />
+              </div>
+
+              <div className="voucher-form-group">
+                <h3>Used:</h3>
+                <input
+                  type="number"
+                  value={used}
+                  onChange={(e) => setUsed(e.target.value)}
                   required
                   disabled={!isEditing} // Disable input if not in edit mode
                 />

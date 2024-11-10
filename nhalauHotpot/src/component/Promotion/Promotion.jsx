@@ -61,7 +61,7 @@ const Promotions = () => {
                 <ul className="promotion-list">
                     {promotions.map((promo) => (
 
-                        <li key={promo.id} className="promotion-item">
+                        <li key={promo._id} className="promotion-item">
                             <img src={`${url}/images/promotions/${promo.image}`} alt={promo.title} className="promotion-image-size" onClick={() => handlePromoClick(promo._id)} />
                             <div className="promotion-details">
                                 <h3 className="promotion-title">{promo.title}</h3>

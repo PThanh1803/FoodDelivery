@@ -10,14 +10,16 @@ const Verify = () => {
     const [searchParams] = useSearchParams();
     const success = searchParams.get("success");
     const orderId = searchParams.get("orderId");
-
+    const userId = searchParams.get("userId");
+    const voucherId = searchParams.get("voucherId");
+    console.log("voucherId",  voucherId)
     console.log(success, orderId)
 
     const {url} = React.useContext(StoreContext);
     const navigate = useNavigate();
 
     const verifyPayment = async () => {
-        const response = await axios.post(`${url}/api/order/verify`, {success, orderId})
+        const response = await axios.post(`${url}/api/order/verify`, {success, orderId, userId, voucherId});
         console.log(response);
         if(response.data.success){
             navigate("/myorders")

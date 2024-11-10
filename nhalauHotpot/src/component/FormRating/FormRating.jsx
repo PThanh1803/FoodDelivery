@@ -1,40 +1,38 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import './FormRating.css';
 import { StoreContext } from '../../context/StoreContext';
 
-// eslint-disable-next-line react/prop-types
-const FormRating = ({ setShowPopup }) => {
-    const [selectedOption, setSelectedOption] = useState(null);
-    const [overallRating, setOverallRating] = useState(0);
-    const [foodRating, setFoodRating] = useState(0);
-    const [serviceRating, setServiceRating] = useState(0);
+const FormRating = ({ setShowPopup, mode = 'add', reviewData }) => {
+    const [selectedOption, setSelectedOption] = useState(reviewData?.type || null);
+    const [overallRating, setOverallRating] = useState(reviewData?.star || 0);
+    const [foodRating, setFoodRating] = useState(reviewData?.foodRate || 0);
+    const [serviceRating, setServiceRating] = useState(reviewData?.serviceRate || 0);
     const [imageFiles, setImageFiles] = useState([]);
-    const [reviewText, setReviewText] = useState('');
+    const [existingImages, setExistingImages] = useState(reviewData?.pictures || []);
+    const [reviewText, setReviewText] = useState(reviewData?.comment || '');
     const { url, userInfo } = useContext(StoreContext);
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleOverallStarClick = (index) => {
-        setOverallRating(index + 1);
-    };
+    useEffect(() => {
+        if (mode === 'edit' && reviewData) {
+            setExistingImages(reviewData.pictures || []);
+        }
+    }, [mode, reviewData]);
 
-    const handleFoodStarClick = (index) => {
-        setFoodRating(index + 1);
-    };
-
-    const handleServiceStarClick = (index) => {
-        setServiceRating(index + 1);
-    };
+    const handleOverallStarClick = (index) => setOverallRating(index + 1);
+    const handleFoodStarClick = (index) => setFoodRating(index + 1);
+    const handleServiceStarClick = (index) => setServiceRating(index + 1);
 
     const handleImageChange = (event) => {
         const files = Array.from(event.target.files);
-        setImageFiles(prevFiles => [...prevFiles, ...files]);
+        setImageFiles((prevFiles) => [...prevFiles, ...files]);
     };
 
-    const handleImageRemove = (index) => {
-        setImageFiles(prevFiles => prevFiles.filter((_, i) => i !== index));
-    };
+    const handleImageRemove = (index) => setImageFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
 
-    const addReview = async () => {
+    const handleExistingImageRemove = (index) => setExistingImages((prevImages) => prevImages.filter((_, i) => i !== index));
+
+    const handleSubmit = async () => {
         if (!overallRating || !foodRating || !serviceRating || !selectedOption || !reviewText) {
             alert('Please fill in all fields before submitting.');
             return;
@@ -49,30 +47,23 @@ const FormRating = ({ setShowPopup }) => {
         formData.append('userImage', userInfo.avatar || 'https://via.placeholder.com/50x50');
         formData.append('userName', userInfo.name || 'John Doe');
         formData.append('userID', userInfo._id || '123456789');
-        
-      
-        imageFiles.forEach(file => {
-            formData.append('images', file); // Append the actual file object
-        });
 
-        setIsLoading(true); // Set loading state to true
+        imageFiles.forEach((file) => formData.append('images', file));
+        console.log(existingImages);
+        formData.append('existingImages',JSON.stringify(existingImages)); // Maintain existing images
+
+
+        setIsLoading(true);
 
         try {
-            const response = await fetch(url + '/api/review/', {
-                method: 'POST',
+            const response = await fetch(`${url}/api/review/${mode === 'edit' ? reviewData._id : ''}`, {
+                method: mode === 'edit' ? 'PUT' : 'POST',
                 body: formData,
             });
             const data = await response.json();
 
             if (data.success) {
                 alert('Review submitted successfully!');
-                // Reset form fields
-                setOverallRating(0);
-                setFoodRating(0);
-                setServiceRating(0);
-                setImageFiles([]);
-                setReviewText('');
-                setSelectedOption(null);
                 setShowPopup(false);
             } else {
                 alert('Error submitting review: ' + data.message);
@@ -81,14 +72,14 @@ const FormRating = ({ setShowPopup }) => {
             console.error("Error submitting review:", error);
             alert('An error occurred while submitting your review. Please try again.');
         } finally {
-            setIsLoading(false); // Reset loading state
+            setIsLoading(false);
         }
     };
 
     return (
         <div className='form-rating-popup'>
             <div className="form-rating-container">
-                <h2>Rate Your Experience</h2>
+                <h2>{mode === 'edit' ? 'Edit Your Review' : 'Rate Your Experience'}</h2>
                 <div className="form-rating-user">
                     <img src={userInfo.avatar || 'https://via.placeholder.com/50x50'} alt='user' />
                     <div className='form-rating-user-info'>
@@ -171,26 +162,45 @@ const FormRating = ({ setShowPopup }) => {
                     multiple
                     accept="image/*"
                     onChange={handleImageChange}
-                    style={{ display: 'none' }}
+                    style={{ display: 'none' }} 
                     id="image-upload"
                 />
                 <label htmlFor="image-upload" className="add-image-btn">
                     Thêm ảnh
                 </label>
 
-                {/* Display selected images */}
-                <div className="selected-images">
-                    {imageFiles.map((file, index) => (
-                        <div key={index} className="image-preview">
-                            <img src={URL.createObjectURL(file)} alt={`Preview ${index + 1}`} />
-                            <button onClick={() => handleImageRemove(index)} className="remove-image-btn">X</button>
+                {/* Existing Images (only in edit mode) */}
+                {mode === 'edit' && existingImages.length > 0 && (
+                    <div> 
+                        <h4>Existing Images:</h4>
+                        <div className="selected-images">                           
+                            {existingImages.map((image, index) => (
+                                <div key={index} className="image-preview">
+                                    <img src={`${url}/images/reviews/${image}`} alt={`Existing ${index + 1}`} />
+                                    <button onClick={() => handleExistingImageRemove(index)} className="remove-image-btn">X</button>
+                                </div>
+                            ))}
                         </div>
-                    ))}
-                </div>
+                    </div>
+                )}
+
+                {imageFiles.length > 0 && <div>
+                    <h4>New Images:</h4>
+                    <div className="selected-images">
+                        
+                        {imageFiles.map((file, index) => (
+                            <div key={index} className="image-preview">
+                                <img src={URL.createObjectURL(file)} alt={`Preview ${index + 1}`} />
+                                <button onClick={() => handleImageRemove(index)} className="remove-image-btn">X</button>
+                            </div>
+                        ))}
+                    </div>
+                </div>}
+                
 
                 <div className="form-rating-actions">
                     <button className="cancel-btn" onClick={() => setShowPopup(false)}>Cancel</button>
-                    <button className="submit-btn" onClick={addReview} disabled={isLoading}>
+                    <button className="submit-btn" onClick={handleSubmit} disabled={isLoading}>
                         {isLoading ? 'Submitting...' : 'Submit'}
                     </button>
                 </div>

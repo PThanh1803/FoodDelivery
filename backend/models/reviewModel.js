@@ -13,7 +13,7 @@ const ReviewSchema = new mongoose.Schema({
     pictures: [{ type: String }],
     comment: { type: String },
     response: { type: String }
-});
+},{timestamps: true});
 
 
  const reviewModel = mongoose.models.Review || mongoose.model('Review', ReviewSchema);

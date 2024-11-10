@@ -1,6 +1,6 @@
 import reviewModel from "../models/reviewModel.js";
 import fs from "fs";
-
+import {createNotification} from "./notificationController.js";
 
 
 //add review
@@ -29,48 +29,27 @@ const addReview = async (req, res) => {
         }
 
         await newReview.save();
+        const notificationData = {
+            userId: req.body.userID,
+            userName: req.body.userName,
+            userImage: req.body.userImage,
+            type: 'admin',
+            category: 'review',
+            message: 'A new review has been added',
+            details: {
+                reviewId: newReview._id,
+            },
+            status: 'unread'
+        }
+
+        await createNotification(global.io, notificationData)
+
         res.json({ success: true, message: "Review added successfully", review: newReview });
     } catch (error) {
         console.log(error);
         res.json({ success: false, message: "Error adding review" });
     }
 };
-
-// In reviewController.js
-
-// const getReviews = async (req, res) => {
-//     try {
-//         const { page = 1, limit = 5 } = req.query;
-
-//         // Convert page and limit to numbers
-//         const pageNum = Math.max(1, parseInt(page, 10)); // Ensure page is at least 1
-//         const limitNum = Math.max(1, parseInt(limit, 10)); // Ensure limit is at least 1
-
-//         const totalReviews = await reviewModel.countDocuments();
-//         const totalPages = Math.ceil(totalReviews / limitNum);
-
-//         // Fetch reviews with pagination
-//         const reviews = await reviewModel
-//             .find()
-//             .skip((pageNum - 1) * limitNum)
-//             .limit(limitNum);
-
-//         // Collect all images from the reviews
-//         const images = reviews.flatMap(review => review.pictures);
-
-//         res.json({
-//             success: true,
-//             reviews,
-//             images, // List of all images in the current set of reviews
-//             currentPage: pageNum,
-//             totalPages,
-//         });
-//     } catch (error) {
-//         console.error("Error fetching reviews:", error);
-//         res.status(500).json({ success: false, message: "Error fetching reviews", error: error.message });
-//     }
-// };
-
 
 
 const deleteReview = async (req, res) => {
@@ -103,13 +82,47 @@ const updateReview = async (req, res) => {
         if (type === "response") {
             review.response = req.body.response;
             await review.save();
+            const notificationData = {
+                userId: review.userID,
+                userName: review.userName,
+                userImage: review.userImage,
+                type: 'user',
+                category: 'review',
+                message: 'Your review has been responded by admin',
+                details: {
+                    reviewId: review._id,
+                    response: review.response,
+                },
+                status: 'unread'
+            }
+            await createNotification(global.io, notificationData)
             res.json({ success: true, message: "Response updated successfully", review });
         }
         else {
+        
+        let updatedImages = JSON.parse(req.body.existingImages) || [];
+        console.log(updatedImages);
+
+        if (req.files ) {
+            const newImagePaths = req.files.map((file) => file.filename);
+            updatedImages.push(...newImagePaths);
+        }
+
+        const imagesToRemove = review.pictures.filter((img) => !updatedImages.includes(img));
+        review.pictures = updatedImages;
+
+        const deleteImage = async (imageName) => {
+            try {
+                return await fs.promises.unlink(`uploads/reviews/${imageName}`);
+            } catch (err) {
+                console.error(`Failed to delete image ${imageName}:`, err);
+            }
+        };
+
+        await Promise.all(imagesToRemove.map((image) => deleteImage(image)));
             review.userImage = req.body.userImage;
             review.userName = req.body.userName;
             review.userID = req.body.userID;
-            review.date = req.body.date;
             review.star = req.body.star;
             review.type = req.body.type;
             review.foodRate = req.body.foodRate;
@@ -152,7 +165,9 @@ const getReviews = async (req, res) => {
     const limitNum = Math.max(1, parseInt(limit, 10)); // Ensure limit is at least 1
     // Pagination: skip and limit
 
-
+    const reviewsImages = await reviewModel.find().lean();
+    const images = reviewsImages.flatMap(review => review.pictures);
+        
     // Date range filter
     if (startDate && endDate) {
         filters.date = { $gte: new Date(startDate), $lte: new Date(endDate) };
@@ -190,7 +205,7 @@ const getReviews = async (req, res) => {
             .skip((pageNum - 1) * limitNum)
             .limit(limitNum);
         const totalReviews = await reviewModel.countDocuments(filters);
-        const images = reviews.flatMap(review => review.pictures);
+       
         res.json({
             success: true,
             reviews,
@@ -241,22 +256,5 @@ const getReviewStats = async (req, res) => {
         console.log(error);
     }
 }
-// const getGoodReview = async (req, res) => {
-//     try {
-//         // Lấy 5 review gần đây nhất có số sao là 4 hoặc 5
-//         const goodReviews = await reviewModel
-//             .find({ star: { $gte: 4 } }) // Chỉ lấy review có số sao từ 4 trở lên
-//             .sort({ date: -1 }) // Sắp xếp theo ngày mới nhất
-//             .limit(5); // Giới hạn 5 review
 
-//         res.json({
-//             success: true,
-//             reviews: goodReviews,
-//             message: "Successfully fetched good reviews"
-//         });
-//     } catch (error) {
-//         console.error("Error fetching good reviews:", error);
-//         res.status(500).json({ success: false, message: "Error fetching good reviews", error: error.message });
-//     }
-// };
 export { addReview, getReviews, deleteReview, updateReview, getReviewStats };

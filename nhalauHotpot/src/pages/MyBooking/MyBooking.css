@@ -6,6 +6,7 @@
     padding: 20px;
     font-family: Arial, sans-serif;
     color: #333;
+    animation: fadeIn 2s;
   }
   
   .booking-list-header {
@@ -290,4 +291,13 @@
     background-color: #dc3545; /* Red for cancel */
   }
   
+}
+
+.highlight-same {
+  background-color: #f0f8ff; /* Light blue background */
+  border: 2px solid #007bff;  /* Blue border */
+  padding: 10px;
+  margin: 10px 0;
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+  transition: background-color 6s ease, border 6s ease, box-shadow 6s ease;
 }

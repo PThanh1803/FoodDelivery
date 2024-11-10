@@ -103,7 +103,7 @@ const sendPassword = async (req, res) => {
 const generateOrderSummary = (items) => {
     let totalAmount = 0;
     let itemsHTML = items.map(item => {
-        totalAmount += item.price * item.quantity + 2;
+        totalAmount += item.price * item.quantity;
         const image = `https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1562815515627-WUI5RN2UL8UZPT1WLROY/chup-anh-mon-an-nha-hang-chuyen-nghiep-4.jpg`
         return `
             <div style="display: flex; align-items: center; margin-bottom: 10px;">
@@ -124,7 +124,7 @@ const generateOrderSummary = (items) => {
             <div style="margin: 20px 0; padding: 20px; background-color: #f8f8f8; border-radius: 10px;">
                 ${itemsHTML}
                 <p style="text-align: left; font-size: 12px; color: #333;">Phí ship: 2$</p>
-                <p style="text-align: right; font-size: 16px; font-weight: bold; color: #d35400;">Tổng tiền: $${totalAmount}</p>
+                <p style="text-align: right; font-size: 16px; font-weight: bold; color: #d35400;">Tổng tiền: $${totalAmount+2}</p>
             </div>
             <p style="text-align: center; font-size: 14px; color: #777;">Chúng tôi sẽ sớm chuẩn bị đơn hàng của bạn và giao đến bạn!</p>
         </div>
