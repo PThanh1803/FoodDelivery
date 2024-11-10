@@ -22,13 +22,17 @@ const RateComponent = () => {
         const fetchImages = async () => {
             
             try {
-                const response = await fetch(url + '/api/review' , { method: 'GET' } ); // Replace with your API endpoint
+                const response = await fetch(url + '/api/review' , { method: 'GET' } ); 
+                console.log(response);
+                // Replace with your API endpoint
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
+                console.log(response);
                 const data = await response.json();
                 console.log(data);
-                setImages(data.images); // Assuming your API returns an array of images in an 'images' field
+                setImages(data.images);
+                console.log("images",data.images); // Assuming your API returns an array of images in an 'images' field
             } catch (error) {
                 setError(error);
             } finally {
@@ -57,9 +61,6 @@ const RateComponent = () => {
             prevIndex === 0 ? images.length - 1 : prevIndex - 1
         );
     };
-
-    if (loading) return <div>Loading images...</div>;
-    if (error) return <div>Error loading images: {error.message}</div>;
 
     return (
         <div className='rate-container'>

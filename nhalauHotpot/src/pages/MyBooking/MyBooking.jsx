@@ -28,16 +28,15 @@ const MyBooking = () => {
   const [bookingToCancel, setBookingToCancel] = useState(null);
   const [highlightedOrder, setHighlightedOrder] = useState(null);
 
-  // Fetch bookings from API
   useEffect(() => {
-    fetchBookings(currentPage);
-  }, [currentPage, url]); // Added currentPage as a dependency
-
-  const handleCancelBooking = (booking) => {
-    setBookingToCancel(booking);
-    setShowCancelPopup(true);
-  };
-
+    const savedBookings = localStorage.getItem("bookings");
+    if (savedBookings) {
+      setBookings(JSON.parse(savedBookings));
+    } else {
+      fetchBookings(currentPage);
+    }
+  }, [currentPage, url]);
+  
   const fetchBookings = async (page) => {
     try {
       const response = await axios.get(
@@ -51,6 +50,7 @@ const MyBooking = () => {
       if (response.data.success) {
         setBookings(response.data.bookings);
         setTotalPages(response.data.totalPages);
+        localStorage.setItem("bookings", JSON.stringify(response.data.bookings)); // Store bookings in localStorage
         if (state && state.bookingId) {
           const { bookingId } = state;
           setHighlightedOrder(bookingId);
@@ -63,6 +63,14 @@ const MyBooking = () => {
       console.error("Error fetching bookings:", error);
     }
   };
+  
+
+  const handleCancelBooking = (booking) => {
+    setBookingToCancel(booking);
+    setShowCancelPopup(true);
+  };
+
+  
 
   const handlePageChange = (page) => {
     setCurrentPage(page);

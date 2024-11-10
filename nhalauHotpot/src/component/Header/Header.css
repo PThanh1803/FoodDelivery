@@ -3,6 +3,7 @@
     width: 100%;
     background-size: contain;
     position: relative;
+    animation: fadeIn 2s ease-in-out;
 
 }
 

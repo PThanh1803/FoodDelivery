@@ -3,6 +3,12 @@
     gap: 20px;
     display: flex;
     flex-direction: column;
+    min-height: 100vh;
+    animation: fadeIn 2s ease-in-out; 
+}
+
+.vouchers-list-container{
+    min-height: 100vh;
 }
 
 .vouchers-list {

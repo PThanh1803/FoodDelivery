@@ -99,10 +99,30 @@ const updateReview = async (req, res) => {
             res.json({ success: true, message: "Response updated successfully", review });
         }
         else {
+        
+        let updatedImages = JSON.parse(req.body.existingImages) || [];
+        console.log(updatedImages);
+
+        if (req.files ) {
+            const newImagePaths = req.files.map((file) => file.filename);
+            updatedImages.push(...newImagePaths);
+        }
+
+        const imagesToRemove = review.pictures.filter((img) => !updatedImages.includes(img));
+        review.pictures = updatedImages;
+
+        const deleteImage = async (imageName) => {
+            try {
+                return await fs.promises.unlink(`uploads/reviews/${imageName}`);
+            } catch (err) {
+                console.error(`Failed to delete image ${imageName}:`, err);
+            }
+        };
+
+        await Promise.all(imagesToRemove.map((image) => deleteImage(image)));
             review.userImage = req.body.userImage;
             review.userName = req.body.userName;
             review.userID = req.body.userID;
-            review.date = req.body.date;
             review.star = req.body.star;
             review.type = req.body.type;
             review.foodRate = req.body.foodRate;
@@ -145,7 +165,9 @@ const getReviews = async (req, res) => {
     const limitNum = Math.max(1, parseInt(limit, 10)); // Ensure limit is at least 1
     // Pagination: skip and limit
 
-
+    const reviewsImages = await reviewModel.find().lean();
+    const images = reviewsImages.flatMap(review => review.pictures);
+        
     // Date range filter
     if (startDate && endDate) {
         filters.date = { $gte: new Date(startDate), $lte: new Date(endDate) };
@@ -183,7 +205,7 @@ const getReviews = async (req, res) => {
             .skip((pageNum - 1) * limitNum)
             .limit(limitNum);
         const totalReviews = await reviewModel.countDocuments(filters);
-        const images = reviews.flatMap(review => review.pictures);
+       
         res.json({
             success: true,
             reviews,

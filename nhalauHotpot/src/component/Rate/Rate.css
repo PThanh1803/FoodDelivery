@@ -2,6 +2,8 @@
     font-family: Arial, sans-serif;
     max-width: 1200px;
     margin: 120px auto 0 auto;
+    min-height: 100vh ;
+    animation: fadeIn 2s;
 }
 
 .rate-score-header {
@@ -218,6 +220,7 @@
 
 .full-image {
     width: 100%;
+    max-width: 650px !important;
     /* Đảm bảo ảnh chiếm toàn bộ chiều rộng của container */
     height: auto;
     /* Giữ tỉ lệ gốc của ảnh */
