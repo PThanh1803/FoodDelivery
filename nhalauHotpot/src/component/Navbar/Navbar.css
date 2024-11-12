@@ -20,7 +20,7 @@
 }
 
 .navbar .logo {
-    width: 150px;
+    width: max(10%, 80px);
     cursor: pointer;
 }
 
@@ -42,7 +42,7 @@
     gap: 40px;
 }
 
-/* 
+
 .navbar .navbar-right button {
     background-color: transparent;
     color: white;
@@ -57,7 +57,8 @@
 .navbar .navbar-right button:hover {
     background-color: tomato;
     color: white;
-} */
+}
+
 .navbar-profile-image {
     width: 40px;
     height: 40px;
@@ -231,10 +232,10 @@
 .notification-dropdown p {
     margin: 5px 0;
 
-  }
-  
-  .notification-popup {
-    position: absolute; 
+}
+
+.notification-popup {
+    position: absolute;
     top: 80px;
     right: 10px;
     background-color: #eee9e9;
@@ -244,15 +245,12 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     animation: showPopup 5s forwards;
     z-index: 9999;
-  }
+}
 
-  .notification-popup .notification-content {
+.notification-popup .notification-content {
     display: flex;
     align-items: center;
     gap: 10px;
     width: 400px;
     height: 150px;
-  }
-  
- 
-
+}

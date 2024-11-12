@@ -5,7 +5,7 @@ import axios from 'axios';
 import { assets } from '../../assets/assets';
 import { useLocation } from 'react-router-dom';
 
-const MyOrders = () => {
+const MyOrders = ({ setShowLogin }) => {
     const { url, token, userInfo } = useContext(StoreContext);
     const location = useLocation();
     const [data, setData] = useState([]);
@@ -25,7 +25,7 @@ const MyOrders = () => {
             alert(response.data.message);
             return;
         }
-        
+
         setData(response.data.data);
         setTotalOrders(response.data.totalOrders);
 
@@ -40,6 +40,12 @@ const MyOrders = () => {
     };
 
     useEffect(() => {
+        if (!token) {
+            alert("Please Log in");
+            setShowLogin(true);
+            window.location.href = "/";
+            return;
+        }
         if (token) {
             fetchOrders();
         }

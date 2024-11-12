@@ -8,12 +8,17 @@ import FoodDisplay from '../FoodDisplay/FoodDisplay';
 
 
 const UserProfile = () => {
-    const { userInfo, url } = useContext(StoreContext);
+    const { userInfo, url, token } = useContext(StoreContext);
     const [activeTab, setActiveTab] = useState('profile');
     const [wishlist, setWishlist] = useState([]);
     // Khi userInfo thay đổi, cập nhật userEdit
     useEffect(() => {
-        // Check if userInfo and userInfo._id are defined and haven't been fetched yet
+        // if (!token) {
+        //     alert("Please Log in");
+        //     setShowLogin(true);
+        //     window.location.href = "/";
+        //     return;
+        // }
         if (userInfo && userInfo._id) {
             fetchWishlist();         // Fetch wishlist data
         }
@@ -47,6 +52,12 @@ const UserProfile = () => {
     const handleTabClick = (tab) => {
         setActiveTab(tab);
     };
+
+    if (!token) {
+        alert("Please Log in");
+        window.location.href = "/";
+        return;
+    }
     return (
         <div className="user-profile-container">
             <div className="sidebar">

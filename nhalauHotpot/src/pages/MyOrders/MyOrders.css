@@ -1,6 +1,7 @@
 .my-orders {
     margin: 50px 0px;
     padding: 20px;
+    min-height: 90vh;
 }
 
 .my-orders .container {
@@ -103,11 +104,12 @@
 }
 
 .my-orders-order.highlight {
-    background-color: #f0f8ff; /* Light blue background */
-    border: 2px solid #007bff;  /* Blue border */
+    background-color: #f0f8ff;
+    /* Light blue background */
+    border: 2px solid #007bff;
+    /* Blue border */
     padding: 10px;
     margin: 10px 0;
     box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
     transition: background-color 6s ease, border 6s ease, box-shadow 6s ease;
 }
-

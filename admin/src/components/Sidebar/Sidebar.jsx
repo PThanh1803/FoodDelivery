@@ -1,14 +1,16 @@
 import './Sidebar.css';
 import { NavLink } from 'react-router-dom';
 import { FaPlus, FaList, FaShoppingCart, FaTicketAlt, FaCogs, FaBell, FaSignOutAlt } from 'react-icons/fa';
+import { MdDashboard, MdOutlineRateReview } from "react-icons/md";
+import { AiOutlineGift } from "react-icons/ai";
+import { MdTableRestaurant } from "react-icons/md";
 
 export const Sidebar = () => {
   return (
     <div className="sidebar">
       <div className="sidebar-options">
-
-        <NavLink to='/add' className="sidebar-option"  >
-          <FaPlus className="sidebar-icon" />
+        <NavLink to='/dashboard' className="sidebar-option" >
+          <MdDashboard className="sidebar-icon" />
         </NavLink>
 
         <NavLink to='/list' className="sidebar-option"  >
@@ -23,24 +25,16 @@ export const Sidebar = () => {
           <FaTicketAlt className="sidebar-icon" />
         </NavLink>
 
-        <NavLink to='/dashboard' className="sidebar-option" >
-          <FaCogs className="sidebar-icon" />
-        </NavLink>
-
-        <NavLink to='/notification' className="sidebar-option" >
-          <FaBell className="sidebar-icon" />
-        </NavLink>
-
         <NavLink to='/promotion' className="sidebar-option" >
-          <FaSignOutAlt className="sidebar-icon" />
+          <AiOutlineGift className="sidebar-icon" />
         </NavLink>
 
         <NavLink to='/reservation' className="sidebar-option" >
-          <FaSignOutAlt className="sidebar-icon" />
+          <MdTableRestaurant className="sidebar-icon" />
         </NavLink>
 
         <NavLink to='/review' className="sidebar-option" >
-          <FaSignOutAlt className="sidebar-icon" />
+          <MdOutlineRateReview className="sidebar-icon" />
         </NavLink>
       </div>
     </div>

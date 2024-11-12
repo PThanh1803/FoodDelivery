@@ -27,13 +27,13 @@ const App = () => {
         <Navbar setShowLogin={setShowLogin} />
         <Routes>
           <Route path='/' element={<Home />} />
-          <Route path='/card' element={<Card />} />
+          <Route path='/card' element={<Card setShowLogin={setShowLogin} />} />
           <Route path='/placeorder' element={<PlaceOrder />} />
           <Route path='/verify' element={<Verify />} />
-          <Route path='/myorders' element={<MyOrders />} />
+          <Route path='/myorders' element={<MyOrders setShowLogin={setShowLogin} />} />
           <Route path='/myprofile' element={<UserProfile />} />
           <Route path='/menu' element={<Menu />} />
-          <Route path='/menu/:id' element={<FoodDetails />} />
+          <Route path='/menu/:id' element={<FoodDetails setShowLogin={setShowLogin} />} />
           <Route path='/promotions' element={<Promotions />} />
           <Route path='/promotions/:id' element={<PromotionDetail />} />
           <Route path='/rate' element={<Rate />} />

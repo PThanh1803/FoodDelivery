@@ -4,8 +4,8 @@ import "./Card.css";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-const Card = () => {
-  const { cardItems, removeFromCard, food_list, getTotalCartAmount, url } = useContext(StoreContext);
+const Card = ({ setShowLogin }) => {
+  const { cardItems, removeFromCard, food_list, getTotalCartAmount, url, token } = useContext(StoreContext);
   const navigate = useNavigate();
   const [voucherCode, setVoucherCode] = useState("");
   const [voucher, setVoucher] = useState(null);
@@ -121,13 +121,18 @@ const Card = () => {
             </div>
             <button
               disabled={subtotal === 0}
-              onClick={() =>
+              onClick={() => {
+                if (!token) {
+                  setShowLogin(true)
+                  return
+                }
                 navigate("/placeorder", {
                   state: {
                     discountAmount: discount,
                     voucher: voucher,
                   },
                 })
+              }
               }
             >
               Proceed to checkout

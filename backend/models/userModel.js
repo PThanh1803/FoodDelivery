@@ -47,6 +47,10 @@ const userSchema = new mongoose.Schema({
             }
         ],
         default: []
+    },
+    role: {
+        type: String,
+        default: "user"
     }
 }, { minimize: false });
 

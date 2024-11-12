@@ -29,6 +29,11 @@ const MyBooking = () => {
   const [highlightedOrder, setHighlightedOrder] = useState(null);
 
   useEffect(() => {
+    if (!token) {
+      alert("Please log in to view your bookings.");
+      window.location.href = "/";
+      setShowLogin(true);
+    }
     fetchBookings(currentPage);
   }, [currentPage, url]);
 

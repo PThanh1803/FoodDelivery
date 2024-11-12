@@ -10,6 +10,14 @@
   cursor: pointer;
 }
 
+.navbar-logo {
+  font-size: 40px;
+  font-weight: bold;
+  color: rgb(12, 9, 9);
+  cursor: pointer;
+  margin-right: 30px;
+}
+
 .navbar .profile-image {
   width: 40px;
   cursor: pointer;
@@ -136,4 +144,47 @@
   justify-content: center;
   align-items: center;
   font-size: 12px;
+}
+
+.navbar-profile-image {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.navbar-profile .nav-profile-dropdown {
+  position: absolute;
+  right: 0;
+  z-index: 1;
+  display: none;
+
+}
+
+.navbar-profile:hover .nav-profile-dropdown {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  gap: 10px;
+  padding: 12px 25px;
+  border-radius: 5px;
+  border: 1px solid tomato;
+  outline: 2px solid white;
+  list-style: none;
+}
+
+.nav-profile-dropdown li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.nav-profile-dropdown img {
+  width: 20px;
+}
+
+.nav-profile-dropdown li:hover {
+  color: tomato;
 }

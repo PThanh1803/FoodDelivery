@@ -52,7 +52,7 @@ const CommentHome = () => {
         <div className="comment-home-container">
             <button className="comment-button" onClick={handlePrevious}> ❮ </button>
             {visibleComments.map((comment, i) => (
-                <GoodCommentCard key={i} comment={comment} />
+                <GoodCommentCard key={i} comment={comment} url={url} />
             ))}
 
             <button className="comment-button" onClick={handleNext}>❯</button>
@@ -60,7 +60,7 @@ const CommentHome = () => {
     );
 };
 
-const GoodCommentCard = ({ comment }) => {
+const GoodCommentCard = ({ comment, url }) => {
     const formatDate = (dateString) => {
         const dateObj = new Date(dateString);
 
@@ -82,7 +82,7 @@ const GoodCommentCard = ({ comment }) => {
     const { fullDate, time } = formatDate(comment.date);
     return (
         <div className="good-comment-card">
-            <img className="good-comment-card-avatar" src={comment.userImage} alt="User Avatar" />
+            <img className="good-comment-card-avatar" src={`${url}/images/avatars/${comment.userImage}`} alt="User Avatar" />
             <div className="stars-form">
                 {[...Array(5)].map((_, index) => (
                     <span

@@ -48,23 +48,23 @@ const Navbar = ({ setShowLogin }) => {
     return location.pathname.startsWith(path) ? "Active" : "";
   };
   useEffect(() => {
-    console.log("aaaaaaaaa");
     const fetchNotifications = async () => {
-      try {
-        const response = await axios.get(`${url}/api/notification/${userInfo._id}?type=user`);
-        setNotifications(response.data.notifications);
-        setUnreadCount(response.data.notifications.filter(notification => notification.status === "unread").length);
-      } catch (error) {
-        console.error('Error fetching notifications:', error);
+      if (token) {
+        try {
+          const response = await axios.get(`${url}/api/notification/${userInfo._id}?type=user`);
+          setNotifications(response.data.notifications);
+          setUnreadCount(response.data.notifications.filter(notification => notification.status === "unread").length);
+        } catch (error) {
+          console.error('Error fetching notifications:', error);
+        }
       }
+
     };
 
     fetchNotifications();
   }, [userInfo._id, url]);
 
   useEffect(() => {
-    console.log("bbbbbbb", userInfo?._id);
-    // Check if userInfo._id is available before making API request
     if (!userInfo?._id) return;
     // Set up the WebSocket connection
     const socket = io("http://localhost:4000");
@@ -127,7 +127,7 @@ const Navbar = ({ setShowLogin }) => {
           </Link>
           <div className={getTotalCartAmount() === 0 ? "" : "dot"}></div>
         </div>
-        {!token ? <button onClick={() => setShowLogin(true)}>Sign in</button> :
+        {!token ? <button className="navbar-signin" onClick={() => setShowLogin(true)}>Sign in</button> :
           <div className='navbar-profile'>
             <img src={`http://localhost:4000/images/avatars/${userInfo.avatar}`} alt={userInfo.name} className='navbar-profile-image' />
 

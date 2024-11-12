@@ -6,8 +6,8 @@ import CryptoJS from 'crypto-js';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-const FoodDetails = () => {
-    const { food_list, cardItems, addToCard, removeFromCard, url, userInfo } = useContext(StoreContext);
+const FoodDetails = ({ setShowLogin }) => {
+    const { food_list, cardItems, addToCard, removeFromCard, url, userInfo, token } = useContext(StoreContext);
     const navigate = useNavigate();
     const { id } = useParams(); // Call useParams at the top level of the component
     const [wishlist, setWishlist] = useState([]);
@@ -47,6 +47,10 @@ const FoodDetails = () => {
     };
 
     const addToWishlist = async () => {
+        if (!token) {
+            setShowLogin(true);
+            return
+        }
         try {
             const response = await axios.post(`${url}/api/wishlist`, {
                 userId: userInfo._id,

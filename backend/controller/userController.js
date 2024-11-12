@@ -5,12 +5,12 @@ import userModel from "../models/userModel.js";
 import fs from "fs";
 //login user
 const loginUser = async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password, role } = req.body;
     try {
-        const user = await userModel.findOne({ email });
 
+        const user = await userModel.findOne({ email, role });
         if (!user) {
-            return res.json({ success: false, message: "User not found" });
+            return res.json({ success: false, message: role + " not found" });
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
@@ -29,7 +29,6 @@ const loginUser = async (req, res) => {
                 email: user.email,
                 avatar: user.avatar,
                 address: user.address
-
             }
         });
     } catch (error) {
@@ -108,7 +107,7 @@ const updateUserById = async (req, res) => {
         console.log(req.body);
         const { currentPassword, newPassword } = req.body;
         const { firstName, lastName, name } = req.body;
-        const { address } = JSON.parse(req.body.address);
+        const address = JSON.parse(req.body.address);
         // Parse the address data from the request bodyreq.body;
         if (!user) {
             return res.status(404).json({ success: false, message: "User not found" });
@@ -134,7 +133,11 @@ const updateUserById = async (req, res) => {
             }
             user.avatar = avatar;
         }
-        if (address) user.address[0] = address;
+        if (address) {
+            user.address = user.address || [];
+            user.address[0] = address;
+        }
+
         // Lưu các thay đổi vào cơ sở dữ liệu
         const updatedUser = await user.save();
 
@@ -143,7 +146,7 @@ const updateUserById = async (req, res) => {
             success: true,
             message: "User updated successfully",
             user: {
-                _id: uupdatedUserser._id,
+                _id: updatedUser._id,
                 firstName: updatedUser.firstName,
                 name: updatedUser.name,
                 lastName: updatedUser.lastName,

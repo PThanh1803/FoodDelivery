@@ -15,7 +15,7 @@ const RateComponent = () => {
     const [images, setImages] = useState([]); // State for fetched images
     const [loading, setLoading] = useState(true); // Loading state
     const [error, setError] = useState(null); // Error state
-    const { url } = useContext(StoreContext);
+    const { url, token } = useContext(StoreContext);
     const [reload, setReload] = useState(false);
     const [stats, setStats] = useState(null);
 
@@ -93,7 +93,14 @@ const RateComponent = () => {
                         <span className='rate-count'>({stats.totalReviews} đánh giá)</span>
                     </div>
                 </div>
-                <div className='rate-button' onClick={() => setShowPopup(true)}>
+                <div className='rate-button' onClick={() => {
+                    if (!token) {
+                        alert('Please login to rate');
+                        return;
+                    }
+
+                    setShowPopup(true)
+                }}>
                     <img src={write_icon} alt="write" />
                     <span>Rating now</span>
                 </div>
