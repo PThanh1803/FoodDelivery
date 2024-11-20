@@ -65,7 +65,7 @@ const registerUser = async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hashPassword = await bcrypt.hash(password, salt);
 
-        const newUser = new userModel({ firstName: firstName, lastName: lastName, name: firstName + " " + lastName, email: email, password: hashPassword });
+        const newUser = new userModel({ firstName: firstName, lastName: lastName, name: firstName + " " + lastName, email: email, password: hashPassword, role: "user" });
         const user = await newUser.save();
         const token = createToken(user._id);
         res.json({ success: true, data: token });

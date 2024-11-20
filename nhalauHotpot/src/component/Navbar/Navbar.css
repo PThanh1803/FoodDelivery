@@ -43,7 +43,7 @@
 }
 
 
-.navbar .navbar-right button {
+.navbar .navbar-right .navbar-signin {
     background-color: transparent;
     color: white;
     border: 1px solid tomato;
@@ -54,7 +54,7 @@
     transition: 0.5s;
 }
 
-.navbar .navbar-right button:hover {
+.navbar .navbar-right .navbar-signin:hover {
     background-color: tomato;
     color: white;
 }

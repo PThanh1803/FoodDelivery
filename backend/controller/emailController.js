@@ -89,7 +89,7 @@ const sendPassword = async (req, res) => {
         try {
             await sendEmail(subject, textBody, htmlBody, email);
             console.log(`Email sent to ${email}`);
-            res.json({ success: true, message: 'Email sent successfully' });
+            res.json({ success: true, message: 'Email sent successfully' })
         } catch (error) {
             console.error(`Failed to send email to ${email}:`, error);
             res.json({ success: false, message: 'Failed to send email' });
@@ -124,13 +124,14 @@ const generateOrderSummary = (items) => {
             <div style="margin: 20px 0; padding: 20px; background-color: #f8f8f8; border-radius: 10px;">
                 ${itemsHTML}
                 <p style="text-align: left; font-size: 12px; color: #333;">Phí ship: 2$</p>
-                <p style="text-align: right; font-size: 16px; font-weight: bold; color: #d35400;">Tổng tiền: $${totalAmount+2}</p>
+                 <p style="text-align: left; font-size: 12px; color: #333;">Discount: ${discount}$</p>
+                <p style="text-align: right; font-size: 16px; font-weight: bold; color: #d35400;">Tổng tiền: ${totalAmount + 2 - discount}$</p>
             </div>
             <p style="text-align: center; font-size: 14px; color: #777;">Chúng tôi sẽ sớm chuẩn bị đơn hàng của bạn và giao đến bạn!</p>
         </div>
     `;
 };
-const sendOrderEmail = async (userEmail, orderStatus, items = []) => {
+const sendOrderEmail = async (userEmail, orderStatus, items = [], discount = 0) => {
     const subject = `Your Order Status Update - 2T Food`;
 
     let textBody = '';
@@ -139,7 +140,7 @@ const sendOrderEmail = async (userEmail, orderStatus, items = []) => {
     // Nếu trạng thái là 'Processing', tức là đơn hàng vừa được đặt thành công
     if (orderStatus === 'Processing') {
         textBody = `Your order has been successfully placed and is now processing.`;
-        htmlBody = generateOrderSummary(items);  // Hàm đã có để tạo nội dung email
+        htmlBody = generateOrderSummary(items, discount);  // Hàm đã có để tạo nội dung email
 
     } else {
         // Nếu trạng thái không phải 'Processing', đó là khi admin cập nhật trạng thái đơn hàng

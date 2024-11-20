@@ -12,7 +12,7 @@ const MyOrders = ({ setShowLogin }) => {
     const [highlightedOrder, setHighlightedOrder] = useState(null);
     const [page, setPage] = useState(1);  // Trang hiện tại
     const limit = 5;  // Số đơn hàng mỗi trang
-    const [totalOrders, setTotalOrders] = useState(0);
+    const [totalOrders, setTotalOrders] = useState(1);
 
     const fetchOrders = async () => {
         const response = await axios.get(
@@ -79,7 +79,7 @@ const MyOrders = ({ setShowLogin }) => {
                 <div className="pagination">
                     <button onClick={() => setPage(page - 1)} disabled={page === 1}>Previous</button>
                     <span>Page {page} of {totalPages}</span>
-                    <button onClick={() => setPage(page + 1)} disabled={page === totalPages}>Next</button>
+                    <button onClick={() => setPage(page + 1)} disabled={page === totalPages || data.length < limit}>Next</button>
                 </div>
             </div>
         </div>

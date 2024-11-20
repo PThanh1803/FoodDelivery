@@ -75,6 +75,7 @@ const StoreContextProvider = (props) => {
             const response = await axios.post(`${url}/api/user/login`, {
                 email,
                 password,
+                role: "user",
             });
 
             if (response.data.success) {

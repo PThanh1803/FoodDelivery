@@ -11,21 +11,21 @@ const Verify = () => {
     const success = searchParams.get("success");
     const orderId = searchParams.get("orderId");
     const userId = searchParams.get("userId");
-    const voucherId = searchParams.get("voucherId");
-    console.log("voucherId",  voucherId)
+    const voucherId = searchParams.get("voucherId") || null;
+    console.log("voucherId", voucherId)
     console.log(success, orderId)
 
-    const {url} = React.useContext(StoreContext);
+    const { url } = React.useContext(StoreContext);
     const navigate = useNavigate();
 
     const verifyPayment = async () => {
-        const response = await axios.post(`${url}/api/order/verify`, {success, orderId, userId, voucherId});
+        const response = await axios.post(`${url}/api/order/verify`, { success, orderId, userId, voucherId });
         console.log(response);
-        if(response.data.success){
+        if (response.data.success) {
             navigate("/myorders")
         }
-        else{
-           navigate("/")
+        else {
+            navigate("/")
         }
     }
 
@@ -33,14 +33,14 @@ const Verify = () => {
         verifyPayment()
     }, [])
 
-  return (
-    <div className="verify">
-        <div className="spinner">
+    return (
+        <div className="verify">
+            <div className="spinner">
+
+            </div>
 
         </div>
-
-    </div>
-  )
+    )
 }
 
 export default Verify

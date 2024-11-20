@@ -46,7 +46,7 @@ const PlaceOrder = () => {
       items: orderItems,
       amount: getTotalCartAmount() + 2,
       discount: state ? state.discountAmount : 0,
-      voucherId: state ? state.voucher._id : null
+      voucherId: state && state.voucher ? state.voucher._id : null
     }
     console.log("orderData", orderData);
     setProcessing(true);
