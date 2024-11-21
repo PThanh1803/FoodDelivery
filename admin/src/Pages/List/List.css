@@ -10,6 +10,8 @@
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
+  min-height: 80vh;
+  min-width: 81vw;
 }
 
 /* Card Styling */
@@ -214,3 +216,29 @@
 .search-bar input:focus {
   border-color: #09abe1;
 }
+
+.category-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.category-card {
+  padding: 10px 20px;
+  background-color: #09abe1;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.3s;
+}
+
+.category-card:hover {
+  background-color: #007bb5;
+  transform: scale(1.1);
+}
+

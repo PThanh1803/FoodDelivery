@@ -16,9 +16,10 @@ const placeOrder = async (req, res) => {
         const newOrder = new orderModel({
             userId: req.body.userId,
             items: req.body.items,
-            amount: req.body.amount,
+            amount: req.body.amount - (req.body.discount ? req.body.discount : 0),
             address: req.body.address,
         });
+        
         await newOrder.save();
         await userModel.findByIdAndUpdate(req.body.userId, { cartData: {} });
 
@@ -54,7 +55,7 @@ const placeOrder = async (req, res) => {
             const session = await stripe.checkout.sessions.create({
                 mode: "payment",
                 line_items,
-                success_url: `${frontend_url}/verify?success=true&orderId=${newOrder._id}&voucherId=${req.body.voucherId}`,
+                success_url: `${frontend_url}/verify?success=true&orderId=${newOrder._id}&voucherId=${req.body.voucherId}&discount=${req.body.discount? req.body.discount : 0}`,
                 cancel_url: `${frontend_url}/verify?success=false&orderId=${newOrder._id}`,
             });
 
@@ -103,6 +104,7 @@ const placeOrder = async (req, res) => {
 
 const verifyOrder = async (req, res) => {
     const { voucherId, success, orderId, discount } = req.body;
+    console.log(discount);
 
     try {
         const order = await orderModel.findById(orderId);
@@ -138,7 +140,7 @@ const verifyOrder = async (req, res) => {
             await createNotification(global.io, notificationData);
 
             if (user && user.email) {
-                await sendOrderEmail(user.email, 'Processing', order.items);
+                await sendOrderEmail(user.email, 'Processing', order.items,discount);
             }
 
             console.log("paid");

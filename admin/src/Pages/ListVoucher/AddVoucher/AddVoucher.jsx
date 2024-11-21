@@ -7,7 +7,7 @@ import { FaEdit, FaTimes, FaSave } from "react-icons/fa"; // Import icons
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import ApiClient from "../../../../src/client";
 const AddVoucherForm = ({ isOpen, closeModal, voucher, url }) => {
   const navigate = useNavigate();
 
@@ -115,46 +115,49 @@ const AddVoucherForm = ({ isOpen, closeModal, voucher, url }) => {
   };
 
   const updateVoucher = async (voucherData) => {
-     try{
+    
       voucherData={...voucherData,id:voucher._id}
       console.log(voucherData);
       const formData = new FormData();
       formData.append("image", image);
       formData.append("id", voucher._id);
       formData.append("voucherData", JSON.stringify(voucherData));
-
-        const response = await axios.put(`${url}/api/voucher/${voucher._id}`,formData);
+    //   try{
+    //     const response = await axios.put(`${url}/api/voucher/${voucher._id}`,formData);
         
-        if (response && response.data && response.data.success) {
-          // Handle success response
-          console.log("Voucher updated successfully:", response.data.message);
-          toast.success(response.data.message);
-        } else {
-          // Handle error response if success is false
-          const errorMessage = response?.data?.message || "An unexpected error occurred.";
-          toast.error(errorMessage);
-        }
-     }
-     catch(error){
-        toast.error("Failed to update voucher");
-        console.log(error);
-     }
-     
+    //     if (response && response.data && response.data.success) {
+    //       // Handle success response
+    //       console.log("Voucher updated successfully:", response.data.message);
+    //       toast.success(response.data.message);
+    //     } else {
+    //       // Handle error response if success is false
+    //       const errorMessage = response?.data?.message || "An unexpected error occurred.";
+    //       toast.error(errorMessage);
+    //     }
+    //  }
+    //  catch(error){
+    //     toast.error("Failed to update voucher");
+    //     console.log(error);
+    //  }
+     const client = new ApiClient("voucher");
+     const response = await client.update(voucher._id,formData);
+     if (response.data.success) {
+      toast.success(response.data.message);
+    } else {
+      toast.error(response.data.message);
+    }
   };
 
   const addVoucher = async (voucherData) => {
-    try {
-      const formData = new FormData();
-      formData.append("image", image);
-      formData.append("voucherData", JSON.stringify(voucherData));
-      const response = await axios.post(`${url}/api/voucher/`, formData);
-      if (response.data.success) {
-        toast.success(response.data.message);
-      } else {
-        toast.error(response.data.message);
-      }
-    } catch (error) {
-      toast.error("Failed to add voucher");
+    const formData = new FormData();
+    formData.append("image", image);
+    formData.append("voucherData", JSON.stringify(voucherData));
+    const client = new ApiClient("voucher");
+    const response = await client.create(formData);
+    if (response.data.success) {
+      toast.success(response.data.message);
+    } else {
+      toast.error(response.data.message);
     }
    };
 

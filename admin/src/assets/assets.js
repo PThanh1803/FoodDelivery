@@ -11,7 +11,7 @@ export const assets ={
     order_icon,
     profile_image,
     upload_area,
-    parcel_icon
+    parcel_icon,
 }
 
 export const url = 'http://localhost:4000'

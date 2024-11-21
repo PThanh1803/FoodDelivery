@@ -44,7 +44,7 @@ const PlaceOrder = () => {
     let orderData = {
       address: data,
       items: orderItems,
-      amount: getTotalCartAmount() + 2,
+      amount: getTotalCartAmount() + 2 ,
       discount: state ? state.discountAmount : 0,
       voucherId: state && state.voucher ? state.voucher._id : null
     }

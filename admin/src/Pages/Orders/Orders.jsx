@@ -85,7 +85,11 @@ const Orders = ({ url }) => {
   const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
 
   // Change page
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const paginate = (pageNumber) => {
+    if (pageNumber > 0 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
+  };
 
   // Status color mapping
   const getStatusColor = (status) => {
@@ -189,17 +193,24 @@ const Orders = ({ url }) => {
       </div>
 
       {/* Pagination */}
-      <div className="pagination">
-        {Array.from({ length: totalPages }, (_, index) => (
-          <button
-            key={index}
-            onClick={() => paginate(index + 1)}
-            className={currentPage === index + 1 ? 'active' : ''}
-          >
-            {index + 1}
-          </button>
-        ))}
+      <div className="pagination-controls">
+        <button
+          onClick={() => paginate(currentPage - 1)}
+          disabled={currentPage === 1} // Disable when on the first page
+        >
+          Previous
+        </button>
+        <span>
+          Page {currentPage} of {totalPages}
+        </span>
+        <button
+          onClick={() => paginate(currentPage + 1)}
+          disabled={currentPage === totalPages} // Disable when on the last page
+        >
+          Next
+        </button>
       </div>
+
     </div>
   );
 };

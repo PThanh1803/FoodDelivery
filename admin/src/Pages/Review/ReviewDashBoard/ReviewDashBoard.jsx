@@ -9,6 +9,9 @@ const ReviewDashboard = ({ url }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [filterRating, setFilterRating] = useState('');
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
+    const [responseStatus, setResponseStatus] = useState("all");
     const [stats, setStats] = useState(null);
     const reviewsPerPage = 5; // Set reviews per page
 
@@ -17,7 +20,7 @@ const ReviewDashboard = ({ url }) => {
             try {
                 const response = await axios.get(
                     `${url}/api/review`, 
-                    { params: { page: currentPage, limit: reviewsPerPage, starRating: filterRating } }
+                    { params: { page: currentPage, limit: reviewsPerPage, starRating: filterRating, startDate, endDate, responseStatus } }
                 );
                 setReviews(response.data.reviews);
                 setTotalPages(response.data.totalPages);
@@ -37,11 +40,14 @@ const ReviewDashboard = ({ url }) => {
 
         fetchReviews();
         fetchStatistics();
-    }, [currentPage, filterRating, url]);
+    }, [currentPage, filterRating, url, startDate, endDate, responseStatus]);
 
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
         if (name === "starRating") setFilterRating(value === "all" ? '' : parseInt(value));
+        else if (name === "startDate") setStartDate(value);
+        else if (name === "endDate") setEndDate(value);
+        else if (name === "responseStatus") setResponseStatus(value);
         setCurrentPage(1); // Reset to first page when filters change
     };
 

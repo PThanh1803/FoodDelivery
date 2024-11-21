@@ -4,7 +4,7 @@ import AddVoucher from './AddVoucher/AddVoucher';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { FaClipboard } from 'react-icons/fa'; // Import FaClipboard from react-icons
-
+import ApiClient from '../../client';
 
 const VoucherListPage = ({ url }) => {
   const [vouchers, setVouchers] = useState([]);
@@ -12,7 +12,6 @@ const VoucherListPage = ({ url }) => {
   const [statusFilter, setStatusFilter] = useState('All');
   const [dateFilter, setDateFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [vouchersPerPage] = useState(2);
   const [showPopup, setShowPopup] = useState(false);
   const [selectedVoucher, setSelectedVoucher] = useState(null);
   const [totalPages, setTotalPages] = useState(0);
@@ -35,7 +34,7 @@ const VoucherListPage = ({ url }) => {
 
   useEffect(() => {
     fetchVouchers();
-  }, [showPopup, url, currentPage, vouchersPerPage]);
+  }, [showPopup, url, currentPage]);
 
   const closePopup = async () => {
     await fetchVouchers();
@@ -43,26 +42,20 @@ const VoucherListPage = ({ url }) => {
   };
 
   const fetchVouchers = async () => {
-    try {
-      const response = await axios.get(`${url}/api/voucher/`, {
-        params: {
-          page: currentPage,
-          limit: vouchersPerPage,
-          status: statusFilter,
-          date: dateFilter,
-          code: searchTerm,
-        }
-      });
-      if (response.data.success) {
-        setVouchers(response.data.vouchers);
-        setTotalPages(response.data.pagination.totalPages);
-      } else {
-        toast.error(response.data.message);
-        setTotalPages(0);
-      }
-    } catch (error) {
-      console.error("Error fetching vouchers:", error);
-      toast.error("Failed to fetch data");
+    const  params = {
+            page: currentPage,
+            status: statusFilter,
+            date: dateFilter,
+           code: searchTerm,
+          }
+     const client = new ApiClient("voucher");
+     const response = await client.find(params);
+     if (response.data.success) {
+      setVouchers(response.data.vouchers);
+      setTotalPages(response.data.pagination.totalPages);
+    } else {
+      toast.error(response.data.message);
+      setTotalPages(0);
     }
   };
 

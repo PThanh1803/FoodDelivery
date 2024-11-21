@@ -39,7 +39,7 @@ const ReviewCard = ({ review, onRespondSuccess, url }) => {
     return (
         <div className="review-card">
             <div className="review-avatar">
-                <img src={`${url}/images/avatars/${review.userImage}`} alt={`${review.userID} avatar`} />
+                <img src={`${url}/images/avatars/${review.userImage}`} alt={`avatar`} />
             </div>
             <div className="review-content">
                 <div className="review-header">

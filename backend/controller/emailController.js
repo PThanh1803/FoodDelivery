@@ -100,7 +100,7 @@ const sendPassword = async (req, res) => {
     }
 }
 
-const generateOrderSummary = (items) => {
+const generateOrderSummary = (items, discount) => {
     let totalAmount = 0;
     let itemsHTML = items.map(item => {
         totalAmount += item.price * item.quantity;

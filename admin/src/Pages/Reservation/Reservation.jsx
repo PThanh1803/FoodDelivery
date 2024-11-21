@@ -19,10 +19,10 @@ const Reservation = ({ url }) => {
 
   const limit = 3;
 
-  // Fetch reservations for pagination
+  // Fetch reservations for pagination and filters
   useEffect(() => {
     fetchReservations();
-  }, [url, currentPage, limit]);
+  }, [url, currentPage, limit, statusFilter, selectedDate]); // Added filters as dependencies
 
   // Fetch confirmed and incomplete reservations for calendar highlighting
   useEffect(() => {
@@ -31,32 +31,38 @@ const Reservation = ({ url }) => {
 
   const fetchReservations = async () => {
     try {
-      const response = await axios.get(url + '/api/booking/', { params: { page: currentPage, limit } });
+      const response = await axios.get(url + '/api/booking/', {
+        params: {
+          page: currentPage,
+          limit,
+          status: statusFilter === 'all' ? undefined : statusFilter, // Only send status filter if it's not 'all'
+          date: selectedDate ? selectedDate.toISOString().split('T')[0] : undefined, // Send date in YYYY-MM-DD format
+        },
+      });
       if (response.data.success) {
         setReservations(response.data.bookings);
         setTotalPages(response.data.totalPages);
       } else {
-        console.error("Failed to fetch reservations:", response.data.message);
+        console.error('Failed to fetch reservations:', response.data.message);
       }
     } catch (error) {
-      console.error("Failed to fetch reservations:", error);
+      console.error('Failed to fetch reservations:', error);
     }
   };
 
-  // Fetch all confirmed but incomplete bookings for calendar
   const fetchCalendarBookings = async () => {
     try {
       const response = await axios.get(url + '/api/booking/');
       if (response.data.success) {
         const dates = response.data.bookings
-          .filter(booking => booking.status === 'confirmed') // Filter bookings that are confirmed
-          .map(booking => new Date(booking.reservationTime)); // Map to reservation dates
+          .filter((booking) => booking.status === 'confirmed') // Filter bookings that are confirmed
+          .map((booking) => new Date(booking.reservationTime)); // Map to reservation dates
         setHighlightedDates(dates);
       } else {
-        console.error("Failed to fetch calendar bookings:", response.data.message);
+        console.error('Failed to fetch calendar bookings:', response.data.message);
       }
     } catch (error) {
-      console.error("Failed to fetch calendar bookings:", error);
+      console.error('Failed to fetch calendar bookings:', error);
     }
   };
 
@@ -68,8 +74,8 @@ const Reservation = ({ url }) => {
     try {
       const response = await axios.put(`${url}/api/booking/${reservationId}`, { status: newStatus }, {
         headers: {
-          token: localStorage.getItem("token"),
-        }
+          token: localStorage.getItem('token'),
+        },
       });
       if (response.data.success) {
         fetchReservations(); // Refresh list
@@ -77,10 +83,10 @@ const Reservation = ({ url }) => {
         setSelectedReservation(null); // Clear selected reservation
         toast.success(response.data.message);
       } else {
-        console.error("Failed to update reservation status:", response.data.message);
+        console.error('Failed to update reservation status:', response.data.message);
       }
     } catch (error) {
-      console.error("Error updating reservation status:", error);
+      console.error('Error updating reservation status:', error);
     }
   };
 
@@ -90,7 +96,7 @@ const Reservation = ({ url }) => {
 
   const handleFilterChange = (e) => {
     setStatusFilter(e.target.value);
-    setSelectedReservation(null);
+    setSelectedReservation(null); // Reset selected reservation
   };
 
   const handlePageChange = (page) => {
@@ -102,7 +108,6 @@ const Reservation = ({ url }) => {
     const isDateMatch = !selectedDate || new Date(reservation.reservationTime).toDateString() === selectedDate.toDateString();
     return isStatusMatch && isDateMatch;
   });
-
 
   const tileClassName = ({ date, view }) => {
     if (view === 'month') {
@@ -122,7 +127,7 @@ const Reservation = ({ url }) => {
   const convertUTCToLocalTime = (utcTimeString) => {
     const utcTime = new Date(utcTimeString);
     const localTime = new Date(utcTime.getTime() + utcTime.getTimezoneOffset() * 60 * 1000); // Adjust for UTC+7
-    return localTime.toLocaleTimeString("en-US", { timeStyle: "short" }); // Returns time in local format
+    return localTime.toLocaleTimeString('en-US', { timeStyle: 'short' }); // Returns time in local format
   };
 
   const convertUTCToLocalDate = (utcDateString) => {
@@ -130,14 +135,12 @@ const Reservation = ({ url }) => {
     const localDate = new Date(utcDate.getTime() + utcDate.getTimezoneOffset() * 60 * 1000); // Adjust for UTC+7
     return localDate.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }); // Returns date in local format
   };
+
   return (
     <div className="reservation-container">
       <div className="reservation-list-header">
         <h1>Reservation List</h1>
-        <Calendar
-          tileClassName={tileClassName}
-          onClickDay={(date) => setSelectedDate(date)}
-        />
+        <Calendar tileClassName={tileClassName} onClickDay={(date) => setSelectedDate(date)} />
       </div>
       <div className="reservation-filter">
         <div className="date-filter">
@@ -198,23 +201,18 @@ const Reservation = ({ url }) => {
             </div>
           ))}
           <div className="pagination-controls">
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-            >
+            <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
               Previous
             </button>
             <span>
               Page {currentPage} of {totalPages}
             </span>
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-            >
+            <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages || filteredReservations.length === 0}>
               Next
             </button>
           </div>
         </div>
+
         {selectedReservation ? (
           <div className="reservation-details">
             <h2>Reservation Details</h2>
@@ -233,7 +231,7 @@ const Reservation = ({ url }) => {
               <div className="pre-ordered-items">
                 <h3>Pre-Ordered Items:</h3>
                 <ul>
-                  {selectedReservation.foodDetails.map((item) => (
+                  {selectedReservation.foodDetails?.map((item) => (
                     <li key={item.menuItemId}>
                       <img src={`${url}/images/${item.image}`} alt={item.image} />
                       {item.name}

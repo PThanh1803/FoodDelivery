@@ -10,7 +10,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import axios from "axios";
 import "./MyBooking.css";
-import { StoreContext } from "../../context/StoreContext";
+import { StoreContext } from "../../Context/StoreContext";
 import { useLocation } from "react-router-dom";
 
 const MyBooking = () => {
@@ -35,7 +35,7 @@ const MyBooking = () => {
       setShowLogin(true);
     }
     fetchBookings(currentPage);
-  }, [currentPage, url]);
+  }, [currentPage, url, statusFilter, selectedDate]);
 
   const fetchBookings = async (page) => {
     try {
@@ -45,6 +45,10 @@ const MyBooking = () => {
         {
           headers: {
             token: localStorage.getItem("token"),
+          },
+          params: {
+            status: statusFilter === "all" ? undefined : statusFilter,
+            date: selectedDate ? selectedDate.toISOString().split("T")[0] : undefined,
           },
         }
       );
@@ -87,15 +91,7 @@ const MyBooking = () => {
     setSelectedBooking(null);
   };
 
-  const filteredBookings = bookings?.filter((booking) => {
-    const isStatusMatch =
-      statusFilter === "all" || booking.status === statusFilter;
-    const isDateMatch =
-      !selectedDate ||
-      new Date(booking.reservationTime).toDateString() ===
-      selectedDate.toDateString();
-    return isStatusMatch && isDateMatch;
-  });
+  
 
   const handleCancelConfirm = async () => {
     if (!cancelReason) {
@@ -179,7 +175,7 @@ const MyBooking = () => {
           <select value={statusFilter} onChange={handleFilterChange}>
             <option value="all">All</option>
             <option value="pending">Pending</option>
-            <option value="accepted">Accepted</option>
+            <option value="confirmed">Confirmed</option>
             <option value="completed">Completed</option>
             <option value="cancelled">Cancelled</option>
           </select>
@@ -187,8 +183,14 @@ const MyBooking = () => {
       </div>
 
       <div className="booking-list-container">
-        <div className="booking-list">
-          {filteredBookings.map((booking) => (
+        {bookings.length === 0 && <div className="booking-list" style={{ textAlign: "center" }}>
+            <p>No bookings found.</p>
+            <a href="/bookingtable">Book Now</a>
+          </div>}
+          {
+            bookings.length > 0 && 
+            <div className="booking-list">
+          {bookings.map((booking) => (
             <div
               key={booking._id}
               className={`booking-card ${booking.status} ${selectedBooking && selectedBooking._id === booking._id
@@ -247,7 +249,9 @@ const MyBooking = () => {
               Next
             </button>
           </div>
-        </div>
+            </div>
+          }
+        
 
         {selectedBooking ? (
           <div className="booking-details">

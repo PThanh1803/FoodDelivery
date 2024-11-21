@@ -2,7 +2,7 @@ import { createContext, useEffect, useState } from "react";
 import axios from "axios";
 
 export const StoreContext = createContext(null);
-
+import APIClient from "../client";
 const StoreContextProvider = (props) => {
     const url = "http://localhost:4000";
     const [token, setToken] = useState(localStorage.getItem("token") || ""); // Initialize from localStorage
@@ -20,12 +20,9 @@ const StoreContextProvider = (props) => {
         }));
 
         if (token) {
-            const response = await axios.post(
-                `${url}/api/cart/`,
-                { itemId },
-                { headers: { token } }
-            );
-
+        
+            const client = new APIClient('cart');
+            const response = await client.create({ itemId });
             if (response.data.success) {
                 console.log(response.data.message);
             }
@@ -45,9 +42,11 @@ const StoreContextProvider = (props) => {
         });
 
         if (token) {
-            await axios.delete(`${url}/api/cart/${itemId}`, {
-                headers: { token },
-            });
+            const client = new APIClient('cart');
+            const response = await client.delete(itemId);
+            if (response.data.success) {
+                console.log(response.data.message);
+            }
         }
     };
 
@@ -61,34 +60,30 @@ const StoreContextProvider = (props) => {
 
     // Fetch the list of foods
     const fetchFoodList = async () => {
-        try {
-            const response = await axios.get(`${url}/api/food/`);
+        // try {
+        //     const response = await axios.get(`${url}/api/food/`);
+        //     setFoodList(response.data.data);
+        // } catch (error) {
+        //     console.error("Error fetching food list:", error);
+        // }
+        const client = new APIClient('food');
+        const response = await client.find({});
+        if (response.data.success) {
             setFoodList(response.data.data);
-        } catch (error) {
-            console.error("Error fetching food list:", error);
         }
     };
 
     // Log in the user and store token and user info
     const loginUser = async (email, password) => {
-        try {
-            const response = await axios.post(`${url}/api/user/login`, {
-                email,
-                password,
-                role: "user",
-            });
-
-            if (response.data.success) {
-                setToken(response.data.token);
-                setUserInfo(response.data.user);
-                localStorage.setItem("token", response.data.token);
-                localStorage.setItem("user", JSON.stringify(response.data.user));
-            }
-            return response.data;
-        } catch (error) {
-            console.error("Login error:", error);
-            return { success: false, message: "Login failed" };
+        const client = new APIClient('user/login')
+        const response = await client.authenticate({ email, password, role: "user" });
+        if (response.data.success) {
+            setToken(response.data.token);
+            setUserInfo(response.data.user);
+            localStorage.setItem("token", response.data.token);
+            localStorage.setItem("user", JSON.stringify(response.data.user));
         }
+        return response.data;
     };
 
     // Load food list, token, and cart data on first mount
@@ -102,18 +97,13 @@ const StoreContextProvider = (props) => {
 
     // Load cart data if token is available
     const loadCartData = async (token) => {
-        try {
-            const response = await axios.get(`${url}/api/cart/`, {
-                headers: { token },
-            });
-
-            if (response.data.success) {
-                setCardItems(response.data.cartData);
-            } else {
-                console.error(response.data.message);
-            }
-        } catch (error) {
-            console.error("Error loading cart data:", error);
+        const client = new APIClient('cart');
+        const response = await client.find({});
+        if (response.data.success) {
+            setCardItems(response.data.cartData);
+        }
+        else {
+            console.error(response.data.message);
         }
     };
 

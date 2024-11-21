@@ -24,8 +24,8 @@ const PromotionForm = ({ isVisible, onClose, onSubmit, initialData = {}, modalTy
     setContent(initialData?.content || '');
     setImage(initialData?.image || '');
     setStatus(initialData?.status || 'active');
-    setStartDate(new Date().toISOString().split("T")[0] || '');
-    setExpiryDate(new Date().toISOString().split("T")[0] ||  '');
+    setStartDate(new Date (initialData?.startDate).toISOString().split("T")[0] || '');
+    setExpiryDate(new Date(initialData?.expiryDate).toISOString().split("T")[0] ||  '');
     setDateCreated( Date.now());
     
   }, [initialData]);

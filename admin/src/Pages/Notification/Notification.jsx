@@ -6,7 +6,7 @@ import io from 'socket.io-client'; // Import Socket.IO client
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 const socket = io('http://localhost:4000'); // Connect to the Socket.IO server
-
+import ApiClient from '../../../src/client';
 const Notification = ({ url }) => {
   const [notifications, setNotifications] = useState([]);
   const [filteredNotifications, setFilteredNotifications] = useState([]);
@@ -20,12 +20,18 @@ const Notification = ({ url }) => {
   // Fetch notifications on component mount
   useEffect(() => {
     const fetchNotifications = async () => {
-      try {
-        const response = await axios.get(url + '/api/notification?type=admin');
+      // try {
+      //   const response = await axios.get(url + '/api/notification?type=admin');
+      //   setNotifications(response.data.notifications);
+      //   console.log("Notifications:", response.data.notifications);
+      // } catch (error) {
+      //   console.error('Error fetching notifications:', error);
+      // }
+      const client = new ApiClient("notification");
+      const response = await client.find({type:"admin"});
+      if (response.data.success) {
         setNotifications(response.data.notifications);
         console.log("Notifications:", response.data.notifications);
-      } catch (error) {
-        console.error('Error fetching notifications:', error);
       }
     };
     fetchNotifications();

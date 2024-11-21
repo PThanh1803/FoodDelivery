@@ -12,6 +12,7 @@ const Verify = () => {
     const orderId = searchParams.get("orderId");
     const userId = searchParams.get("userId");
     const voucherId = searchParams.get("voucherId") || null;
+    const discount = searchParams.get("discount") || null;
     console.log("voucherId", voucherId)
     console.log(success, orderId)
 
@@ -19,12 +20,14 @@ const Verify = () => {
     const navigate = useNavigate();
 
     const verifyPayment = async () => {
-        const response = await axios.post(`${url}/api/order/verify`, { success, orderId, userId, voucherId });
+        const response = await axios.post(`${url}/api/order/verify`, { success, orderId, userId, voucherId, discount });
         console.log(response);
         if (response.data.success) {
+            alert(response.data.message)
             navigate("/myorders")
         }
         else {
+            alert(response.data.message)
             navigate("/")
         }
     }

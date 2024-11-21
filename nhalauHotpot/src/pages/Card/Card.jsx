@@ -24,7 +24,7 @@ const Card = ({ setShowLogin }) => {
         setVoucher(data.voucher);  // Lưu voucher vào state
         toast.success(data.message);
       } else {
-        toast.error(data.message);
+        alert(data.message);
       }
     } catch (error) {
       console.error(error);

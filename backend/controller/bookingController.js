@@ -108,13 +108,18 @@ const updateBookingStatus = async (req, res) => {
 // Get bookings by user ID with populated food details, pagination, and sorting
 const getBookingByUser = async (req, res) => {
     const userId = req.params.userId;
-    const { page = 1, limit = 5 } = req.query;
-    console.log("page:", page, "limit:", limit);
+    const { page = 1, limit = 10, status, date } = req.query;
+    const filters = {};
+   
+    if (status && status !== 'all') filters.status = status;
+    if (date) filters.reservationTime = { $gte: new Date(date) };
+    console.log(filters.reservationTime);
+    filters.userId = userId;
     try {
-        const bookings = await bookingModel.find({ userId })
-            .sort({ createdAt: -1 })
-            .skip((page - 1) * limit)
-            .limit(Number(limit));
+      const bookings = await bookingModel.find(filters)
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(Number(limit));
 
         // Populate food details and associate with bookings
         const bookingsWithFoodDetails = await populateFoodDetails(bookings);
@@ -141,30 +146,35 @@ const getBookingByUser = async (req, res) => {
 
 
 // Get all bookings with populated food details, pagination, and sorting
-const getBooking = async (req, res) => {
-    const { page = 1, limit = 5 } = req.query;
-
+const getBooking =async (req, res) => {
+    const { page = 1, limit = 10, status, date } = req.query;
+    const filters = {};
+   
+    if (status && status !== 'all') filters.status = status;
+    if (date) filters.reservationTime = { $gte: new Date(date) };
+    console.log(filters.reservationTime);
     try {
-        const bookings = await bookingModel.find()
-            .sort({ createdAt: -1 }) // Sort by createdAt in descending order
-            .skip((page - 1) * limit)
-            .limit(Number(limit));
-
-        const bookingsWithFoodDetails = await populateFoodDetails(bookings);
-
-        const totalBookings = await bookingModel.countDocuments();
-        res.status(200).json({
-            success: true,
-            bookings: bookingsWithFoodDetails,
-            currentPage: Number(page),
-            totalPages: Math.ceil(totalBookings / limit),
-            totalBookings
-        });
-    } catch (error) {
-        res.status(500).json({ message: 'Failed to retrieve bookings', error: error.message });
-        console.error('Error retrieving bookings:', error);
+      const reservations = await bookingModel.find(filters)
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(Number(limit));
+    
+        const reservationsWithFoodDetails = await populateFoodDetails(reservations);
+      const totalReservations = await bookingModel.countDocuments(filters);
+      const totalPages = Math.ceil(totalReservations / limit);
+  
+      res.json({
+        success: true,
+        bookings: reservationsWithFoodDetails,
+        totalPages,
+      });
+    } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
+      console.error('Error retrieving reservations:', err);
     }
-};
+  };
+  
+
 
 // Create a new booking
 const createBooking = async (req, res) => {

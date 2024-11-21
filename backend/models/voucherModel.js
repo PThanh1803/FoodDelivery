@@ -21,7 +21,7 @@ const voucherSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['Active', 'Inactive'],
+    enum: ['Active', 'Inactive', 'Expired'],
     default: 'Active'
   },
   description: {
@@ -53,8 +53,12 @@ const voucherSchema = new mongoose.Schema({
   maxDiscount: {
     type: Number,
     required: true
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
   }
-});
+}, { timestamps: true });
 
 const voucherModel = mongoose.models.voucher || mongoose.model("voucher", voucherSchema);
 

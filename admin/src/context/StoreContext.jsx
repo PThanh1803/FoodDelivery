@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import axios from "axios";
-
+import APIClient from "../client";
 export const StoreContext = createContext(null);
 
 const StoreContextProvider = (props) => {
@@ -12,24 +12,17 @@ const StoreContextProvider = (props) => {
 
     // Log in the user and store token and user info
     const loginAdmin = async (email, password) => {
-        try {
-            const response = await axios.post(`${url}/api/user/login`, {
-                email,
-                password,
-                role: "admin",
-            });
-            if (response.data.success) {
-                setToken(response.data.token);
-                setAdminInfo(response.data.user);
-                localStorage.setItem("token", response.data.token);
-                localStorage.setItem("user", JSON.stringify(response.data.user));
-            }
-            return response.data;
-        } catch (error) {
-            console.error("Login error:", error);
-            return { success: false, message: "Login failed" };
+        const client = new APIClient('user/login')
+        const response = await client.authenticate({ email, password, role: "admin" });
+        if (response.data.success) {
+            setToken(response.data.token);
+            setAdminInfo(response.data.user);
+            localStorage.setItem("token", response.data.token);
+            localStorage.setItem("user", JSON.stringify(response.data.user));
         }
+        return response.data;
     };
+    
     useEffect(() => {
         localStorage.setItem("user", JSON.stringify(adminInfo));
     }, [adminInfo]);

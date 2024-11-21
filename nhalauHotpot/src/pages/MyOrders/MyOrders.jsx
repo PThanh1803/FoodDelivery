@@ -56,7 +56,15 @@ const MyOrders = ({ setShowLogin }) => {
     return (
         <div className="my-orders">
             <h2>My Orders</h2>
-            <div className="container">
+            {data.length === 0 && 
+                <div className="container" style={{textAlign: 'center'}}>
+                    <h3>No orders found.</h3>
+                    <a href="/menu">Go to <b>Menu</b></a>
+                </div>
+            }
+            {
+                data.length > 0 &&
+                <div className="container">
                 {data.map((order, index) => (
                     <div
                         className={`my-orders-order ${order._id === highlightedOrder ? 'highlight' : ''}`}
@@ -81,7 +89,9 @@ const MyOrders = ({ setShowLogin }) => {
                     <span>Page {page} of {totalPages}</span>
                     <button onClick={() => setPage(page + 1)} disabled={page === totalPages || data.length < limit}>Next</button>
                 </div>
-            </div>
+                </div>
+            }
+           
         </div>
     );
 };

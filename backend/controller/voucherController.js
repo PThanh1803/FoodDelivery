@@ -4,7 +4,7 @@ import fs from "fs";
 const getListVoucher = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 5;
+        const limit = parseInt(req.query.limit) || 3;
 
         const statusFilter = req.query.status || null;
         const dateFilter = req.query.date || null;
@@ -67,7 +67,7 @@ const getListVoucher = async (req, res) => {
 
         // Thực hiện phân trang nếu page hợp lệ
         const skip = (page - 1) * limit;
-        const voucherData = await voucherModel.find(filter).skip(skip).limit(limit);
+        const voucherData = await voucherModel.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit);
 
         res.json({
             success: true,
