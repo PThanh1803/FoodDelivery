@@ -39,7 +39,7 @@ export default class APIClient {
   async findByID(id) {
     const data = await axios.get(`${this.api}/${id}`, {
       headers: {
-        Authorization: `Bearer ${this.token}`
+        token : this.token
       }
     })
     return data
@@ -48,7 +48,7 @@ export default class APIClient {
   async create(newData) {
     const data = await axios.post(`${this.api}`, newData, {
       headers: {
-        Authorization: `Bearer ${this.token}`
+        token : this.token
       }
     })
     return data // data = true/false
@@ -57,7 +57,7 @@ export default class APIClient {
   async update(id, newData) {
     const data = await axios.put(`${this.api}/${id}`, newData, {
       headers: {
-        Authorization: `Bearer ${this.token}`
+        token : this.token
       }
     })
     return data
@@ -67,7 +67,7 @@ export default class APIClient {
   async delete(id) {
     const data = await axios.delete(`${this.api}/${id}`, {
       headers: {
-        Authorization: `Bearer ${this.token}`
+        token : this.token
       }
     })
     return data

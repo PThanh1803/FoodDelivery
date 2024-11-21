@@ -26,6 +26,9 @@ const StoreContextProvider = (props) => {
             if (response.data.success) {
                 console.log(response.data.message);
             }
+            else {
+                console.error(response.data.message);
+            }
         }
     };
 
