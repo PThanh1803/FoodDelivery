@@ -23,7 +23,6 @@ const CommentHome = () => {
         };
         fetchComments();
     }, [url]);
-    console.log(comments);
     // Set up an interval to cycle through comments every 2 seconds
     useEffect(() => {
         const interval = setInterval(() => {

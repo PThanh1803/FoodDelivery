@@ -82,12 +82,12 @@ const Vouchers = () => {
                                             Code: {voucher.voucherCode}
                                         </h3>
                                         <p className={`${voucher.discountType === 'Percentage' ? 'percentage' : 'fixed'}`}>
-                                            {voucher.discountAmount} {voucher.discountType === 'Percentage' ? '%' : 'VND'}
+                                            {voucher.discountAmount} {voucher.discountType === 'Percentage' ? '%' : '$'}
                                         </p>
                                         <div className="voucher-info">
                                             <p className="voucher-description">Description: {voucher.description}</p>
-                                            <p>Min Order: {voucher.minOrder.toLocaleString()} VND</p>
-                                            <p>Max Discount: {voucher.maxDiscount.toLocaleString()} VND</p>
+                                            <p>Min Order: {voucher.minOrder.toLocaleString()} $</p>
+                                            <p>Max Discount: {voucher.maxDiscount.toLocaleString()} $</p>
                                             <p>Expiry Date: {new Date(voucher.expiryDate).toLocaleDateString()}</p>
                                         </div>
                                         <p className="voucher-only">{voucher.usageLimit} vouchers left</p>

@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { StoreContext } from '../../Context/StoreContext';
 import CryptoJS from 'crypto-js';
+
 const Header = () => {
   const { url } = useContext(StoreContext);
   const [promotions, setPromotions] = useState([]);
@@ -10,9 +11,9 @@ const Header = () => {
 
   const fetchListPromotion = async () => {
     try {
-      const response = await axios.get(`${url}/api/promotion?page=1&limit=5&status=active`);
+      const response = await axios.get(`${url}/api/promotion?page=1&limit=10&status=active`);
       if (response.data.success) {
-        setPromotions(response.data.promotions); // Lấy mảng promotions từ response
+        setPromotions(response.data.promotions);
       } else {
         console.log(response.data.message);
       }
@@ -25,9 +26,9 @@ const Header = () => {
     fetchListPromotion();
   }, []);
 
-  // Tự động chuyển ảnh sau mỗi 2 giây
+  // Tự động chuyển ảnh sau mỗi 7 giây
   useEffect(() => {
-    if (promotions.length > 0) {  // Kiểm tra mảng promotions không rỗng
+    if (promotions.length > 0) {
       const interval = setInterval(() => {
         setCurrentIndex((prevIndex) => (prevIndex + 1) % promotions.length);
       }, 7000);
@@ -47,23 +48,28 @@ const Header = () => {
   };
 
   const handlePromoClick = (promoId) => {
-    const encryptedID = encodeURIComponent(CryptoJS.AES.encrypt(promoId, 'secret-key').toString());
+    const encryptedID = encodeURIComponent(
+      CryptoJS.AES.encrypt(promoId, 'secret-key').toString()
+    );
     window.location.href = `/promotions/${encryptedID}`;
   };
+
   return (
-    <div className='header'>
-      <div className='header-img'>
+    <div className="header">
+      <div className="header-img">
         {promotions.map((promo, index) => (
           <img
             key={index}
             src={`${url}/images/promotions/${promo.image}`}
             alt={promo.title || `Promotion ${index + 1}`}
             className={`promotion-image ${index === currentIndex ? 'active' : ''}`}
-            onClick={() => handlePromoClick(promo._id)}
+            onClick={() => {
+              if (index === currentIndex) handlePromoClick(promo._id);
+            }} // Chỉ xử lý click khi là hình đang hiển thị
           />
         ))}
-        <button onClick={handlePrev} className='prev-button'>❮</button>
-        <button onClick={handleNext} className='next-button'>❯</button>
+        <button onClick={handlePrev} className="prev-button">❮</button>
+        <button onClick={handleNext} className="next-button">❯</button>
       </div>
     </div>
   );

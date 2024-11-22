@@ -161,6 +161,7 @@ const Add = ({ url, foodData, isEditMode, closeModal }) => {
                             onChange={onChangeHandler}
                             value={data.price}
                             type="number"
+                            min ="0"
                             name="price"
                             id="price"
                             required

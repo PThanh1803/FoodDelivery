@@ -204,7 +204,7 @@ const BookingTable = () => {
                                     <img src={`${url}/images/${food.image}`} alt={food.name} />
                                     <div className="food-details">
                                         <p>{food.name}</p>
-                                        <p>{food.price} VND</p>
+                                        <p>{food.price} $</p>
                                     </div>
                                     <div className="food-quantity">
                                         <button type="button" onClick={() => handleDecreaseQuantity(food._id)}>-</button>

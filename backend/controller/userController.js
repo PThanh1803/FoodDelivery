@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import validator from "validator";
 import userModel from "../models/userModel.js";
 import fs from "fs";
+
 //login user
 const loginUser = async (req, res) => {
     const { email, password, role } = req.body;
@@ -107,7 +108,11 @@ const updateUserById = async (req, res) => {
         console.log(req.body);
         const { currentPassword, newPassword } = req.body;
         const { firstName, lastName, name } = req.body;
-        const address = JSON.parse(req.body.address);
+        const address = "";
+        if(req.body.address){
+             address = JSON.parse(req.body.address);
+        }
+        
         // Parse the address data from the request bodyreq.body;
         if (!user) {
             return res.status(404).json({ success: false, message: "User not found" });
@@ -133,7 +138,7 @@ const updateUserById = async (req, res) => {
             }
             user.avatar = avatar;
         }
-        if (address) {
+        if (address !== "") {
             user.address = user.address || [];
             user.address[0] = address;
         }

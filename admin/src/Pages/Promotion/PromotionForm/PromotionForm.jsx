@@ -18,17 +18,22 @@ const PromotionForm = ({ isVisible, onClose, onSubmit, initialData = {}, modalTy
   const [imagePreview, setImagePreview] = useState(null);
 
   useEffect(() => {
-    
     setTitle(initialData?.title || '');
     setDescription(initialData?.description || '');
     setContent(initialData?.content || '');
     setImage(initialData?.image || '');
     setStatus(initialData?.status || 'active');
-    setStartDate(new Date (initialData?.startDate).toISOString().split("T")[0] || '');
-    setExpiryDate(new Date(initialData?.expiryDate).toISOString().split("T")[0] ||  '');
-    setDateCreated( Date.now());
-    
+  
+    // Check if startDate and expiryDate are valid before using them
+    const validStartDate = initialData?.startDate ? new Date(initialData.startDate) : null;
+    const validExpiryDate = initialData?.expiryDate ? new Date(initialData.expiryDate) : null;
+  
+    setStartDate(validStartDate && !isNaN(validStartDate) ? validStartDate.toISOString().split("T")[0] : '');
+    setExpiryDate(validExpiryDate && !isNaN(validExpiryDate) ? validExpiryDate.toISOString().split("T")[0] : '');
+  
+    setDateCreated(Date.now());
   }, [initialData]);
+  
 
   const handleSubmit = (e) => {
     e.preventDefault();

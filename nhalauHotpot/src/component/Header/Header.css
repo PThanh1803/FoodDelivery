@@ -59,12 +59,13 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
+    width: 100%;    
     height: 100%;
     opacity: 0;
     transition: opacity 0.5s ease;
     z-index: 0;
     cursor: pointer;
+    pointer-events: none; /* Ngăn ảnh không "active" nhận sự kiện */
 }
 
 .promotion-image.active {
@@ -73,7 +74,10 @@
     height: 100%;
     object-fit: cover;
     cursor: pointer;
+    z-index: 1;
+    pointer-events: auto; /* Đảm bảo ảnh đang hiển thị nhận sự kiện */
 }
+
 
 .prev-button,
 .next-button {

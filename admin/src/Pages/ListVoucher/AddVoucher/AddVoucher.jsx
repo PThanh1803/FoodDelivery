@@ -69,26 +69,57 @@ const AddVoucherForm = ({ isOpen, closeModal, voucher, url }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
+  
+    // Kiểm tra các trường bắt buộc
     if (!voucherCode || !discountAmount || !expiryDate || !startDate) {
       alert("Please fill in all required fields.");
       return;
     }
+  
+    // Kiểm tra ngày tháng
     if (expiryDate < startDate) {
       alert("Expiry date must be after start date.");
       return;
     }
-
-    if(expiryDate < new Date().toISOString().split("T")[0] ){
-      alert("Expiry date must be after current date.");
+  
+    if (expiryDate < new Date().toISOString().split("T")[0]) {
+      alert("Expiry date must be after the current date.");
       return;
     }
-
-    if(used > usageLimit){
+  
+    // Kiểm tra giá trị không hợp lệ (<0)
+    if (discountAmount < 0) {
+      alert("Discount amount cannot be less than 0.");
+      return;
+    }
+  
+    if (usageLimit < 0) {
+      alert("Usage limit cannot be less than 0.");
+      return;
+    }
+  
+    if (minOrder < 0) {
+      alert("Minimum order cannot be less than 0.");
+      return;
+    }
+  
+    if (maxDiscount < 0) {
+      alert("Maximum discount cannot be less than 0.");
+      return;
+    }
+  
+    if (used < 0) {
+      alert("Used amount cannot be less than 0.");
+      return;
+    }
+  
+    // Kiểm tra nếu đã vượt quá giới hạn sử dụng
+    if (used > usageLimit) {
       alert("Usage limit exceeded.");
       return;
     }
-
+  
+    // Tạo object dữ liệu voucher
     const voucherData = {
       voucherCode,
       discountAmount,
@@ -100,19 +131,20 @@ const AddVoucherForm = ({ isOpen, closeModal, voucher, url }) => {
       minOrder,
       maxDiscount,
       image,
-      used
+      used,
     };
-
+  
     if (voucher) {
       updateVoucher(voucherData);
       console.log("Updating voucher:", voucherData);
     } else {
-      // Add new voucher
       addVoucher(voucherData);
       console.log("Adding new voucher:", voucherData);
     }
-    closeModal(); // Close the modal after submission
+  
+    closeModal(); // Đóng modal sau khi gửi
   };
+  
 
   const updateVoucher = async (voucherData) => {
     

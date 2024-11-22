@@ -105,21 +105,20 @@
 
 .navbar-profile .nav-profile-dropdown {
     position: absolute;
-    right: 0;
+    top: 50px;
     z-index: 1;
-    display: none;
 
 }
 
-.navbar-profile:hover .nav-profile-dropdown {
+.navbar-profile .nav-profile-dropdown {
     display: flex;
     flex-direction: column;
+    width: 200px;
     background-color: white;
     gap: 10px;
     padding: 12px 25px;
     border-radius: 5px;
-    border: 1px solid tomato;
-    outline: 2px solid white;
+    box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
     list-style: none;
 }
 
